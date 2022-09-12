@@ -6,7 +6,6 @@ import AppPage from './Pages/AppPage';
 import Home from './Pages/Home';
 import NotFound from './Pages/NotFound';
 import Reservations from './Pages/Reservations';
-import connection from './Services/WebSocket';
 
 // connection.start().catch((err) => document.write(err));
 
@@ -14,6 +13,7 @@ export default function App() {
   const links = [
     { link: '/', label: 'Home' },
     { link: '/app', label: 'App' },
+    { link: '/reservations', label: 'Reservations' },
   ];
 
   return (
