@@ -1,34 +1,12 @@
 import { Button, Group, Modal, NumberInput, Textarea } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { IconClock } from '@tabler/icons';
-import Customer from '../../Models/Customer';
-import Sitting from '../../Models/Sitting';
+import { IconCalendar, IconClock } from '@tabler/icons';
 import Reservation from '../../Models/Reservation';
-import { useEffect, useState } from 'react';
 
 interface ReservationModalProps {
   opened: boolean;
   onClose(): void;
-}
-
-interface ReservationFormValues {
-  id: number;
-  customer: Customer;
-  sitting: Sitting;
-  dateTime: Date;
-  people: number;
-  notes: string;
-}
-
-interface ReservationThing {
-  id: number;
-  customerId: number; // TODO: change to customer object
-  sittingId: number; // TODO: change to sitting object
-  dateTime: string; // Date picker + time picker
-  duration: number; // Number input
-  noGuests: number; // Number input
-  notes?: string;
 }
 
 export default function ReservationModal({
@@ -84,6 +62,8 @@ export default function ReservationModal({
           placeholder="Pick date"
           label="Reservation date"
           withAsterisk
+          allowFreeInput
+          icon={<IconCalendar size={16} />}
           required
           value={form.values.date}
           // onChange={(date) => form.setFieldValue('date', date)}

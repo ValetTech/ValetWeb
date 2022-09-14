@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Reservation from '../Models/Reservation';
 // import { IApiService } from './IApiService';
 // const API_URL = 'https://localhost:7028/api';
 axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api';
@@ -17,6 +18,35 @@ export default async function getReservationsAsync() {
     console.log('response.data', response.data);
 
     return response.data;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
+export function getReservationByIdAsync(id: number) {
+  try {
+    const response = axios.get(`/reservations/${id}`);
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
+export function updateReservationAsync(id: number, reservation: Reservation) {
+  try {
+    const response = axios.put(`/reservations/${id}`, {
+      body: reservation,
+    });
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
+export function deleteReservationAsync(id: number) {
+  try {
+    const response = axios.delete(`/reservations/${id}`);
+    return response;
   } catch (error) {
     throw new Error();
   }

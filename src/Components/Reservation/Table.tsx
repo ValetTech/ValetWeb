@@ -140,9 +140,9 @@ export default function TableSort({ data }: TableSortProps) {
       <td>
         <Center>{row.sittingId}</Center>
       </td>
-      <td>
+      {/* <td>
         <Center>{row.venueId}</Center>
-      </td>
+      </td> */}
       <td>
         <Center>{new Date(row.dateTime).toLocaleString()}</Center>
       </td>
@@ -194,13 +194,13 @@ export default function TableSort({ data }: TableSortProps) {
             >
               Sitting
             </Th>
-            <Th
+            {/* <Th
               sorted={sortBy === 'venueId'}
               reversed={reverseSortDirection}
               onSort={() => setSorting('venueId')}
             >
               Venue
-            </Th>
+            </Th> */}
             <Th
               sorted={sortBy === 'dateTime'}
               reversed={reverseSortDirection}
