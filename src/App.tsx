@@ -3,7 +3,6 @@ import { NotificationsProvider } from '@mantine/notifications';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import FooterCentered from './Layouts/Footer';
 import HeaderSimple from './Layouts/Header';
-import AppPage from './Pages/AppPage';
 import Home from './Pages/Home';
 import NotFound from './Pages/NotFound';
 import Reservations from './Pages/Reservations';
@@ -13,7 +12,6 @@ import Reservations from './Pages/Reservations';
 export default function App() {
   const links = [
     { link: '/', label: 'Home' },
-    { link: '/app', label: 'App' },
     { link: '/reservations', label: 'Reservations' },
   ];
 
@@ -28,7 +26,6 @@ export default function App() {
         <HashRouter>
           <HeaderSimple links={links} />
           <Routes>
-            <Route path="/app" element={<AppPage />} />
             <Route path="/reservations" element={<Reservations />} />
             <Route path="/" element={<Home />} />
             <Route path="*" element={<NotFound />} />
