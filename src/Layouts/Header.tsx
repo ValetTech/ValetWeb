@@ -4,8 +4,9 @@ import {
   Container,
   createStyles,
   Group,
-  Header,
+  Header as MantineHeader,
   Image,
+  MediaQuery,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
@@ -69,7 +70,7 @@ interface HeaderSimpleProps {
   links: { link: string; label: string }[];
 }
 
-export default function HeaderSimple({ links }: HeaderSimpleProps) {
+export default function Header({ links }: HeaderSimpleProps) {
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
   const { classes, cx } = useStyles();
@@ -91,20 +92,22 @@ export default function HeaderSimple({ links }: HeaderSimpleProps) {
   ));
 
   return (
-    <Header height={60} mb={120}>
+    <MantineHeader height={60} mb={120}>
       <Container className={classes.header}>
-        <Group>
-          <Burger opened={opened} onClick={toggle} size="sm" />
-          <Anchor component={Link} to="/">
-            <Image
-              fit="contain"
-              height={40}
-              //   width={'auto'}
-              src={Logo}
-              alt="Valet Logo"
-            />
-          </Anchor>
-        </Group>
+        <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+          <Group>
+            <Burger opened={opened} onClick={toggle} size="sm" />
+            <Anchor component={Link} to="/">
+              <Image
+                fit="contain"
+                height={40}
+                //   width={'auto'}
+                src={Logo}
+                alt="Valet Logo"
+              />
+            </Anchor>
+          </Group>
+        </MediaQuery>
         <Group spacing={5} className={classes.links}>
           {items}
         </Group>
@@ -116,6 +119,6 @@ export default function HeaderSimple({ links }: HeaderSimpleProps) {
           size="sm"
         />
       </Container>
-    </Header>
+    </MantineHeader>
   );
 }
