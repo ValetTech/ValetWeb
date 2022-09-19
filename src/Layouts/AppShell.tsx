@@ -22,9 +22,8 @@ export default function DefaultAppShell() {
         },
       }}
       navbar={<Nav />}
+      header={<Header links={links} />}
     >
-      <Header links={links} />
-
       <Text>Resize app to see responsive navbar in action</Text>
     </AppShell>
   );
