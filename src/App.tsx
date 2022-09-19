@@ -1,7 +1,7 @@
 import { MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { HashRouter } from 'react-router-dom';
-import Nav from './Layouts/Nav';
+import DefaultAppShell from './Layouts/AppShell';
 
 export default function App() {
   const links = [
@@ -17,8 +17,7 @@ export default function App() {
     >
       <NotificationsProvider>
         <HashRouter>
-          <Nav />
-          {/* <AppShellLayout links={links} /> */}
+          <DefaultAppShell />
         </HashRouter>
       </NotificationsProvider>
     </MantineProvider>

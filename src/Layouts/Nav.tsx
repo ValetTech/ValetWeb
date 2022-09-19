@@ -5,6 +5,7 @@ import {
   Center,
   createStyles,
   Image,
+  MediaQuery,
   Navbar,
   Stack,
   Tooltip,
@@ -89,7 +90,7 @@ const mockdata = [
   { icon: IconHome2, label: 'Home' },
   { icon: IconGauge, label: 'Dashboard' },
   { icon: IconDeviceDesktopAnalytics, label: 'Analytics' },
-  { icon: IconCalendarStats, label: 'Releases' },
+  { icon: IconCalendarStats, label: 'Schedule' },
   { icon: IconUser, label: 'Account' },
   { icon: IconFingerprint, label: 'Security' },
   { icon: IconSettings, label: 'Settings' },
@@ -108,29 +109,36 @@ export default function Nav() {
   ));
 
   return (
-    <Navbar height={750} width={{ base: 80 }} p="md">
-      <Center>
-        <Anchor component={Link} to="/">
-          <Image
-            fit="contain"
-            height={40}
-            //   width={'auto'}
-            src={Logo}
-            alt="Valet Logo"
-          />
-        </Anchor>
-      </Center>
-      <Navbar.Section grow mt={50}>
-        <Stack justify="center" spacing={0}>
-          {links}
-        </Stack>
-      </Navbar.Section>
-      <Navbar.Section>
-        <Stack justify="center" spacing={0}>
-          <NavbarLink icon={IconSwitchHorizontal} label="Change account" />
-          <NavbarLink icon={IconLogout} label="Logout" />
-        </Stack>
-      </Navbar.Section>
-    </Navbar>
+    <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
+      <Navbar
+        withBorder={false}
+        width={{ base: 80 }}
+        p="md"
+        className="fixed top-0 left-0 z-50 h-full"
+      >
+        <Center>
+          <Anchor component={Link} to="/">
+            <Image
+              fit="contain"
+              height={40}
+              //   width={'auto'}
+              src={Logo}
+              alt="Valet Logo"
+            />
+          </Anchor>
+        </Center>
+        <Navbar.Section grow mt={80}>
+          <Stack justify="center" spacing={1}>
+            {links}
+          </Stack>
+        </Navbar.Section>
+        <Navbar.Section>
+          <Stack justify="center" spacing={0}>
+            <NavbarLink icon={IconSwitchHorizontal} label="Change account" />
+            <NavbarLink icon={IconLogout} label="Logout" />
+          </Stack>
+        </Navbar.Section>
+      </Navbar>
+    </MediaQuery>
   );
 }
