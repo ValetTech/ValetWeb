@@ -4,8 +4,9 @@ import {
   Container,
   createStyles,
   Group,
-  Header,
+  Header as MantineHeader,
   Image,
+  MediaQuery,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
@@ -13,25 +14,6 @@ import { Link } from 'react-router-dom';
 import Logo from '../Assets/Images/Logo/H-LogoLight.png';
 
 const useStyles = createStyles((theme) => ({
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '100%',
-  },
-
-  links: {
-    [theme.fn.smallerThan('xs')]: {
-      display: 'none',
-    },
-  },
-
-  burger: {
-    [theme.fn.largerThan('xs')]: {
-      display: 'none',
-    },
-  },
-
   link: {
     display: 'block',
     lineHeight: 1,
@@ -69,7 +51,7 @@ interface HeaderSimpleProps {
   links: { link: string; label: string }[];
 }
 
-export default function HeaderSimple({ links }: HeaderSimpleProps) {
+export default function Header({ links }: HeaderSimpleProps) {
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
   const { classes, cx } = useStyles();
@@ -89,33 +71,29 @@ export default function HeaderSimple({ links }: HeaderSimpleProps) {
       {link.label}
     </Anchor>
   ));
-
   return (
-    <Header height={60} mb={120}>
-      <Container className={classes.header}>
-        <Group>
-          <Burger opened={opened} onClick={toggle} size="sm" />
-          <Anchor component={Link} to="/">
-            <Image
-              fit="contain"
-              height={40}
-              //   width={'auto'}
-              src={Logo}
-              alt="Valet Logo"
-            />
-          </Anchor>
-        </Group>
-        <Group spacing={5} className={classes.links}>
-          {items}
-        </Group>
-
-        <Burger
-          opened={opened}
-          onClick={toggle}
-          className={classes.burger}
-          size="sm"
-        />
-      </Container>
-    </Header>
+    <MantineHeader
+      withBorder={false}
+      height={60}
+      mb={120}
+      // pl={80}
+      className="z-10"
+    >
+      <MediaQuery largerThan="xs" styles={{ placeContent: 'end' }}>
+        <Container className="flex items-center h-full">
+          <MediaQuery largerThan="xs" styles={{ display: 'none' }}>
+            <Group>
+              <Burger opened={opened} onClick={toggle} size="sm" />
+              <Anchor component={Link} to="/">
+                <Image fit="contain" height={40} src={Logo} alt="Valet Logo" />
+              </Anchor>
+            </Group>
+          </MediaQuery>
+          <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
+            <Group spacing={5}>{items}</Group>
+          </MediaQuery>
+        </Container>
+      </MediaQuery>
+    </MantineHeader>
   );
 }
