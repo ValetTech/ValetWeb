@@ -2,6 +2,7 @@ import { AppShell, Text, useMantineTheme } from '@mantine/core';
 import { useState } from 'react';
 import Header from './Header';
 import Nav from './Nav';
+import HomepageGrid from '../Components/Grids/HomepageGrid';
 
 const links = [
   { link: '/', label: 'Home' },
@@ -21,11 +22,12 @@ export default function DefaultAppShell() {
               : theme.colors.gray[0],
         },
       }}
+      navbarOffsetBreakpoint="xs" // Removes side navbar and fills in space with page content when extra small resolution is reached
       navbar={<Nav />}
+      header={<Header links={links} />}
     >
-      <Header links={links} />
-
-      <Text>Resize app to see responsive navbar in action</Text>
+      {/* content */}
+      <HomepageGrid />
     </AppShell>
   );
 }
