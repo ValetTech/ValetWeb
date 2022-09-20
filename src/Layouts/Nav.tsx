@@ -30,7 +30,7 @@ import Logo from '../Assets/Images/Logo/H-LogoLight.png';
 const useStyles = createStyles((theme) => ({
   link: {
     width: 50,
-    height: 50,
+    height: 90,
     borderRadius: theme.radius.md,
     display: 'flex',
     alignItems: 'center',
@@ -88,11 +88,9 @@ function NavbarLink({
 
 const mockdata = [
   { icon: IconHome2, label: 'Home' },
-  { icon: IconGauge, label: 'Dashboard' },
-  { icon: IconDeviceDesktopAnalytics, label: 'Analytics' },
-  { icon: IconCalendarStats, label: 'Schedule' },
-  { icon: IconUser, label: 'Account' },
-  { icon: IconFingerprint, label: 'Security' },
+  { icon: IconCalendarStats, label: 'Reservations' },
+  { icon: IconDeviceDesktopAnalytics, label: 'Seating' },
+  { icon: IconGauge, label: 'Orders' },
   { icon: IconSettings, label: 'Settings' },
 ];
 
@@ -130,12 +128,6 @@ export default function Nav() {
         <Navbar.Section grow mt={80}>
           <Stack justify="center" spacing={1}>
             {links}
-          </Stack>
-        </Navbar.Section>
-        <Navbar.Section>
-          <Stack justify="center" spacing={0}>
-            <NavbarLink icon={IconSwitchHorizontal} label="Change account" />
-            <NavbarLink icon={IconLogout} label="Logout" />
           </Stack>
         </Navbar.Section>
       </Navbar>
