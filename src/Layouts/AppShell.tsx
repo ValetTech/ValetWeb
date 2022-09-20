@@ -25,7 +25,6 @@ export default function DefaultAppShell() {
       navbarOffsetBreakpoint="xs" // Removes side navbar and fills in space with page content when extra small resolution is reached
       navbar={<Nav />}
       header={<Header links={links} />}
-      header={<Header links={links} />}
     >
       {/* content */}
       <HomepageGrid />
