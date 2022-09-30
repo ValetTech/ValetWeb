@@ -1,8 +1,4 @@
-// https://ui.mantine.dev/category/stats
-
-import { SimpleGrid, Skeleton, Text, Group } from '@mantine/core';
-import DashboardReservationList from '../Reservation/DashboardReservationList';
-import VacancyRate from '../Widgets/VacancyRate';
+import { SimpleGrid, Skeleton, Text } from '@mantine/core';
 
 export default function HomepageGrid() {
   return (
@@ -20,26 +16,24 @@ export default function HomepageGrid() {
       {/* Left Column */}
       <div>
         {/* Radius property smooths the corners of the column border */}
-        <DashboardReservationList />
-        {/* <Skeleton
+        <Skeleton
           height={600}
           mt={6}
           width="100%"
           radius="md"
           animate={false}
-        /> */}
+        />
       </div>
       {/* Right Column */}
       <div>
-        {/* <Skeleton
+        <Skeleton
           height={130}
           mt={6}
           mb={10}
           width="100%"
           radius="md"
           animate={false}
-        /> */}
-        <VacancyRate />
+        />
         <Skeleton
           height={130}
           mb={10}
