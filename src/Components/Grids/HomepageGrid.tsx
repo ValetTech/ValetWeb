@@ -2,7 +2,6 @@
 
 import { SimpleGrid, Skeleton, Text, Group } from '@mantine/core';
 import DashboardReservationList from '../Reservation/DashboardReservationList';
-import VacancyRate from '../Widgets/VacancyRate';
 
 export default function HomepageGrid() {
   return (
@@ -31,15 +30,14 @@ export default function HomepageGrid() {
       </div>
       {/* Right Column */}
       <div>
-        {/* <Skeleton
+        <Skeleton
           height={130}
           mt={6}
           mb={10}
           width="100%"
           radius="md"
           animate={false}
-        /> */}
-        <VacancyRate />
+        />
         <Skeleton
           height={130}
           mb={10}

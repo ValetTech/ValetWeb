@@ -32,6 +32,15 @@ export function getReservationByIdAsync(id: number) {
   }
 }
 
+export function getReservationByDateAsync(date: string) {
+  try {
+    const response = axios.get(`/reservations?Date=${date}`);
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 export function updateReservationAsync(id: number, reservation: Reservation) {
   try {
     const response = axios.put(`/reservations/${id}`, {

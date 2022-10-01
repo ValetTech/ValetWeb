@@ -1,5 +1,22 @@
+// Components
 import { useState } from 'react';
-import { createStyles, Table, ScrollArea } from '@mantine/core';
+import {
+  createStyles,
+  Table,
+  ScrollArea,
+  Button,
+  UnstyledButton,
+  Group,
+  SimpleGrid,
+  Drawer,
+} from '@mantine/core';
+import { IconChevronRight, IconPencil } from '@tabler/icons';
+
+// Services
+import { getReservationByIdAsync } from '../../Services/ApiServices';
+
+// Interfaces
+import Reservation from '../../Services/ApiInterfaces';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -29,18 +46,38 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface TableScrollAreaProps {
-  data: { name: string; phone: string; time: string }[];
+  data: { id: number; fullName: string; phone: string; dateTime: string }[];
 }
 
 export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const { classes, cx } = useStyles();
   const [scrolled, setScrolled] = useState(false);
+  const [drawerOpened, setDrawerOpened] = useState(false);
 
   const rows = data.map((row) => (
-    <tr key={row.name}>
-      <td>{row.name}</td>
+    <tr key={row.fullName}>
+      <td>{row.fullName}</td>
       <td>{row.phone}</td>
-      <td>{row.time}</td>
+      <td>
+        {row.dateTime}
+        <UnstyledButton pl={20}>
+          <IconPencil
+            size={20}
+            stroke={1.5}
+            onClick={() => setDrawerOpened(true)}
+          />
+        </UnstyledButton>
+        <Drawer
+          opened={drawerOpened}
+          onClose={() => setDrawerOpened(false)}
+          title="Reservation"
+          padding="xl"
+          size="full"
+          position="top"
+        >
+          {/* Drawer Content */}
+        </Drawer>
+      </td>
     </tr>
   ));
 
@@ -49,7 +86,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
       sx={{ height: 300 }}
       onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
     >
-      <Table sx={{ minWidth: 350 }}>
+      <Table sx={{ minWidth: 350 }} highlightOnHover fontSize="lg">
         <thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <tr>
             <th>Name</th>
