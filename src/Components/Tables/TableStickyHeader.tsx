@@ -9,8 +9,12 @@ import {
   Group,
   SimpleGrid,
   Drawer,
+  Title,
+  Card,
+  List,
+  ThemeIcon,
 } from '@mantine/core';
-import { IconChevronRight, IconPencil } from '@tabler/icons';
+import { IconChevronRight, IconCircleCheck, IconPencil } from '@tabler/icons';
 
 // Services
 import { getReservationByIdAsync } from '../../Services/ApiServices';
@@ -70,12 +74,32 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
         <Drawer
           opened={drawerOpened}
           onClose={() => setDrawerOpened(false)}
-          title="Reservation"
           padding="xl"
           size="full"
           position="top"
         >
-          {/* Drawer Content */}
+          <Card withBorder radius="md">
+            <Title align="center">Update Reservation</Title>
+            <Group position="center">
+              <List
+                spacing="md"
+                size="lg"
+                center
+                icon={
+                  <ThemeIcon color="teal" size={24} radius="xl">
+                    <IconCircleCheck size={16} />
+                  </ThemeIcon>
+                }
+              >
+                <List.Item>Name</List.Item>
+                <List.Item>Name</List.Item>
+                <List.Item>Name</List.Item>
+                <List.Item>Name</List.Item>
+                <List.Item>Name</List.Item>
+                <List.Item>Name</List.Item>
+              </List>
+            </Group>
+          </Card>
         </Drawer>
       </td>
     </tr>
