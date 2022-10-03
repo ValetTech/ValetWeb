@@ -10,6 +10,7 @@ axios.defaults.headers.post['Content-Type'] =
 // axios.defaults.headers.get['Content-Type'] = 'application/json';
 // axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
+// RESERVATION
 export default async function getReservationsAsync() {
   try {
     const response = await axios.get('/reservations', {
@@ -55,6 +56,26 @@ export function updateReservationAsync(id: number, reservation: Reservation) {
 export function deleteReservationAsync(id: number) {
   try {
     const response = axios.delete(`/reservations/${id}`);
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
+// AREA
+export function getAllAreasAsync() {
+  try {
+    const response = axios.get(`/areas`);
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
+// SITTING
+export function getAllSittingsAsync() {
+  try {
+    const response = axios.get(`/sittings`);
     return response;
   } catch (error) {
     throw new Error();

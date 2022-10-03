@@ -1,19 +1,26 @@
 // Components
-import { SimpleGrid, Container, Card, Title, Button } from '@mantine/core';
-import { DatePicker, DateRangePickerValue } from '@mantine/dates';
-import { useState, useEffect, useRef } from 'react';
+import { SimpleGrid, Container, Card, Title, Select } from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
+import { useState, useEffect } from 'react';
 import TableStickyHeader from '../Tables/TableStickyHeader';
 
 // Services
-import { getReservationByDateAsync } from '../../Services/ApiServices';
+import {
+  getReservationByDateAsync,
+  getAllAreasAsync,
+  getAllSittingsAsync,
+} from '../../Services/ApiServices';
 
 // Interfaces
-import Reservation from '../../Services/ApiInterfaces';
+import { Reservation, Area, Sitting } from '../../Services/ApiInterfaces';
 
 export default function DashboardReservationList() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [reservationData, setReservationData] = useState([]);
+  const [areaData, setAreaData] = useState([]);
+  const [sittingData, setSittingData] = useState([]);
 
+  // Will fire whenever selected date changes
   useEffect(() => {
     // Formatting date for url query. For some reason getMonth returns an incorrect number (e.g. october is 9) so have to do + 1.
     const formattedDate = `${selectedDate.getFullYear()}-${
@@ -40,6 +47,39 @@ export default function DashboardReservationList() {
     });
   }, [selectedDate]);
 
+  // Will only fire on page load
+  useEffect(() => {
+    getAllAreasAsync().then((response) => {
+      const areas: Array<Area> = response.data;
+      const dataBuilder = [];
+      areas.forEach((element) => {
+        dataBuilder.push({
+          label: element.name,
+          value: element.name,
+          description: element.description,
+        });
+      });
+      setAreaData(dataBuilder);
+      console.log(areaData);
+    });
+  }, []);
+
+  // Will only fire on page load
+  useEffect(() => {
+    getAllSittingsAsync().then((response) => {
+      const sittings: Array<Sitting> = response.data;
+      const dataBuilder = [];
+      sittings.forEach((element) => {
+        dataBuilder.push({
+          label: element.type,
+          value: element.type,
+        });
+      });
+      setSittingData(dataBuilder);
+      console.log(sittingData);
+    });
+  }, []);
+
   return (
     <Container mt={6}>
       <Card withBorder radius="md">
@@ -53,21 +93,15 @@ export default function DashboardReservationList() {
           // onChange throws an error but doesn't seem to be causing any issues.
           onChange={setSelectedDate}
         />
-        <Title size="h6" mt={30}>
-          Filter by area
-        </Title>
-        <SimpleGrid cols={3}>
-          <Button>Main</Button>
-          <Button>Outside</Button>
-          <Button>Upstairs</Button>
-        </SimpleGrid>
-        <Title size="h6" mt={15}>
-          Filter by sitting
-        </Title>
-        <SimpleGrid cols={3} mb={20}>
-          <Button>Breakfast</Button>
-          <Button>Lunch</Button>
-          <Button>Dinner</Button>
+        <SimpleGrid cols={2} mb={30}>
+          <Title size="h4" mt={30} mb={10}>
+            Filter by area
+            <Select data={areaData} />
+          </Title>
+          <Title size="h4" mt={30} mb={10}>
+            Filter by sitting
+            <Select data={sittingData} />
+          </Title>
         </SimpleGrid>
         <TableStickyHeader data={reservationData} />
       </Card>

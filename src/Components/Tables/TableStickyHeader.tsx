@@ -3,19 +3,20 @@ import { useState } from 'react';
 import {
   createStyles,
   Table,
+  Text,
   ScrollArea,
-  Button,
   UnstyledButton,
   Group,
-  SimpleGrid,
   Drawer,
   Title,
   Card,
   List,
   ThemeIcon,
+  Button,
+  SimpleGrid,
+  Modal,
 } from '@mantine/core';
-import { IconChevronRight, IconCircleCheck, IconPencil } from '@tabler/icons';
-
+import { IconCircleCheck, IconPencil } from '@tabler/icons';
 // Services
 import { getReservationByIdAsync } from '../../Services/ApiServices';
 
@@ -57,20 +58,30 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const { classes, cx } = useStyles();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(false);
+  const [drawerContent, setDrawerContent] = useState<Reservation>();
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
 
+  // Reservation Table
   const rows = data.map((row) => (
     <tr key={row.fullName}>
       <td>{row.fullName}</td>
       <td>{row.phone}</td>
       <td>
         {row.dateTime}
+        {/* Edit Buttonn */}
         <UnstyledButton pl={20}>
           <IconPencil
             size={20}
             stroke={1.5}
-            onClick={() => setDrawerOpened(true)}
+            onClick={() => {
+              setDrawerOpened(true);
+              getReservationByIdAsync(row.id).then((response) => {
+                setDrawerContent(response.data);
+              });
+            }}
           />
         </UnstyledButton>
+        {/* Drawer that opens when edit button is clicked */}
         <Drawer
           opened={drawerOpened}
           onClose={() => setDrawerOpened(false)}
@@ -78,10 +89,13 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           size="full"
           position="top"
         >
+          {/* Drawer content */}
           <Card withBorder radius="md">
             <Title align="center">Update Reservation</Title>
             <Group position="center">
               <List
+                mt={40}
+                mr={180}
                 spacing="md"
                 size="lg"
                 center
@@ -91,13 +105,67 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                   </ThemeIcon>
                 }
               >
-                <List.Item>Name</List.Item>
-                <List.Item>Name</List.Item>
-                <List.Item>Name</List.Item>
-                <List.Item>Name</List.Item>
-                <List.Item>Name</List.Item>
-                <List.Item>Name</List.Item>
+                <List.Item>
+                  <Title size="h4">First Name:</Title>
+                </List.Item>
+                <Text italic ml={40} mb={20}>
+                  {drawerContent?.customer.firstName}
+                </Text>
+                <List.Item>
+                  <Title size="h4">Last Name:</Title>
+                </List.Item>
+                <Text italic ml={40} mb={20}>
+                  {drawerContent?.customer.lastName}
+                </Text>
+                <List.Item>
+                  <Title size="h4">Phone:</Title>
+                </List.Item>
+                <Text italic ml={40} mb={20}>
+                  {drawerContent?.customer.phone}
+                </Text>
+                <List.Item>
+                  <Title size="h4">Booking Time:</Title>
+                </List.Item>
+                <Text italic ml={40} mb={20}>
+                  {drawerContent?.dateTime}
+                </Text>
               </List>
+            </Group>
+            <Group mt={20} position="center">
+              <SimpleGrid cols={2}>
+                <Button size="lg">Update</Button>
+                <Button
+                  color="red"
+                  size="lg"
+                  onClick={() => setDeleteModalOpened(true)}
+                >
+                  Delete
+                </Button>
+                {/* Delete Confirmation Modal */}
+                <Modal
+                  centered
+                  opened={deleteModalOpened}
+                  onClose={() => setDeleteModalOpened(false)}
+                >
+                  <Group position="center">
+                    <Title size="h3">{drawerContent?.customer.fullName}</Title>
+                    <Text italic size="lg">
+                      Are you sure you want to delete this reservation?
+                    </Text>
+                    <SimpleGrid cols={2}>
+                      <Button size="lg" color="red">
+                        Confirm
+                      </Button>
+                      <Button
+                        size="lg"
+                        onClick={() => setDeleteModalOpened(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </SimpleGrid>
+                  </Group>
+                </Modal>
+              </SimpleGrid>
             </Group>
           </Card>
         </Drawer>
