@@ -1,5 +1,5 @@
 // Components
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   createStyles,
   Table,
@@ -15,13 +15,15 @@ import {
   Button,
   SimpleGrid,
   Modal,
+  Popover,
+  Input,
 } from '@mantine/core';
-import { IconCircleCheck, IconPencil } from '@tabler/icons';
+import { IconPencil, IconCircleDotted, IconEditCircle } from '@tabler/icons';
 // Services
 import { getReservationByIdAsync } from '../../Services/ApiServices';
 
 // Interfaces
-import Reservation from '../../Services/ApiInterfaces';
+import { Reservation } from '../../Services/ApiInterfaces';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -60,8 +62,55 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [drawerContent, setDrawerContent] = useState<Reservation>();
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+  const [editModalOpened, setEditModalOpened] = useState(false);
+
+  // Update Reservation HTML refs
+  //#region 
+  const updateFirstName = useRef<HTMLInputElement>(null);
+  const updateLastName = useRef<HTMLInputElement>(null);
+  const updatePhone = useRef<HTMLInputElement>(null);
+  const updateDateTime = useRef<HTMLInputElement>(null);
+  //#endregion
+
+  function UpdateDetails() {
+    // Not sure if this is optimal but it works. There was an eslint
+    // rule saying that you shouldn't use functions within jsx
+    // components because of performance issues but for now
+    // I am going to to keep things cleanish
+    const updatedDetails = {
+      id: drawerContent?.id,
+      customerId: drawerContent?.customerId,
+      customer: {
+        id: drawerContent?.customer.id,
+        firstName: updateFirstName.current.value,
+        lastName: updateLastName.current.value,
+        email: drawerContent?.customer.email,
+        phone: updatePhone.current.value,
+        fullName: drawerContent?.customer.fullName,
+      },
+      sittingId: drawerContent?.sittingId,
+      sitting: {
+        id: drawerContent?.sitting.id,
+        capacity: drawerContent?.sitting.capacity,
+        type: drawerContent?.sitting.type,
+        startTime: drawerContent?.sitting.startTime,
+        endTime: drawerContent?.sitting.endTime,
+        venueId: drawerContent?.sitting.venueId,
+      },
+      dateTime: drawerContent?.dateTime,
+      duration: drawerContent?.duration,
+      noGuests: drawerContent?.noGuests,
+      source: drawerContent?.source,
+      venueId: drawerContent?.venueId,
+      tables: [],
+      status: drawerContent?.status,
+      notes: drawerContent?.notes,
+    };
+    setDrawerContent(updatedDetails);
+  }
 
   // Reservation Table
+
   const rows = data.map((row) => (
     <tr key={row.fullName}>
       <td>{row.fullName}</td>
@@ -91,7 +140,18 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
         >
           {/* Drawer content */}
           <Card withBorder radius="md">
-            <Title align="center">Update Reservation</Title>
+            <Title align="center">
+              Update Reservation
+              <UnstyledButton
+                onClick={() => {
+                  setEditModalOpened(true);
+                }}
+              >
+                <ThemeIcon ml={20} color="green" size={24} radius="xl">
+                  <IconEditCircle size={18} />
+                </ThemeIcon>
+              </UnstyledButton>
+            </Title>
             <Group position="center">
               <List
                 mt={40}
@@ -99,12 +159,52 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                 spacing="md"
                 size="lg"
                 center
-                icon={
-                  <ThemeIcon color="teal" size={24} radius="xl">
-                    <IconCircleCheck size={16} />
-                  </ThemeIcon>
-                }
+                icon={<IconCircleDotted />}
               >
+                {/* Edit Details Model */}
+                <Modal
+                  title="Edit Reservation"
+                  centered
+                  opened={editModalOpened}
+                  onClose={() => setEditModalOpened(false)}
+                >
+                  <Input
+                    ref={updateFirstName}
+                    mt={20}
+                    icon={<IconPencil />}
+                    placeholder={drawerContent?.customer.firstName}
+                  />
+                  <Input
+                    ref={updateLastName}
+                    mt={20}
+                    icon={<IconPencil />}
+                    placeholder={drawerContent?.customer.lastName}
+                  />
+                  <Input
+                    ref={updatePhone}
+                    mt={20}
+                    icon={<IconPencil />}
+                    placeholder={drawerContent?.customer.phone}
+                  />
+                  <Input
+                    ref={updateDateTime}
+                    mt={20}
+                    icon={<IconPencil />}
+                    placeholder={drawerContent?.dateTime}
+                  />
+                  <Group mt={20} position="center">
+                    {/* eslint-disable-next-line react/jsx-no-bind */}
+                    <Button
+                      size="lg"
+                      onClick={() => {
+                        UpdateDetails();
+                        setEditModalOpened(false);
+                      }}
+                    >
+                      Confirm
+                    </Button>
+                  </Group>
+                </Modal>
                 <List.Item>
                   <Title size="h4">First Name:</Title>
                 </List.Item>
