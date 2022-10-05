@@ -17,10 +17,14 @@ import {
   Modal,
   Popover,
   Input,
+  TextInput,
 } from '@mantine/core';
 import { IconPencil, IconCircleDotted, IconEditCircle } from '@tabler/icons';
 // Services
-import { getReservationByIdAsync } from '../../Services/ApiServices';
+import {
+  getReservationByIdAsync,
+  deleteReservationAsync,
+} from '../../Services/ApiServices';
 
 // Interfaces
 import { Reservation } from '../../Services/ApiInterfaces';
@@ -63,14 +67,17 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const [drawerContent, setDrawerContent] = useState<Reservation>();
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
+  const [createModalOpened, setCreateModalOpened] = useState(false);
 
-  // Update Reservation HTML refs
-  //#region 
+  // Update Reservation
+  // #region
   const updateFirstName = useRef<HTMLInputElement>(null);
   const updateLastName = useRef<HTMLInputElement>(null);
   const updatePhone = useRef<HTMLInputElement>(null);
   const updateDateTime = useRef<HTMLInputElement>(null);
-  //#endregion
+  const updateDuration = useRef<HTMLInputElement>(null);
+  const updateNoGuests = useRef<HTMLInputElement>(null);
+  const updateNotes = useRef<HTMLInputElement>(null);
 
   function UpdateDetails() {
     // Not sure if this is optimal but it works. There was an eslint
@@ -97,17 +104,37 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
         endTime: drawerContent?.sitting.endTime,
         venueId: drawerContent?.sitting.venueId,
       },
-      dateTime: drawerContent?.dateTime,
-      duration: drawerContent?.duration,
-      noGuests: drawerContent?.noGuests,
+      dateTime: updateDateTime.current.value,
+      duration: updateDuration.current.value,
+      noGuests: updateNoGuests.current.value,
       source: drawerContent?.source,
       venueId: drawerContent?.venueId,
       tables: [],
       status: drawerContent?.status,
-      notes: drawerContent?.notes,
+      notes: updateNotes.current.value,
     };
     setDrawerContent(updatedDetails);
   }
+  // #endregion
+
+  // Create Reservation
+  // #region
+  const createFirstName = useRef<HTMLInputElement>(null);
+  const createLastName = useRef<HTMLInputElement>(null);
+  const createPhone = useRef<HTMLInputElement>(null);
+  const createDateTime = useRef<HTMLInputElement>(null);
+  const createDuration = useRef<HTMLInputElement>(null);
+  const createNoGuests = useRef<HTMLInputElement>(null);
+  const createNotes = useRef<HTMLInputElement>(null);
+
+  // function CreateReservation() {
+  //   const newReservationDetails = {
+  //      {
+  //       Object that will be sent to server
+  //      }
+  //   };
+  // }
+  // #endregion
 
   // Reservation Table
 
@@ -168,29 +195,54 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                   opened={editModalOpened}
                   onClose={() => setEditModalOpened(false)}
                 >
-                  <Input
+                  <TextInput
+                    label="First Name"
                     ref={updateFirstName}
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.customer.firstName}
                   />
-                  <Input
+                  <TextInput
+                    label="Last Name"
                     ref={updateLastName}
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.customer.lastName}
                   />
-                  <Input
+                  <TextInput
+                    label="Phone"
                     ref={updatePhone}
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.customer.phone}
                   />
-                  <Input
+                  <TextInput
+                    label="DateTime"
                     ref={updateDateTime}
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.dateTime}
+                  />
+                  <TextInput
+                    label="Duration"
+                    ref={updateDuration}
+                    mt={20}
+                    icon={<IconPencil />}
+                    placeholder={drawerContent?.duration.toString()}
+                  />
+                  <TextInput
+                    label="Number of Guests"
+                    ref={updateNoGuests}
+                    mt={20}
+                    icon={<IconPencil />}
+                    placeholder={drawerContent?.noGuests.toString()}
+                  />
+                  <TextInput
+                    label="Notes"
+                    ref={updateNotes}
+                    mt={20}
+                    icon={<IconPencil />}
+                    placeholder={drawerContent?.notes}
                   />
                   <Group mt={20} position="center">
                     {/* eslint-disable-next-line react/jsx-no-bind */}
@@ -229,6 +281,24 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                 <Text italic ml={40} mb={20}>
                   {drawerContent?.dateTime}
                 </Text>
+                <List.Item>
+                  <Title size="h4">Duration:</Title>
+                </List.Item>
+                <Text italic ml={40} mb={20}>
+                  {drawerContent?.duration} minutes
+                </Text>
+                <List.Item>
+                  <Title size="h4">Number of guests</Title>
+                </List.Item>
+                <Text italic ml={40} mb={20}>
+                  {drawerContent?.noGuests} covers
+                </Text>
+                <List.Item>
+                  <Title size="h4">Notes</Title>
+                </List.Item>
+                <Text italic ml={40} mb={20}>
+                  {drawerContent?.notes}
+                </Text>
               </List>
             </Group>
             <Group mt={20} position="center">
@@ -253,7 +323,16 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                       Are you sure you want to delete this reservation?
                     </Text>
                     <SimpleGrid cols={2}>
-                      <Button size="lg" color="red">
+                      <Button
+                        size="lg"
+                        color="red"
+                        onClick={() => {
+                          deleteReservationAsync(drawerContent?.id);
+                          setDeleteModalOpened(false);
+                          setDrawerOpened(false);
+                          window.location.reload();
+                        }}
+                      >
                         Confirm
                       </Button>
                       <Button
@@ -274,20 +353,87 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   ));
 
   return (
-    <ScrollArea
-      sx={{ height: 300 }}
-      onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
-    >
-      <Table sx={{ minWidth: 350 }} highlightOnHover fontSize="lg">
-        <thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
-    </ScrollArea>
+    <>
+      <ScrollArea
+        sx={{ height: 300 }}
+        onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
+      >
+        <Table sx={{ minWidth: 350 }} highlightOnHover fontSize="lg">
+          <thead
+            className={cx(classes.header, { [classes.scrolled]: scrolled })}
+          >
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </Table>
+      </ScrollArea>
+      <Button
+        size="lg"
+        radius="md"
+        mt={20}
+        onClick={() => {
+          setCreateModalOpened(true);
+        }}
+      >
+        Create Reservation
+      </Button>
+      {/* Create Reservation Modal */}
+      <Modal
+        title="Create Reservation"
+        centered
+        opened={createModalOpened}
+        onClose={() => setCreateModalOpened(false)}
+      >
+        <TextInput
+          label="First Name"
+          mt={20}
+          icon={<IconPencil />}
+          placeholder={drawerContent?.customer.firstName}
+        />
+        <TextInput
+          label="Last Name"
+          mt={20}
+          icon={<IconPencil />}
+          placeholder={drawerContent?.customer.lastName}
+        />
+        <TextInput
+          label="Phone"
+          mt={20}
+          icon={<IconPencil />}
+          placeholder={drawerContent?.customer.phone}
+        />
+        <TextInput
+          label="DateTime"
+          mt={20}
+          icon={<IconPencil />}
+          placeholder={drawerContent?.dateTime}
+        />
+        <TextInput
+          label="Duration"
+          mt={20}
+          icon={<IconPencil />}
+          placeholder={drawerContent?.duration.toString()}
+        />
+        <TextInput
+          label="Number of Guests"
+          mt={20}
+          icon={<IconPencil />}
+          placeholder={drawerContent?.noGuests.toString()}
+        />
+        <TextInput
+          label="Notes"
+          mt={20}
+          icon={<IconPencil />}
+          placeholder={drawerContent?.notes}
+        />
+        <Group mt={20} position="center">
+          <Button size="lg">Create</Button>
+        </Group>
+      </Modal>
+    </>
   );
 }
