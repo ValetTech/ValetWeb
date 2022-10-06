@@ -113,7 +113,7 @@ export function createCustomerAsync(customer: Customer) {
   }
 }
 
-export function createReservationAsync(id: number, reservation: Reservation) {
+export function createReservationAsync(reservation: Reservation) {
   try {
     const response = axios.post(`/reservations`, {
       body: reservation,
