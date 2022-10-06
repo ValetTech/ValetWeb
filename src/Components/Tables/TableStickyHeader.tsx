@@ -24,6 +24,8 @@ import { IconPencil, IconCircleDotted, IconEditCircle } from '@tabler/icons';
 import {
   getReservationByIdAsync,
   deleteReservationAsync,
+  createCustomerAsync,
+  createReservationAsync,
 } from '../../Services/ApiServices';
 
 // Interfaces
@@ -122,18 +124,27 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const createFirstName = useRef<HTMLInputElement>(null);
   const createLastName = useRef<HTMLInputElement>(null);
   const createPhone = useRef<HTMLInputElement>(null);
+  const createEmail = useRef<HTMLInputElement>(null);
   const createDateTime = useRef<HTMLInputElement>(null);
   const createDuration = useRef<HTMLInputElement>(null);
   const createNoGuests = useRef<HTMLInputElement>(null);
   const createNotes = useRef<HTMLInputElement>(null);
+  const createSittingId = useRef<HTMLInputElement>(null);
 
-  // function CreateReservation() {
-  //   const newReservationDetails = {
-  //      {
-  //       Object that will be sent to server
-  //      }
-  //   };
-  // }
+  function CreateReservation() {
+    const newCustomer = {
+      firstName: createFirstName.current.value,
+      lastName: createLastName.current.value,
+      email: createEmail.current.value,
+      phone: createPhone.current.value,
+      // dateTime: createDateTime.current.value,
+      // duration: parseInt(createDuration.current.value, 16),
+      // noGuests: parseInt(createNoGuests.current.value, 16),
+      // notes: createNotes.current.value,
+    };
+    createCustomerAsync(newCustomer);
+    alert('created');
+  }
   // #endregion
 
   // Reservation Table
@@ -389,49 +400,68 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
         onClose={() => setCreateModalOpened(false)}
       >
         <TextInput
+          ref={createFirstName}
           label="First Name"
           mt={20}
           icon={<IconPencil />}
-          placeholder={drawerContent?.customer.firstName}
         />
         <TextInput
+          ref={createLastName}
           label="Last Name"
           mt={20}
           icon={<IconPencil />}
-          placeholder={drawerContent?.customer.lastName}
         />
         <TextInput
+          ref={createPhone}
           label="Phone"
           mt={20}
           icon={<IconPencil />}
-          placeholder={drawerContent?.customer.phone}
         />
         <TextInput
+          ref={createEmail}
+          label="Email"
+          mt={20}
+          icon={<IconPencil />}
+        />
+        <TextInput
+          ref={createDateTime}
           label="DateTime"
           mt={20}
           icon={<IconPencil />}
-          placeholder={drawerContent?.dateTime}
         />
         <TextInput
+          ref={createDuration}
           label="Duration"
           mt={20}
           icon={<IconPencil />}
-          placeholder={drawerContent?.duration.toString()}
         />
         <TextInput
+          ref={createNoGuests}
           label="Number of Guests"
           mt={20}
           icon={<IconPencil />}
-          placeholder={drawerContent?.noGuests.toString()}
         />
         <TextInput
+          ref={createNotes}
           label="Notes"
           mt={20}
           icon={<IconPencil />}
-          placeholder={drawerContent?.notes}
+        />
+        <TextInput
+          ref={createSittingId}
+          label="Sitting Id"
+          mt={20}
+          icon={<IconPencil />}
         />
         <Group mt={20} position="center">
-          <Button size="lg">Create</Button>
+          <Button
+            size="lg"
+            onClick={() => {
+              CreateReservation();
+            }}
+          >
+            Create
+          </Button>
         </Group>
       </Modal>
     </>
