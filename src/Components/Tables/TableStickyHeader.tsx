@@ -1,31 +1,29 @@
 // Components
-import { useRef, useState } from 'react';
 import {
+  Button,
+  Card,
   createStyles,
+  Drawer,
+  Group,
+  List,
+  Modal,
+  ScrollArea,
+  SimpleGrid,
   Table,
   Text,
-  ScrollArea,
-  UnstyledButton,
-  Group,
-  Drawer,
-  Title,
-  Card,
-  List,
-  ThemeIcon,
-  Button,
-  SimpleGrid,
-  Modal,
-  Popover,
-  Input,
   TextInput,
+  ThemeIcon,
+  Title,
+  UnstyledButton,
 } from '@mantine/core';
-import { IconPencil, IconCircleDotted, IconEditCircle } from '@tabler/icons';
+import { IconCircleDotted, IconEditCircle, IconPencil } from '@tabler/icons';
+import { useRef, useState } from 'react';
 // Services
 import {
-  getReservationByIdAsync,
-  deleteReservationAsync,
   createCustomerAsync,
   createReservationAsync,
+  deleteReservationAsync,
+  getReservationByIdAsync,
 } from '../../Services/ApiServices';
 
 // Interfaces
@@ -131,7 +129,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const createNotes = useRef<HTMLInputElement>(null);
   const createSittingId = useRef<HTMLInputElement>(null);
 
-  function CreateReservation() {
+  async function CreateReservation() {
     const newCustomer = {
       firstName: createFirstName.current.value,
       lastName: createLastName.current.value,
@@ -142,8 +140,16 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
       // noGuests: parseInt(createNoGuests.current.value, 16),
       // notes: createNotes.current.value,
     };
-    createCustomerAsync(newCustomer);
-    alert('created');
+    const customer = await (await createCustomerAsync(newCustomer)).data;
+    const newReservation = {
+      customerId: customer.id,
+      sittingId: parseInt(createSittingId.current.value, 16),
+      dateTime: createDateTime.current.value,
+      duration: parseInt(createDuration.current.value, 16),
+      noGuests: parseInt(createNoGuests.current.value, 16),
+      notes: createNotes.current.value,
+    };
+    await createReservationAsync(newReservation);
   }
   // #endregion
 
