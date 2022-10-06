@@ -27,6 +27,7 @@ import {
 } from '../../Services/ApiServices';
 
 // Interfaces
+import Customer from '../../Models/Customer';
 import { Reservation } from '../../Services/ApiInterfaces';
 
 const useStyles = createStyles((theme) => ({
@@ -130,7 +131,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const createSittingId = useRef<HTMLInputElement>(null);
 
   async function CreateReservation() {
-    const newCustomer = {
+    const newCustomer: Customer = {
       firstName: createFirstName.current.value,
       lastName: createLastName.current.value,
       email: createEmail.current.value,
@@ -140,16 +141,21 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
       // noGuests: parseInt(createNoGuests.current.value, 16),
       // notes: createNotes.current.value,
     };
-    const customer = await (await createCustomerAsync(newCustomer)).data;
+
+    console.log(newCustomer);
+    const response = await createCustomerAsync(newCustomer);
+    const customer: Customer = response.data;
+    console.log(customer);
     const newReservation = {
       customerId: customer.id,
-      sittingId: parseInt(createSittingId.current.value, 16),
+      sittingId: parseInt(createSittingId.current.value),
       dateTime: createDateTime.current.value,
-      duration: parseInt(createDuration.current.value, 16),
-      noGuests: parseInt(createNoGuests.current.value, 16),
+      duration: parseInt(createDuration.current.value),
+      noGuests: parseInt(createNoGuests.current.value),
       notes: createNotes.current.value,
     };
     await createReservationAsync(newReservation);
+    console.log(newReservation);
   }
   // #endregion
 

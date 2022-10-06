@@ -6,8 +6,9 @@ import Reservation from '../Models/Reservation';
 axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api';
 // axios.defaults.baseURL = 'https://localhost:7028/api';
 
-axios.defaults.headers.post['Content-Type'] =
-  'application/x-www-form-urlencoded';
+// axios.defaults.headers.post['Content-Type'] = 'application/json-patch+json';
+// axios.defaults.headers.post['Content-Type'] =
+// 'application/x-www-form-urlencoded';
 // axios.defaults.headers.get['Content-Type'] = 'application/json';
 // axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 
@@ -105,7 +106,7 @@ export function createCustomer(customer: Customer) {
 export function createCustomerAsync(customer: Customer) {
   try {
     const response = axios.post(`/customers`, {
-      body: customer,
+      ...customer,
     });
     return response;
   } catch (error) {
@@ -116,7 +117,7 @@ export function createCustomerAsync(customer: Customer) {
 export function createReservationAsync(reservation: Reservation) {
   try {
     const response = axios.post(`/reservations`, {
-      body: reservation,
+      ...reservation,
     });
     return response;
   } catch (error) {
