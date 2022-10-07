@@ -4,7 +4,7 @@ export default interface Reservation {
   customer?: Customer;
   sittingId: number;
   sitting?: Sitting;
-  dateTime: Date;
+  dateTime: string;
   duration: number;
   noGuests: number;
   source?: string;
