@@ -1,9 +1,9 @@
 // https://ui.mantine.dev/category/stats
 
-import { SimpleGrid, Skeleton, Text, Group } from '@mantine/core';
-import DashboardReservationList from '../Reservation/DashboardReservationList';
+import { SimpleGrid, Skeleton } from '@mantine/core';
+import DashboardReservationList from '../Reservations/DashboardReservationList';
 
-export default function HomepageGrid() {
+export default function DashboardGrid() {
   return (
     // Breakpoints prop handles responsivity.
     <SimpleGrid

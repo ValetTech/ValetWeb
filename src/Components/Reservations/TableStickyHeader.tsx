@@ -1,4 +1,5 @@
 // Components
+// #region
 import {
   Button,
   Card,
@@ -18,7 +19,10 @@ import {
 } from '@mantine/core';
 import { IconCircleDotted, IconEditCircle, IconPencil } from '@tabler/icons';
 import { useRef, useState } from 'react';
+// #endregion
+
 // Services
+// #region
 import {
   createCustomerAsync,
   createReservationAsync,
@@ -26,14 +30,17 @@ import {
   getReservationByIdAsync,
   updateReservationAsync,
   updateCustomerAsync,
-  getReservationByDateAsync,
 } from '../../Services/ApiServices';
+// #endregion
 
-// Interfaces
+// Data Models
+// #region
 import Customer from '../../Models/Customer';
 import Reservation from '../../Models/Reservation';
-import Sitting from '../../Models/Sitting';
+// #endregion
 
+// Styles
+// #region
 const useStyles = createStyles((theme) => ({
   header: {
     position: 'sticky',
@@ -60,6 +67,7 @@ const useStyles = createStyles((theme) => ({
     boxShadow: theme.shadows.sm,
   },
 }));
+// #endregion
 
 interface TableScrollAreaProps {
   data: { id: number; fullName: string; phone: string; dateTime: string }[];
@@ -74,7 +82,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [createModalOpened, setCreateModalOpened] = useState(false);
 
-  // Update Reservation
+  // Update Reservation Function
   // #region
   const updateFirstName = useRef<HTMLInputElement>(null);
   const updateLastName = useRef<HTMLInputElement>(null);
@@ -85,13 +93,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const updateNoGuests = useRef<HTMLInputElement>(null);
   const updateNotes = useRef<HTMLInputElement>(null);
 
-  // Only updates details in the draw. Will not send to DB unless update button is then clicked.
   function UpdateDetails() {
-    // Not sure if this is optimal but it works. There was an eslint
-    // rule saying that you shouldn't use functions within jsx
-    // components because of performance issues but for now
-    // I am going to to keep things cleanish
-
     const updatedCustomerDetails = {
       id: drawerContent?.customerId,
       firstName: updateFirstName.current.value,
@@ -130,7 +132,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   }
   // #endregion
 
-  // Create Reservation
+  // Create Reservation Function
   // #region
   const createFirstName = useRef<HTMLInputElement>(null);
   const createLastName = useRef<HTMLInputElement>(null);
@@ -153,8 +155,8 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
       // noGuests: parseInt(createNoGuests.current.value, 16),
       // notes: createNotes.current.value,
     };
-
     console.log(newCustomer);
+
     await createCustomerAsync(newCustomer).then((createCustomerResponse) => {
       const customer = createCustomerResponse.data;
 
@@ -179,20 +181,10 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
         window.location.reload();
       }, 500);
     });
-    // const newReservation = {
-    //   customerId: customer.id,
-    //   sittingId: parseInt(createSittingId.current.value, 16),
-    //   dateTime: createDateTime.current.value,
-    //   duration: parseInt(createDuration.current.value, 16),
-    //   noGuests: parseInt(createNoGuests.current.value, 16),
-    //   venueId: 1,
-    //   notes: createNotes.current.value,
-    // };
-    // await createReservationAsync(newReservation);
   }
   // #endregion
 
-  // Reservation Table
+  // Reservation Table - Sticky header with scrollable list for displaying data.
 
   const rows = data.map((row) => (
     <tr key={row.fullName}>
@@ -200,7 +192,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
       <td>{row.phone}</td>
       <td>
         {row.dateTime}
-        {/* Edit Buttonn */}
+        {/* Edit Button - Being rendered in-line next to datetime value. */}
         <UnstyledButton pl={20}>
           <IconPencil
             size={20}
@@ -224,14 +216,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
         >
           {/* Drawer content */}
           <Card withBorder radius="md">
-            <Title align="center">
-              Update Reservation
-              <UnstyledButton onClick={() => {}}>
-                <ThemeIcon ml={20} color="green" size={24} radius="xl">
-                  <IconEditCircle size={18} />
-                </ThemeIcon>
-              </UnstyledButton>
-            </Title>
+            <Title align="center">Update Reservation</Title>
             <Group position="center">
               <List
                 mt={40}

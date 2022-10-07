@@ -2,7 +2,7 @@
 import { SimpleGrid, Container, Card, Title, Select } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useState, useEffect } from 'react';
-import TableStickyHeader from '../Tables/TableStickyHeader';
+import TableStickyHeader from './TableStickyHeader';
 
 // Services
 import {
@@ -11,8 +11,10 @@ import {
   getAllSittingsAsync,
 } from '../../Services/ApiServices';
 
-// Interfaces
-import { Reservation, Area, Sitting } from '../../Services/ApiInterfaces';
+// Data Models
+import Reservation from '../../Models/Reservation';
+import Area from '../../Models/Area';
+import Sitting from '../../Models/Sitting';
 
 export default function DashboardReservationList() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -29,7 +31,6 @@ export default function DashboardReservationList() {
     }-${selectedDate.getDate()}`;
 
     getReservationByDateAsync(formattedDate).then((response) => {
-      // Using Reservation Interfacer in services/ApiInterfaces to type api response
       const reservations: Array<Reservation> = response.data;
       // Deconstructing response and building new array to pass to table component
       // Errors are being thrown but they do not seem to be causing any issues
