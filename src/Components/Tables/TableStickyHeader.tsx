@@ -24,11 +24,15 @@ import {
   createReservationAsync,
   deleteReservationAsync,
   getReservationByIdAsync,
+  updateReservationAsync,
+  updateCustomerAsync,
+  getReservationByDateAsync,
 } from '../../Services/ApiServices';
 
 // Interfaces
 import Customer from '../../Models/Customer';
-import { Reservation } from '../../Services/ApiInterfaces';
+import Reservation from '../../Models/Reservation';
+import Sitting from '../../Models/Sitting';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -74,47 +78,55 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   // #region
   const updateFirstName = useRef<HTMLInputElement>(null);
   const updateLastName = useRef<HTMLInputElement>(null);
+  const updateEmail = useRef<HTMLInputElement>(null);
   const updatePhone = useRef<HTMLInputElement>(null);
   const updateDateTime = useRef<HTMLInputElement>(null);
   const updateDuration = useRef<HTMLInputElement>(null);
   const updateNoGuests = useRef<HTMLInputElement>(null);
   const updateNotes = useRef<HTMLInputElement>(null);
 
+  // Only updates details in the draw. Will not send to DB unless update button is then clicked.
   function UpdateDetails() {
     // Not sure if this is optimal but it works. There was an eslint
     // rule saying that you shouldn't use functions within jsx
     // components because of performance issues but for now
     // I am going to to keep things cleanish
-    const updatedDetails = {
+
+    const updatedCustomerDetails = {
+      id: drawerContent?.customerId,
+      firstName: updateFirstName.current.value,
+      lastName: updateLastName.current.value,
+      email: updateEmail.current.value,
+      phone: updatePhone.current.value,
+    };
+
+    const updatedReservationDetails = {
       id: drawerContent?.id,
       customerId: drawerContent?.customerId,
-      customer: {
-        id: drawerContent?.customer.id,
-        firstName: updateFirstName.current.value,
-        lastName: updateLastName.current.value,
-        email: drawerContent?.customer.email,
-        phone: updatePhone.current.value,
-        fullName: drawerContent?.customer.fullName,
-      },
       sittingId: drawerContent?.sittingId,
-      sitting: {
-        id: drawerContent?.sitting.id,
-        capacity: drawerContent?.sitting.capacity,
-        type: drawerContent?.sitting.type,
-        startTime: drawerContent?.sitting.startTime,
-        endTime: drawerContent?.sitting.endTime,
-        venueId: drawerContent?.sitting.venueId,
-      },
       dateTime: updateDateTime.current.value,
-      duration: updateDuration.current.value,
-      noGuests: updateNoGuests.current.value,
-      source: drawerContent?.source,
-      venueId: drawerContent?.venueId,
-      tables: [],
-      status: drawerContent?.status,
+      duration: parseInt(updateDuration.current?.value),
+      noGuests: parseInt(updateNoGuests.current?.value),
+      venueId: 1,
       notes: updateNotes.current.value,
     };
-    setDrawerContent(updatedDetails);
+
+    console.log(' UPDATED DETAILS');
+    console.log(updatedCustomerDetails);
+    console.log(updatedReservationDetails);
+
+    updateCustomerAsync(drawerContent?.customerId, updatedCustomerDetails);
+    updateReservationAsync(drawerContent?.id, updatedReservationDetails);
+
+    getReservationByIdAsync(drawerContent?.id).then((response) => {
+      setDrawerContent(response.data);
+    });
+
+    setEditModalOpened(false);
+    setDrawerOpened(false);
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   }
   // #endregion
 
@@ -143,19 +155,40 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
     };
 
     console.log(newCustomer);
-    const response = await createCustomerAsync(newCustomer);
-    const customer: Customer = response.data;
-    console.log(customer);
-    const newReservation = {
-      customerId: customer.id,
-      sittingId: parseInt(createSittingId.current.value),
-      dateTime: createDateTime.current.value,
-      duration: parseInt(createDuration.current.value),
-      noGuests: parseInt(createNoGuests.current.value),
-      notes: createNotes.current.value,
-    };
-    await createReservationAsync(newReservation);
-    console.log(newReservation);
+    await createCustomerAsync(newCustomer).then((createCustomerResponse) => {
+      const customer = createCustomerResponse.data;
+
+      const newReservation: Reservation = {
+        customerId: customer.id,
+        sittingId: parseInt(createSittingId.current.value),
+        dateTime: createDateTime.current.value,
+        duration: parseInt(createDuration.current.value),
+        noGuests: parseInt(createNoGuests.current.value),
+        venueId: 1,
+        notes: createNotes.current.value,
+      };
+
+      createReservationAsync(newReservation).then(
+        (createReservationResponse) => {
+          console.log(createReservationResponse.data);
+        }
+      );
+
+      setCreateModalOpened(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    });
+    // const newReservation = {
+    //   customerId: customer.id,
+    //   sittingId: parseInt(createSittingId.current.value, 16),
+    //   dateTime: createDateTime.current.value,
+    //   duration: parseInt(createDuration.current.value, 16),
+    //   noGuests: parseInt(createNoGuests.current.value, 16),
+    //   venueId: 1,
+    //   notes: createNotes.current.value,
+    // };
+    // await createReservationAsync(newReservation);
   }
   // #endregion
 
@@ -176,6 +209,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
               setDrawerOpened(true);
               getReservationByIdAsync(row.id).then((response) => {
                 setDrawerContent(response.data);
+                console.log(response);
               });
             }}
           />
@@ -192,11 +226,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           <Card withBorder radius="md">
             <Title align="center">
               Update Reservation
-              <UnstyledButton
-                onClick={() => {
-                  setEditModalOpened(true);
-                }}
-              >
+              <UnstyledButton onClick={() => {}}>
                 <ThemeIcon ml={20} color="green" size={24} radius="xl">
                   <IconEditCircle size={18} />
                 </ThemeIcon>
@@ -231,6 +261,13 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.customer.lastName}
+                  />
+                  <TextInput
+                    label="Email"
+                    ref={updateEmail}
+                    mt={20}
+                    icon={<IconPencil />}
+                    placeholder={drawerContent?.customer.email}
                   />
                   <TextInput
                     label="Phone"
@@ -273,7 +310,6 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                       size="lg"
                       onClick={() => {
                         UpdateDetails();
-                        setEditModalOpened(false);
                       }}
                     >
                       Confirm
@@ -326,7 +362,14 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
             </Group>
             <Group mt={20} position="center">
               <SimpleGrid cols={2}>
-                <Button size="lg">Update</Button>
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    setEditModalOpened(true);
+                  }}
+                >
+                  Update
+                </Button>
                 <Button
                   color="red"
                   size="lg"
@@ -353,7 +396,9 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                           deleteReservationAsync(drawerContent?.id);
                           setDeleteModalOpened(false);
                           setDrawerOpened(false);
-                          window.location.reload();
+                          setTimeout(() => {
+                            window.location.reload();
+                          }, 500);
                         }}
                       >
                         Confirm

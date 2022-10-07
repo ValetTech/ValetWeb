@@ -44,10 +44,21 @@ export function getReservationByDateAsync(date: string) {
   }
 }
 
+export function createReservationAsync(reservation: Reservation) {
+  try {
+    const response = axios.post(`/reservations`, {
+      ...reservation,
+    });
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 export function updateReservationAsync(id: number, reservation: Reservation) {
   try {
     const response = axios.put(`/reservations/${id}`, {
-      body: reservation,
+      ...reservation,
     });
     return response;
   } catch (error) {
@@ -114,10 +125,10 @@ export function createCustomerAsync(customer: Customer) {
   }
 }
 
-export function createReservationAsync(reservation: Reservation) {
+export function updateCustomerAsync(id: number, customer: Customer) {
   try {
-    const response = axios.post(`/reservations`, {
-      ...reservation,
+    const response = axios.put(`/customers/${id}`, {
+      ...customer,
     });
     return response;
   } catch (error) {
