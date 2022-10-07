@@ -13,10 +13,10 @@ import {
   Table,
   Text,
   TextInput,
-  ThemeIcon,
   Title,
   UnstyledButton,
 } from '@mantine/core';
+import { TimeInput, DatePicker } from '@mantine/dates';
 import { IconCircleDotted, IconEditCircle, IconPencil } from '@tabler/icons';
 import { useRef, useState } from 'react';
 // #endregion
@@ -81,6 +81,12 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [createModalOpened, setCreateModalOpened] = useState(false);
+  // In order to get the correct value for timeInput, state must be used. useRef will only return hours.
+  // Be sure to use .toLocaleTimeString() on timeInputValue as we only need the time. The date will
+  // be incorrect and we will concatenate correct one manually in validation stage.
+  const [timeInputValue, setTimeInputValue] = useState(new Date());
+  // Using state for the date input also seems better for formatting the value.
+  const [dateInputValue, setDateInputValue] = useState(new Date());
 
   // Update Reservation Function
   // #region
@@ -138,22 +144,25 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const createLastName = useRef<HTMLInputElement>(null);
   const createPhone = useRef<HTMLInputElement>(null);
   const createEmail = useRef<HTMLInputElement>(null);
-  const createDateTime = useRef<HTMLInputElement>(null);
   const createDuration = useRef<HTMLInputElement>(null);
   const createNoGuests = useRef<HTMLInputElement>(null);
   const createNotes = useRef<HTMLInputElement>(null);
   const createSittingId = useRef<HTMLInputElement>(null);
 
   async function CreateReservation() {
+    function getDateTimeString() {
+      // This fuckery is required because the day was one day off.
+      dateInputValue.setDate(dateInputValue.getDate() + 1);
+      return `${
+        dateInputValue.toISOString().split('T')[0]
+      }T${timeInputValue.toLocaleTimeString()}`;
+    }
+
     const newCustomer: Customer = {
       firstName: createFirstName.current.value,
       lastName: createLastName.current.value,
       email: createEmail.current.value,
       phone: createPhone.current.value,
-      // dateTime: createDateTime.current.value,
-      // duration: parseInt(createDuration.current.value, 16),
-      // noGuests: parseInt(createNoGuests.current.value, 16),
-      // notes: createNotes.current.value,
     };
     console.log(newCustomer);
 
@@ -163,7 +172,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
       const newReservation: Reservation = {
         customerId: customer.id,
         sittingId: parseInt(createSittingId.current.value),
-        dateTime: createDateTime.current.value,
+        dateTime: getDateTimeString(),
         duration: parseInt(createDuration.current.value),
         noGuests: parseInt(createNoGuests.current.value),
         venueId: 1,
@@ -261,9 +270,11 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                     icon={<IconPencil />}
                     placeholder={drawerContent?.customer.phone}
                   />
-                  <TextInput
-                    label="DateTime"
-                    ref={updateDateTime}
+                  <TimeInput
+                    format="12"
+                    label="Time"
+                    value={timeInputValue}
+                    onChange={setTimeInputValue}
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.dateTime}
@@ -465,11 +476,23 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           mt={20}
           icon={<IconPencil />}
         />
-        <TextInput
-          ref={createDateTime}
-          label="DateTime"
+        <TimeInput
+          value={timeInputValue}
+          onChange={setTimeInputValue}
+          format="12"
+          label="Time"
           mt={20}
           icon={<IconPencil />}
+        />
+        <DatePicker
+          value={dateInputValue}
+          onChange={setDateInputValue}
+          label="Date"
+          dropdownType="modal"
+          // value={selectedDate}
+          // onChange throws an error but doesn't seem to be causing any issues.
+          // onChange={setSelectedDate}
+          mt={20}
         />
         <TextInput
           ref={createDuration}
