@@ -13,6 +13,7 @@ import {
   Table,
   Text,
   TextInput,
+  NumberInput,
   Title,
   UnstyledButton,
 } from '@mantine/core';
@@ -294,14 +295,14 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                     dropdownType="modal"
                     mt={20}
                   />
-                  <TextInput
+                  <NumberInput
                     label="Duration"
                     ref={updateDuration}
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.duration.toString()}
                   />
-                  <TextInput
+                  <NumberInput
                     label="Number of Guests"
                     ref={updateNoGuests}
                     mt={20}
@@ -506,13 +507,13 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           dropdownType="modal"
           mt={20}
         />
-        <TextInput
+        <NumberInput
           ref={createDuration}
           label="Duration"
           mt={20}
           icon={<IconPencil />}
         />
-        <TextInput
+        <NumberInput
           ref={createNoGuests}
           label="Number of Guests"
           mt={20}
@@ -524,7 +525,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           mt={20}
           icon={<IconPencil />}
         />
-        <TextInput
+        <NumberInput
           ref={createSittingId}
           label="Sitting Id"
           mt={20}
