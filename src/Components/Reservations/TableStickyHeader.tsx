@@ -100,6 +100,14 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const updateNotes = useRef<HTMLInputElement>(null);
 
   function UpdateDetails() {
+    function getDateTimeString() {
+      // This fuckery is required because the day was one day off.
+      dateInputValue.setDate(dateInputValue.getDate() + 1);
+      return `${
+        dateInputValue.toISOString().split('T')[0]
+      }T${timeInputValue.toLocaleTimeString()}`;
+    }
+
     const updatedCustomerDetails = {
       id: drawerContent?.customerId,
       firstName: updateFirstName.current.value,
@@ -112,7 +120,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
       id: drawerContent?.id,
       customerId: drawerContent?.customerId,
       sittingId: drawerContent?.sittingId,
-      dateTime: updateDateTime.current.value,
+      dateTime: getDateTimeString(),
       duration: parseInt(updateDuration.current?.value),
       noGuests: parseInt(updateNoGuests.current?.value),
       venueId: 1,
@@ -278,6 +286,13 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.dateTime}
+                  />
+                  <DatePicker
+                    value={dateInputValue}
+                    onChange={setDateInputValue}
+                    label="Date"
+                    dropdownType="modal"
+                    mt={20}
                   />
                   <TextInput
                     label="Duration"
@@ -489,9 +504,6 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           onChange={setDateInputValue}
           label="Date"
           dropdownType="modal"
-          // value={selectedDate}
-          // onChange throws an error but doesn't seem to be causing any issues.
-          // onChange={setSelectedDate}
           mt={20}
         />
         <TextInput
