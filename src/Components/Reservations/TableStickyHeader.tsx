@@ -16,6 +16,7 @@ import {
   NumberInput,
   Title,
   UnstyledButton,
+  Select,
 } from '@mantine/core';
 import { TimeInput, DatePicker } from '@mantine/dates';
 import { IconCircleDotted, IconEditCircle, IconPencil } from '@tabler/icons';
@@ -38,6 +39,7 @@ import {
 // #region
 import Customer from '../../Models/Customer';
 import Reservation from '../../Models/Reservation';
+import Sitting from '../../Models/Sitting';
 // #endregion
 
 // Styles
@@ -71,10 +73,19 @@ const useStyles = createStyles((theme) => ({
 // #endregion
 
 interface TableScrollAreaProps {
-  data: { id: number; fullName: string; phone: string; dateTime: string }[];
+  reservationData: {
+    id: number;
+    fullName: string;
+    phone: string;
+    dateTime: string;
+  }[];
+  sittingData: { label: string; value: string; id: number; venueId: number }[];
 }
 
-export default function TableScrollArea({ data }: TableScrollAreaProps) {
+export default function TableScrollArea({
+  reservationData,
+  sittingData,
+}: TableScrollAreaProps) {
   const { classes, cx } = useStyles();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(false);
@@ -180,6 +191,15 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
       }T${timeInputValue.toLocaleTimeString()}`;
     }
 
+    // If we intend to add support for multiple venues then the venue name will need to be unique
+    // Or this will crash. For now just hardcoded venue 1.
+    function getSittingId() {
+      const sitting = sittingData.filter(
+        (s) => s.value === createSittingId.current?.value && s.venueId === 1
+      );
+      return sitting[0].id;
+    }
+
     const newCustomer: Customer = {
       firstName: createFirstName.current.value,
       lastName: createLastName.current.value,
@@ -193,7 +213,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
 
       const newReservation: Reservation = {
         customerId: customer.id,
-        sittingId: parseInt(createSittingId.current.value),
+        sittingId: getSittingId(),
         dateTime: getDateTimeString(),
         duration: parseInt(createDuration.current.value),
         noGuests: parseInt(createNoGuests.current.value),
@@ -217,7 +237,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
 
   // Reservation Table - Sticky header with scrollable list for displaying data.
 
-  const rows = data.map((row) => (
+  const rows = reservationData.map((row) => (
     <tr key={row.fullName}>
       <td>{row.fullName}</td>
       <td>{row.phone}</td>
@@ -544,13 +564,21 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           mt={20}
           icon={<IconPencil />}
         />
-        <NumberInput
+        <Select
+          data={sittingData}
           ref={createSittingId}
           label="Sitting Id"
           mt={20}
           icon={<IconPencil />}
           withAsterisk
         />
+        {/* <NumberInput
+          ref={createSittingId}
+          label="Sitting Id"
+          mt={20}
+          icon={<IconPencil />}
+          withAsterisk
+        /> */}
         {/* Invalid Input Notification Modal */}
         <Modal
           centered

@@ -74,6 +74,8 @@ export default function DashboardReservationList() {
         dataBuilder.push({
           label: element.type,
           value: element.type,
+          id: element.id,
+          venueId: element.venueId,
         });
       });
       setSittingData(dataBuilder);
@@ -104,7 +106,10 @@ export default function DashboardReservationList() {
             <Select data={sittingData} />
           </Title>
         </SimpleGrid>
-        <TableStickyHeader data={reservationData} />
+        <TableStickyHeader
+          reservationData={reservationData}
+          sittingData={sittingData}
+        />
       </Card>
     </Container>
   );
