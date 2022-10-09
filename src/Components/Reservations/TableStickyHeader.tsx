@@ -79,6 +79,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [drawerContent, setDrawerContent] = useState<Reservation>();
+  const [validationModalOpened, setValidationModalOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [createModalOpened, setCreateModalOpened] = useState(false);
@@ -159,9 +160,21 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
   const createSittingId = useRef<HTMLInputElement>(null);
 
   async function CreateReservation() {
+    // Form Data Validation
+    if (
+      createLastName.current.value === '' ||
+      createPhone.current.value === '' ||
+      createDuration.current.value === '' ||
+      createNoGuests.current.value === '' ||
+      createSittingId.current.value === ''
+    ) {
+      setValidationModalOpened(true);
+      return;
+    }
+
     function getDateTimeString() {
-      // This fuckery is required because the day was one day off.
-      dateInputValue.setDate(dateInputValue.getDate() + 1);
+      // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
+      dateInputValue.setDate(dateInputValue.getDate());
       return `${
         dateInputValue.toISOString().split('T')[0]
       }T${timeInputValue.toLocaleTimeString()}`;
@@ -479,12 +492,14 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           label="Last Name"
           mt={20}
           icon={<IconPencil />}
+          withAsterisk
         />
         <TextInput
           ref={createPhone}
           label="Phone"
           mt={20}
           icon={<IconPencil />}
+          withAsterisk
         />
         <TextInput
           ref={createEmail}
@@ -499,6 +514,7 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           label="Time"
           mt={20}
           icon={<IconPencil />}
+          withAsterisk
         />
         <DatePicker
           value={dateInputValue}
@@ -506,18 +522,21 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           label="Date"
           dropdownType="modal"
           mt={20}
+          withAsterisk
         />
         <NumberInput
           ref={createDuration}
           label="Duration"
           mt={20}
           icon={<IconPencil />}
+          withAsterisk
         />
         <NumberInput
           ref={createNoGuests}
           label="Number of Guests"
           mt={20}
           icon={<IconPencil />}
+          withAsterisk
         />
         <TextInput
           ref={createNotes}
@@ -530,7 +549,22 @@ export default function TableScrollArea({ data }: TableScrollAreaProps) {
           label="Sitting Id"
           mt={20}
           icon={<IconPencil />}
+          withAsterisk
         />
+        {/* Invalid Input Notification Modal */}
+        <Modal
+          centered
+          opened={validationModalOpened}
+          onClose={() => {
+            setValidationModalOpened(false);
+          }}
+          withCloseButton={false}
+        >
+          <Title size="h5" mb={20}>
+            Invalid Input
+          </Title>
+          <Text italic>Required inputs are marked with a red asterisk.</Text>
+        </Modal>
         <Group mt={20} position="center">
           <Button
             size="lg"
