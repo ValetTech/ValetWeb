@@ -5,11 +5,9 @@ import Nav from './Nav';
 import Dashboard from '../Pages/Dashboard';
 import RoutesController from './RoutesController';
 
-const links = [
-  { link: '/', label: 'Home' },
-  { link: '/reservations', label: 'Reservations' },
-  { link: '/settings', label: 'Settings' },
-];
+// These are for the header, not the navbar!!
+// Navbar links are hardcoded into Nav component for now.
+const links = [{ link: '/', label: 'placeholder' }];
 
 export default function DefaultAppShell() {
   const theme = useMantineTheme();

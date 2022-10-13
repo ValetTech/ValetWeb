@@ -5,11 +5,6 @@ import DefaultAppShell from './Layouts/AppShell';
 import RoutesController from './Layouts/RoutesController';
 
 export default function App() {
-  const links = [
-    { link: '/', label: 'Home' },
-    { link: '/reservations', label: 'Reservations' },
-  ];
-
   return (
     <MantineProvider
       theme={{ colorScheme: 'dark' }}
@@ -19,7 +14,6 @@ export default function App() {
       <NotificationsProvider>
         <HashRouter>
           <DefaultAppShell />
-          {/* <RoutesController /> */}
         </HashRouter>
       </NotificationsProvider>
     </MantineProvider>

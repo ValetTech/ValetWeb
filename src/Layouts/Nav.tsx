@@ -91,15 +91,15 @@ function NavbarLink({
 }
 
 const data = [
-  { link: '/', icon: IconHome2, label: 'Home' },
-  { link: '/', icon: IconCalendarStats, label: 'Reservations' },
-  { link: '/', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
-  { link: '/', icon: IconGauge, label: 'Orders' },
+  { link: '/', icon: IconHome2, label: 'Dashboard' },
+  { link: '/reservations', icon: IconCalendarStats, label: 'Reservations' },
+  { link: '/seating', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
+  { link: '/orders', icon: IconGauge, label: 'Orders' },
   { link: '/settings', icon: IconSettings, label: 'Settings' },
 ];
 
 export default function Nav() {
-  const [active, setActive] = useState(2);
+  const [active, setActive] = useState(0);
 
   const linksList = data.map((link, index) => (
     <NavbarLink

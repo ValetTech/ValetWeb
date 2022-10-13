@@ -1,8 +1,8 @@
 import { Button, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import DetailsForm from '../Components/Forms/DetailsReservation';
-import ReservationModal from '../Components/Reservation/ReservationModal';
-import TableSort from '../Components/Reservation/Table';
+import ReservationModal from '../Components/Forms/CreateReservation';
+import TableSort from '../Components/Reservations/Table';
 import Reservation from '../Models/Reservation';
 import getReservationsAsync from '../Services/ApiServices';
 
