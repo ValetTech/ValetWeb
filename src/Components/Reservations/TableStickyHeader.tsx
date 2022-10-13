@@ -326,79 +326,85 @@ export default function TableScrollArea({
                   opened={editModalOpened}
                   onClose={() => setEditModalOpened(false)}
                 >
-                  <TextInput
-                    label="First Name"
-                    ref={updateFirstName}
-                    mt={20}
-                    icon={<IconPencil />}
-                    placeholder={drawerContent?.customer.firstName}
-                  />
-                  <TextInput
-                    label="Last Name"
-                    ref={updateLastName}
-                    mt={20}
-                    icon={<IconPencil />}
-                    placeholder={drawerContent?.customer.lastName}
-                  />
-                  <TextInput
-                    label="Email"
-                    ref={updateEmail}
-                    mt={20}
-                    icon={<IconPencil />}
-                    placeholder={drawerContent?.customer.email}
-                  />
-                  <TextInput
-                    label="Phone"
-                    ref={updatePhone}
-                    mt={20}
-                    icon={<IconPencil />}
-                    placeholder={drawerContent?.customer.phone}
-                  />
-                  <TimeInput
-                    format="12"
-                    label="Time"
-                    value={timeInputValue}
-                    onChange={setTimeInputValue}
-                    mt={20}
-                    icon={<IconPencil />}
-                    withAsterisk
-                  />
-                  <DatePicker
-                    value={dateInputValue}
-                    onChange={setDateInputValue}
-                    label="Date"
-                    dropdownType="modal"
-                    mt={20}
-                    withAsterisk
-                  />
-                  <NumberInput
-                    label="Duration"
-                    ref={updateDuration}
-                    mt={20}
-                    icon={<IconPencil />}
-                    placeholder={drawerContent?.duration.toString()}
-                  />
-                  <NumberInput
-                    label="Number of Guests"
-                    ref={updateNoGuests}
-                    mt={20}
-                    icon={<IconPencil />}
-                    placeholder={drawerContent?.noGuests.toString()}
-                  />
-                  <TextInput
-                    label="Notes"
-                    ref={updateNotes}
-                    mt={20}
-                    icon={<IconPencil />}
-                    placeholder={drawerContent?.notes}
-                  />
-                  <Select
-                    data={sittingData}
-                    ref={updateSittingId}
-                    label="Sitting Id"
-                    mt={20}
-                    icon={<IconPencil />}
-                  />
+                  <SimpleGrid cols={2}>
+                    <Group>
+                      <TextInput
+                        label="First Name"
+                        ref={updateFirstName}
+                        mt={20}
+                        icon={<IconPencil />}
+                        placeholder={drawerContent?.customer.firstName}
+                      />
+                      <TextInput
+                        label="Last Name"
+                        ref={updateLastName}
+                        mt={20}
+                        icon={<IconPencil />}
+                        placeholder={drawerContent?.customer.lastName}
+                      />
+                      <TextInput
+                        label="Email"
+                        ref={updateEmail}
+                        mt={20}
+                        icon={<IconPencil />}
+                        placeholder={drawerContent?.customer.email}
+                      />
+                      <TextInput
+                        label="Phone"
+                        ref={updatePhone}
+                        mt={20}
+                        icon={<IconPencil />}
+                        placeholder={drawerContent?.customer.phone}
+                      />
+                    </Group>
+                    <Group>
+                      <TimeInput
+                        format="12"
+                        label="Time"
+                        value={timeInputValue}
+                        onChange={setTimeInputValue}
+                        mt={20}
+                        icon={<IconPencil />}
+                        withAsterisk
+                      />
+                      <DatePicker
+                        value={dateInputValue}
+                        onChange={setDateInputValue}
+                        label="Date"
+                        dropdownType="modal"
+                        mt={20}
+                        withAsterisk
+                      />
+                      <NumberInput
+                        label="Duration"
+                        ref={updateDuration}
+                        mt={20}
+                        icon={<IconPencil />}
+                        placeholder={drawerContent?.duration.toString()}
+                      />
+                      <NumberInput
+                        label="Number of Guests"
+                        ref={updateNoGuests}
+                        mt={20}
+                        icon={<IconPencil />}
+                        placeholder={drawerContent?.noGuests.toString()}
+                      />
+                      <TextInput
+                        label="Notes"
+                        ref={updateNotes}
+                        mt={20}
+                        icon={<IconPencil />}
+                        placeholder={drawerContent?.notes}
+                      />
+                      <Select
+                        data={sittingData}
+                        ref={updateSittingId}
+                        label="Sitting Id"
+                        mt={20}
+                        icon={<IconPencil />}
+                      />
+                    </Group>
+                  </SimpleGrid>
                   <Group mt={20} position="center">
                     {/* eslint-disable-next-line react/jsx-no-bind */}
                     <Button
@@ -546,89 +552,106 @@ export default function TableScrollArea({
       </Button>
       {/* Create Reservation Modal */}
       <Modal
+        size="xl"
         title="Create Reservation"
         centered
         opened={createModalOpened}
         onClose={() => setCreateModalOpened(false)}
       >
-        <TextInput
-          ref={createFirstName}
-          label="First Name"
-          mt={20}
-          icon={<IconPencil />}
-        />
-        <TextInput
-          ref={createLastName}
-          label="Last Name"
-          mt={20}
-          icon={<IconPencil />}
-          withAsterisk
-        />
-        <TextInput
-          ref={createPhone}
-          label="Phone"
-          mt={20}
-          icon={<IconPencil />}
-          withAsterisk
-        />
-        <TextInput
-          ref={createEmail}
-          label="Email"
-          mt={20}
-          icon={<IconPencil />}
-        />
-        <TimeInput
-          value={timeInputValue}
-          onChange={setTimeInputValue}
-          format="12"
-          label="Time"
-          mt={20}
-          icon={<IconPencil />}
-          withAsterisk
-        />
-        <DatePicker
-          value={dateInputValue}
-          onChange={setDateInputValue}
-          label="Date"
-          dropdownType="modal"
-          mt={20}
-          withAsterisk
-        />
-        <NumberInput
-          ref={createDuration}
-          label="Duration"
-          mt={20}
-          icon={<IconPencil />}
-          withAsterisk
-        />
-        <NumberInput
-          ref={createNoGuests}
-          label="Number of Guests"
-          mt={20}
-          icon={<IconPencil />}
-          withAsterisk
-        />
-        <TextInput
-          ref={createNotes}
-          label="Notes"
-          mt={20}
-          icon={<IconPencil />}
-        />
-        <Select
-          data={sittingData}
-          ref={createSittingId}
-          label="Sitting Id"
-          mt={20}
-          icon={<IconPencil />}
-          withAsterisk
-        />
-        {/* <NumberInput
-          ref={createSittingId}
-          label="Sitting Id"
-          mt={20}
-          icon={<IconPencil />}
-          withAsterisk
-        /> */}
+        <SimpleGrid cols={1}>
+          <Group position="center">
+            <Card radius="md" p="xl">
+              <Title color="dimmed" italic size="h5" align="center">
+                CUSTOMER DETAILS
+              </Title>
+              <SimpleGrid cols={2}>
+                <>
+                  <TextInput
+                    ref={createFirstName}
+                    label="First Name"
+                    mt={20}
+                    icon={<IconPencil />}
+                  />
+                  <TextInput
+                    ref={createLastName}
+                    label="Last Name"
+                    mt={20}
+                    icon={<IconPencil />}
+                    withAsterisk
+                  />
+                </>
+                <>
+                  <TextInput
+                    ref={createPhone}
+                    label="Phone"
+                    mt={20}
+                    icon={<IconPencil />}
+                    withAsterisk
+                  />
+                  <TextInput
+                    ref={createEmail}
+                    label="Email"
+                    mt={20}
+                    icon={<IconPencil />}
+                  />
+                </>
+              </SimpleGrid>
+            </Card>
+          </Group>
+          <Group position="center">
+            <Card radius="md" px={150}>
+              <Title color="dimmed" italic size="h5" align="center">
+                RESERVATION DETAILS
+              </Title>
+              <Select
+                data={sittingData}
+                ref={createSittingId}
+                label="Sitting Id"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+              />
+              <TimeInput
+                value={timeInputValue}
+                onChange={setTimeInputValue}
+                format="12"
+                label="Time"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+              />
+              <DatePicker
+                value={dateInputValue}
+                onChange={setDateInputValue}
+                label="Date"
+                dropdownType="modal"
+                mt={20}
+                withAsterisk
+              />
+              <NumberInput
+                ref={createDuration}
+                label="Duration"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+              />
+              <NumberInput
+                ref={createNoGuests}
+                label="Number of Guests"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+              />
+              <TextInput
+                ref={createNotes}
+                label="Notes"
+                mt={20}
+                mb={20}
+                icon={<IconPencil />}
+              />
+            </Card>
+          </Group>
+        </SimpleGrid>
         {/* Invalid Input Notification Modal */}
         <Modal
           centered
