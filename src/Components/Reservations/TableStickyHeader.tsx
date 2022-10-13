@@ -19,7 +19,7 @@ import {
   Select,
 } from '@mantine/core';
 import { TimeInput, DatePicker } from '@mantine/dates';
-import { IconCircleDotted, IconEditCircle, IconPencil } from '@tabler/icons';
+import { IconCircleDotted, IconPencil } from '@tabler/icons';
 import { useRef, useState } from 'react';
 // #endregion
 
@@ -39,7 +39,6 @@ import {
 // #region
 import Customer from '../../Models/Customer';
 import Reservation from '../../Models/Reservation';
-import Sitting from '../../Models/Sitting';
 // #endregion
 
 // Styles
@@ -107,10 +106,12 @@ export default function TableScrollArea({
   const updateLastName = useRef<HTMLInputElement>(null);
   const updateEmail = useRef<HTMLInputElement>(null);
   const updatePhone = useRef<HTMLInputElement>(null);
-  const updateDateTime = useRef<HTMLInputElement>(null);
+  const updateTimeInputValue = useRef<HTMLInputElement>(null);
+  const updateDateInputValue = useRef<HTMLInputElement>(null);
   const updateDuration = useRef<HTMLInputElement>(null);
   const updateNoGuests = useRef<HTMLInputElement>(null);
   const updateNotes = useRef<HTMLInputElement>(null);
+  const updateSittingId = useRef<HTMLInputElement>(null);
 
   function UpdateDetails() {
     function getDateTimeString() {
@@ -132,13 +133,49 @@ export default function TableScrollArea({
     const updatedReservationDetails = {
       id: drawerContent?.id,
       customerId: drawerContent?.customerId,
-      sittingId: drawerContent?.sittingId,
+      sittingId: updateSittingId.current.value,
       dateTime: getDateTimeString(),
-      duration: parseInt(updateDuration.current?.value),
-      noGuests: parseInt(updateNoGuests.current?.value),
+      duration: parseInt(updateDuration.current.value),
+      noGuests: parseInt(updateNoGuests.current.value),
       venueId: 1,
       notes: updateNotes.current.value,
     };
+
+    // Form Data Validation
+    if (updatedCustomerDetails.firstName === '') {
+      updatedCustomerDetails.firstName = drawerContent?.customer.firstName;
+    }
+    if (updatedCustomerDetails.lastName === '') {
+      updatedCustomerDetails.lastName = drawerContent?.customer.lastName;
+    }
+    if (updatedCustomerDetails.email === '') {
+      updatedCustomerDetails.email = drawerContent?.customer.email;
+    }
+    if (updatedCustomerDetails.phone === '') {
+      updatedCustomerDetails.phone = drawerContent?.customer.phone;
+    }
+    if (
+      updatedReservationDetails.duration === 0 ||
+      updatedReservationDetails.duration === null ||
+      // eslint-disable-next-line no-restricted-globals
+      isNaN(updatedReservationDetails.duration) === true
+    ) {
+      updatedReservationDetails.duration = drawerContent?.duration;
+    }
+    if (
+      updatedReservationDetails.noGuests === 0 ||
+      updatedReservationDetails.noGuests === null ||
+      // eslint-disable-next-line no-restricted-globals
+      isNaN(updatedReservationDetails.noGuests) === true
+    ) {
+      updatedReservationDetails.noGuests = drawerContent?.noGuests;
+    }
+    if (updatedReservationDetails.notes === '') {
+      updatedReservationDetails.notes = drawerContent?.notes;
+    }
+    if (updatedReservationDetails.sittingId === '') {
+      updatedReservationDetails.sittingId = drawerContent?.sittingId;
+    }
 
     console.log(' UPDATED DETAILS');
     console.log(updatedCustomerDetails);
@@ -185,10 +222,15 @@ export default function TableScrollArea({
 
     function getDateTimeString() {
       // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
-      dateInputValue.setDate(dateInputValue.getDate());
+      dateInputValue.setDate(dateInputValue.getDate() + 1);
       return `${
         dateInputValue.toISOString().split('T')[0]
       }T${timeInputValue.toLocaleTimeString()}`;
+
+      // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
+      // You need to add one day when creating a reservation, but if you use the same
+      // Function for the update form, it will mess things up and move the day forward
+      // If the user does not change the day and it remains as the default value.
     }
 
     // If we intend to add support for multiple venues then the venue name will need to be unique
@@ -319,7 +361,7 @@ export default function TableScrollArea({
                     onChange={setTimeInputValue}
                     mt={20}
                     icon={<IconPencil />}
-                    placeholder={drawerContent?.dateTime}
+                    withAsterisk
                   />
                   <DatePicker
                     value={dateInputValue}
@@ -327,6 +369,7 @@ export default function TableScrollArea({
                     label="Date"
                     dropdownType="modal"
                     mt={20}
+                    withAsterisk
                   />
                   <NumberInput
                     label="Duration"
@@ -348,6 +391,13 @@ export default function TableScrollArea({
                     mt={20}
                     icon={<IconPencil />}
                     placeholder={drawerContent?.notes}
+                  />
+                  <Select
+                    data={sittingData}
+                    ref={updateSittingId}
+                    label="Sitting Id"
+                    mt={20}
+                    icon={<IconPencil />}
                   />
                   <Group mt={20} position="center">
                     {/* eslint-disable-next-line react/jsx-no-bind */}
