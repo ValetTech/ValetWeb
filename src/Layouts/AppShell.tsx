@@ -2,11 +2,13 @@ import { AppShell, Text, useMantineTheme } from '@mantine/core';
 import { useState } from 'react';
 import Header from './Header';
 import Nav from './Nav';
-import DashboardGrid from '../Components/Grids/DashboardGrid';
+import Dashboard from '../Pages/Dashboard';
+import RoutesController from './RoutesController';
 
 const links = [
   { link: '/', label: 'Home' },
   { link: '/reservations', label: 'Reservations' },
+  { link: '/settings', label: 'Settings' },
 ];
 
 export default function DefaultAppShell() {
@@ -27,7 +29,7 @@ export default function DefaultAppShell() {
       header={<Header links={links} />}
     >
       {/* content */}
-      <DashboardGrid />
+      <RoutesController />
     </AppShell>
   );
 }

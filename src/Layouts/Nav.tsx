@@ -64,6 +64,7 @@ interface NavbarLinkProps {
   icon: TablerIcon;
   label: string;
   active?: boolean;
+  to: string;
   onClick?(): void;
 }
 
@@ -71,6 +72,7 @@ function NavbarLink({
   icon: Icon,
   label,
   active = false,
+  to,
   onClick = () => {},
 }: NavbarLinkProps) {
   const { classes, cx } = useStyles();
@@ -79,6 +81,8 @@ function NavbarLink({
       <UnstyledButton
         onClick={onClick}
         className={cx(classes.link, { [classes.active]: active })}
+        component={Link}
+        to={to}
       >
         <Icon stroke={1.5} />
       </UnstyledButton>
@@ -86,22 +90,23 @@ function NavbarLink({
   );
 }
 
-const mockdata = [
-  { icon: IconHome2, label: 'Home' },
-  { icon: IconCalendarStats, label: 'Reservations' },
-  { icon: IconDeviceDesktopAnalytics, label: 'Seating' },
-  { icon: IconGauge, label: 'Orders' },
-  { icon: IconSettings, label: 'Settings' },
+const data = [
+  { link: '/', icon: IconHome2, label: 'Home' },
+  { link: '/', icon: IconCalendarStats, label: 'Reservations' },
+  { link: '/', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
+  { link: '/', icon: IconGauge, label: 'Orders' },
+  { link: '/settings', icon: IconSettings, label: 'Settings' },
 ];
 
 export default function Nav() {
   const [active, setActive] = useState(2);
 
-  const links = mockdata.map((link, index) => (
+  const linksList = data.map((link, index) => (
     <NavbarLink
       {...link}
       key={link.label}
       active={index === active}
+      to={link.link}
       onClick={() => setActive(index)}
     />
   ));
@@ -127,7 +132,7 @@ export default function Nav() {
         </Center>
         <Navbar.Section grow mt={80}>
           <Stack justify="center" spacing={1}>
-            {links}
+            {linksList}
           </Stack>
         </Navbar.Section>
       </Navbar>
