@@ -4,10 +4,14 @@ import DetailsForm from '../Components/Forms/DetailsReservation';
 import ReservationModal from '../Components/Forms/CreateReservation';
 import TableSort from '../Components/Reservations/Table';
 import Reservation from '../Models/Reservation';
-import getReservationsAsync from '../Services/ApiServices';
+import getReservationsAsync, {
+  getSittingsAsync,
+} from '../Services/ApiServices';
+import Sitting from '../Models/Sitting';
 
 export default function Reservations() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [sittings, setSittings] = useState<Sitting[]>([]);
   const [modalOpened, setModalOpened] = useState(false);
   const [detailsModalOpened, setDetailsModalOpened] = useState(false);
   useEffect(() => {
@@ -16,6 +20,12 @@ export default function Reservations() {
       setReservations(res);
     }
     fetchReservations();
+
+    async function fetchSittings() {
+      const res: Sitting[] = await getSittingsAsync();
+      setSittings(res);
+    }
+    fetchSittings();
   }, []);
 
   function onCloseModal() {
@@ -48,7 +58,11 @@ export default function Reservations() {
         Reservation details
       </Button>
       <TableSort data={reservations} />
-      <ReservationModal opened={modalOpened} onClose={() => onCloseModal()} />
+      <ReservationModal
+        sittingData={sittings}
+        opened={modalOpened}
+        onClose={() => onCloseModal()}
+      />
       <Modal
         centered
         opened={detailsModalOpened}

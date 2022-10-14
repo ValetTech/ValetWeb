@@ -1,38 +1,54 @@
-import { Button, Group, Modal, NumberInput, Textarea } from '@mantine/core';
+/* eslint-disable react/jsx-props-no-spreading */
+import {
+  Button,
+  Card,
+  Group,
+  Modal,
+  NumberInput,
+  Select,
+  SimpleGrid,
+  Textarea,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { IconCalendar, IconClock } from '@tabler/icons';
+import { IconPencil } from '@tabler/icons';
 import Reservation from '../../Models/Reservation';
+import Sitting from '../../Models/Sitting';
 
 interface ReservationModalProps {
   opened: boolean;
   onClose(): void;
+  sittingData: Sitting[];
 }
 
 export default function ReservationModal({
   opened,
   onClose,
+  sittingData,
 }: ReservationModalProps) {
   // const [values, setValues] = useState();
   const form = useForm({
     initialValues: {
-      date: new Date(),
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      sittingId: 0,
       time: new Date(),
+      date: new Date(),
       duration: 90,
-      guests: 2,
+      noGuests: 1,
       notes: '',
     },
-    validate: (values) => ({
-      date: !values.date && 'Date is required',
-      time: !values.time && 'Time is required',
-      duration: !values.duration && 'Duration is required',
-      guests: !values.guests && 'Number of guests is required',
-    }),
   });
 
-  function onSubmit(values: Reservation) {
-    console.log(values);
-  }
+  // Name of sitting will be displayed in select, but it will return the ID number.
+  const sittings: { label: string; value: number }[] = sittingData.map((s) => ({
+    label: s.type,
+    value: s.id,
+  }));
 
   return (
     <Modal
@@ -40,78 +56,115 @@ export default function ReservationModal({
       opened={opened}
       onClose={onClose}
       title="Create New Reservation"
+      size="xl"
     >
       <form onSubmit={form.onSubmit((values) => console.log(values))}>
-        <NumberInput
-          label="Customer ID"
-          // error="Please enter a customer Id."
-          withAsterisk
-          hideControls
-          required
-          // value={form.values.customerId}
-        />
-        <NumberInput
-          label="Sitting ID"
-          // error="Please enter a sitting Id."
-          withAsterisk
-          hideControls
-          required
-          // value={form.values.sittingId}
-        />
-        <DatePicker
-          placeholder="Pick date"
-          label="Reservation date"
-          withAsterisk
-          allowFreeInput
-          icon={<IconCalendar size={16} />}
-          required
-          value={form.values.date}
-          // onChange={(date) => form.setFieldValue('date', date)}
-        />
-        <TimeInput
-          defaultValue={new Date()}
-          icon={<IconClock size={16} />}
-          label="Pick time"
-          // error="Please input a time."
-          format="12"
-          // amLabel="am"
-          // pmLabel="pm"
-          withAsterisk
-          clearable
-          required
-          value={form.values.time}
-          // onChange={(time) => form.setFieldValue('time', time)}
-        />
-        <NumberInput
-          label="Duration (minutes)"
-          // error="Please enter a sitting Id."
-          withAsterisk
-          hideControls
-          required
-          value={form.values.duration}
-          // onChange={(duration) => form.setFieldValue('duration', duration)}
-        />
-        <NumberInput
-          label="Number of guests"
-          // error="Please enter a sitting Id."
-          withAsterisk
-          hideControls
-          required
-          value={form.values.guests}
-          // onChange={(guests) => form.setFieldValue('guests', guests)}
-        />
-        <Textarea
-          placeholder="Notes"
-          autosize
-          minRows={2}
-          maxRows={4}
-          label="Additional Notes"
-          value={form.values.notes}
-          // onChange={(notes) => form.setFieldValue('notes', notes)}
-        />
-        <Group position="right" mt="md">
-          <Button variant="filled" type="submit">
-            Submit
+        <SimpleGrid cols={1}>
+          <Group position="center">
+            <Card radius="md" p="xl">
+              <Title color="dimmed" italic size="h5" align="center">
+                CUSTOMER DETAILS
+              </Title>
+              <SimpleGrid cols={2}>
+                <>
+                  <TextInput
+                    label="First Name"
+                    mt={20}
+                    icon={<IconPencil />}
+                    {...form.getInputProps('firstName')}
+                  />
+                  <TextInput
+                    label="Last Name"
+                    mt={20}
+                    icon={<IconPencil />}
+                    withAsterisk
+                    required
+                    {...form.getInputProps('lastName')}
+                  />
+                </>
+                <>
+                  <TextInput
+                    label="Phone"
+                    mt={20}
+                    icon={<IconPencil />}
+                    withAsterisk
+                    required
+                    {...form.getInputProps('phone')}
+                  />
+                  <TextInput
+                    label="Email"
+                    mt={20}
+                    icon={<IconPencil />}
+                    {...form.getInputProps('email')}
+                  />
+                </>
+              </SimpleGrid>
+            </Card>
+          </Group>
+          <Group position="center">
+            <Card radius="md" px={150}>
+              <Title color="dimmed" italic size="h5" align="center">
+                RESERVATION DETAILS
+              </Title>
+              <Select
+                data={sittings}
+                label="Sitting Id"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+                {...form.getInputProps('sittingId')}
+              />
+              <TimeInput
+                format="12"
+                label="Time"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+                required
+                defaultValue={new Date()}
+                {...form.getInputProps('time')}
+              />
+              <DatePicker
+                label="Date"
+                dropdownType="modal"
+                mt={20}
+                withAsterisk
+                required
+                defaultValue={new Date()}
+                {...form.getInputProps('date')}
+              />
+              <NumberInput
+                label="Duration"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+                required
+                {...form.getInputProps('duration')}
+              />
+              <NumberInput
+                label="Number of Guests"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+                required
+                {...form.getInputProps('noGuests')}
+              />
+              <Textarea
+                autosize
+                minRows={2}
+                maxRows={4}
+                label="Notes"
+                mt={20}
+                mb={20}
+                icon={<IconPencil />}
+                {...form.getInputProps('notes')}
+              />
+            </Card>
+          </Group>
+        </SimpleGrid>
+        <Group mt={20} position="center">
+          <Button type="submit" size="lg">
+            Create
           </Button>
         </Group>
       </form>

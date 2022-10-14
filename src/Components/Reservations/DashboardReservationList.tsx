@@ -8,7 +8,7 @@ import TableStickyHeader from './TableStickyHeader';
 import {
   getReservationByDateAsync,
   getAllAreasAsync,
-  getAllSittingsAsync,
+  getSittingsAsync,
 } from '../../Services/ApiServices';
 
 // Data Models
@@ -67,7 +67,7 @@ export default function DashboardReservationList() {
 
   // Will only fire on page load
   useEffect(() => {
-    getAllSittingsAsync().then((response) => {
+    getSittingsAsync().then((response) => {
       const sittings: Array<Sitting> = response.data;
       const dataBuilder = [];
       sittings.forEach((element) => {

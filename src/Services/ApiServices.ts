@@ -86,10 +86,14 @@ export function getAllAreasAsync() {
 }
 
 // SITTING
-export function getAllSittingsAsync() {
+export async function getSittingsAsync() {
   try {
-    const response = axios.get(`/sittings`);
-    return response;
+    const response = await axios.get('/sittings', {
+      // withCredentials: false,
+    });
+    console.log('response.data', response.data);
+
+    return response.data;
   } catch (error) {
     throw new Error();
   }
