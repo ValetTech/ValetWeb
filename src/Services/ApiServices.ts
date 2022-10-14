@@ -76,10 +76,14 @@ export function deleteReservationAsync(id: number) {
 }
 
 // AREA
-export function getAllAreasAsync() {
+export async function getAreasAsync() {
   try {
-    const response = axios.get(`/areas`);
-    return response;
+    const response = await axios.get('/areas', {
+      // withCredentials: false,
+    });
+    console.log('response.data', response.data);
+
+    return response.data;
   } catch (error) {
     throw new Error();
   }
@@ -121,7 +125,10 @@ export function createCustomer(customer: Customer) {
 export function createCustomerAsync(customer: Customer) {
   try {
     const response = axios.post(`/customers`, {
-      ...customer,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      email: customer.email,
+      phone: customer.phone,
     });
     return response;
   } catch (error) {

@@ -1,4 +1,10 @@
+// Lint Rules
+// #region
 /* eslint-disable react/jsx-props-no-spreading */
+// #endregion
+
+// Components
+// #region
 import {
   Button,
   Card,
@@ -14,14 +20,31 @@ import {
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
-import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
+// #endregion
 
+// Models
+// #region
+import Reservation from '../../Models/Reservation';
+// #endregion
+
+// Services
+// #region
+import {
+  createCustomerAsync,
+  createReservationAsync,
+} from '../../Services/ApiServices';
+// #endregion
+
+// Props
+// #region
 interface ReservationModalProps {
   opened: boolean;
   onClose(): void;
   sittingData: Sitting[];
 }
+
+// #endregion
 
 export default function ReservationModal({
   opened,
@@ -58,7 +81,28 @@ export default function ReservationModal({
       title="Create New Reservation"
       size="xl"
     >
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form
+        onSubmit={form.onSubmit((values) => {
+          createCustomerAsync({
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            phone: values.phone,
+          }).then((customerResponse) => {
+            console.log(customerResponse.data);
+            createReservationAsync({
+              customerId: customerResponse.data.id,
+              sittingId: values.sittingId,
+              dateTime: '2022-10-15T14:00:00',
+              duration: values.duration,
+              noGuests: values.noGuests,
+              notes: values.notes,
+            }).then((reservationResponse) => {
+              console.log(reservationResponse.data);
+            });
+          });
+        })}
+      >
         <SimpleGrid cols={1}>
           <Group position="center">
             <Card radius="md" p="xl">

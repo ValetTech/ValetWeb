@@ -1,7 +1,8 @@
-// https://ui.mantine.dev/category/stats
-
+// Components
+// #region
 import { SimpleGrid, Skeleton } from '@mantine/core';
-import DashboardReservationList from '../Reservations/DashboardReservationList';
+import DashboardReservationWidget from '../Reservations/DashboardReservationWidget';
+// #endregion
 
 export default function DashboardGrid() {
   return (
@@ -19,7 +20,7 @@ export default function DashboardGrid() {
       {/* Left Column */}
       <div>
         {/* Radius property smooths the corners of the column border */}
-        <DashboardReservationList />
+        <DashboardReservationWidget />
         {/* <Skeleton
           height={600}
           mt={6}
