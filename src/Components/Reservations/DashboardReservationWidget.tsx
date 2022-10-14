@@ -34,6 +34,7 @@ export default function DashboardReservationWidget() {
     fetchSittings();
   }, []);
 
+  // Mapping the data so that it can be displayed in <Select> component.
   // Name of sitting will be displayed in select, but it will return the ID number.
   const sittings: { label: string; value: number }[] = sittingData.map((s) => ({
     label: s.type,
