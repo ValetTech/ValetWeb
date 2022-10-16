@@ -65,6 +65,15 @@ export default function ReservationModal({
       noGuests: 1,
       notes: '',
     },
+    validate: {
+      lastName: (value) =>
+        value.length < 2 ? 'Please provide a valid first name' : null,
+      phone: (value) =>
+        value.length < 10 ? 'Please provide a valid phone number' : null,
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      noGuests: (value) =>
+        value < 1 ? 'Please enter a valid number of guests' : null,
+    },
   });
 
   // Name of sitting will be displayed in select, but it will return the ID number.
