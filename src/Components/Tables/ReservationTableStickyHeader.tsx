@@ -29,7 +29,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface TableScrollAreaProps {
-  data: { name: string; email: string; company: string }[];
+  data: { key: number; name: string; phone: string; dateTime: string }[];
 }
 
 export default function ReservationTableScrollArea({
@@ -39,10 +39,10 @@ export default function ReservationTableScrollArea({
   const [scrolled, setScrolled] = useState(false);
 
   const rows = data.map((row) => (
-    <tr key={row.name}>
+    <tr key={row.key}>
       <td>{row.name}</td>
-      <td>{row.email}</td>
-      <td>{row.company}</td>
+      <td>{row.phone}</td>
+      <td>{row.dateTime}</td>
     </tr>
   ));
 
@@ -51,12 +51,12 @@ export default function ReservationTableScrollArea({
       sx={{ height: 300 }}
       onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
     >
-      <Table sx={{ minWidth: 700 }}>
+      <Table sx={{ minWidth: 350 }}>
         <thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <tr>
             <th>Name</th>
-            <th>Email</th>
-            <th>Company</th>
+            <th>Phone</th>
+            <th>Time</th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>

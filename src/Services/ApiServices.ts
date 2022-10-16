@@ -35,10 +35,14 @@ export function getReservationByIdAsync(id: number) {
   }
 }
 
-export function getReservationByDateAsync(date: string) {
+export async function getReservationByDateAsync(date: string) {
   try {
-    const response = axios.get(`/reservations?Date=${date}`);
-    return response;
+    const response = await axios.get(`/reservations?Date=${date}`, {
+      // withCredentials: false,
+    });
+    console.log('response.data', response.data);
+
+    return response.data;
   } catch (error) {
     throw new Error();
   }

@@ -10,16 +10,23 @@ import ReservationTableStickyHeader from '../Tables/ReservationTableStickyHeader
 // #region
 import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
+import Reservation from '../../Models/Reservation';
 // #endregion
 
 // Services
 // #region
-import { getAreasAsync, getSittingsAsync } from '../../Services/ApiServices';
+import {
+  getAreasAsync,
+  getSittingsAsync,
+  getReservationByDateAsync,
+} from '../../Services/ApiServices';
 // #endregion
 
 export default function DashboardReservationWidget() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [areaData, setAreaData] = useState([]);
   const [sittingData, setSittingData] = useState([]);
+  const [reservationData, setReservationData] = useState([]);
 
   useEffect(() => {
     async function fetchAreas() {
@@ -34,6 +41,21 @@ export default function DashboardReservationWidget() {
     fetchSittings();
   }, []);
 
+  useEffect(() => {
+    // Formatting date for url query. For some reason getMonth returns an incorrect number (e.g. october is 9) so have to do + 1.
+    const formattedDate = `${selectedDate.getFullYear()}-${
+      // eslint-disable-next-line prettier/prettier
+      (selectedDate.getMonth() + 1)
+    }-${selectedDate.getDate()}`;
+
+    async function fetchReservations() {
+      const res: Reservation[] = await getReservationByDateAsync(formattedDate);
+      setReservationData(res);
+    }
+    fetchReservations();
+    console.log(selectedDate);
+  }, [selectedDate]);
+
   // Mapping the data so that it can be displayed in <Select> component.
   // Name of sitting will be displayed in select, but it will return the ID number.
   const sittings: { label: string; value: number }[] = sittingData.map((s) => ({
@@ -45,6 +67,18 @@ export default function DashboardReservationWidget() {
     label: a.name,
     value: a.id,
   }));
+  // Mapping reservation data for table
+  const reservations: {
+    key: number;
+    name: string;
+    phone: string;
+    dateTime: string;
+  }[] = reservationData.map((r) => ({
+    key: r.id,
+    name: `${r.customer.firstName} ${r.customer.lastName}`,
+    phone: r.customer.phone,
+    dateTime: r.dateTime,
+  }));
 
   return (
     <Container mt={6}>
@@ -55,7 +89,8 @@ export default function DashboardReservationWidget() {
         <DatePicker
           dropdownType="modal"
           placeholder="Pick date"
-          // onChange throws an error but doesn't seem to be causing any issues.
+          value={selectedDate}
+          onChange={setSelectedDate}
         />
         <SimpleGrid cols={2} mb={30}>
           <Title size="h4" mt={30} mb={10}>
@@ -67,15 +102,7 @@ export default function DashboardReservationWidget() {
             <Select data={sittings} />
           </Title>
         </SimpleGrid>
-        <ReservationTableStickyHeader
-          data={[
-            {
-              name: 'Paul',
-              email: 'p.b@gmail.com',
-              company: 'valet',
-            },
-          ]}
-        />
+        <ReservationTableStickyHeader data={reservations} />
       </Card>
     </Container>
   );
