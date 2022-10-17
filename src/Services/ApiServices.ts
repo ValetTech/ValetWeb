@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Customer from '../Models/Customer';
 import Reservation from '../Models/Reservation';
+import Area from '../Models/Area';
 // import { IApiService } from './IApiService';
 // const API_URL = 'https://localhost:7028/api';
 axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api';
@@ -97,6 +98,20 @@ export async function getAreasAsync() {
   }
 }
 
+export async function createAreaAsync(area: Area) {
+  try {
+    const response = await axios.post('/areas', {
+      name: area.name,
+      description: area.description,
+    });
+    console.log('response.data', response.data);
+
+    return response.data;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 // SITTING
 export async function getSittingsAsync() {
   try {
@@ -109,24 +124,6 @@ export async function getSittingsAsync() {
   } catch (error) {
     throw new Error();
   }
-}
-
-// CUSTOMER
-export function createCustomer(customer: Customer) {
-  axios
-    .post('/customers', {
-      firstName: customer.firstName,
-      lastName: customer.lastName,
-      email: customer.email,
-      phone: customer.phone,
-    })
-    .then((response) => {
-      console.log(response);
-      return response;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
 }
 
 // CUSTOMER
