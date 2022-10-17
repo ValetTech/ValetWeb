@@ -6,37 +6,15 @@
 
 // Components
 // #region
-import {
-  Button,
-  Card,
-  Drawer,
-  Text,
-  Group,
-  List,
-  Modal,
-  NumberInput,
-  Select,
-  SimpleGrid,
-  Textarea,
-  TextInput,
-  Title,
-} from '@mantine/core';
-import { useState, useEffect } from 'react';
-import { DatePicker, TimeInput } from '@mantine/dates';
-import { useForm } from '@mantine/form';
-import { IconPencil } from '@tabler/icons';
+import { Drawer, Text } from '@mantine/core';
+import { useState } from 'react';
 import UpdateReservationModal from './UpdateReservationModal';
 // #endregion
-
-// Services
-// #region
-import { getReservationByIdAsync } from '../../Services/ApiServices';
 // #endregion
 
 // Models
 // #region
 import Reservation from '../../Models/Reservation';
-import Customer from '../../Models/Customer';
 import Sitting from '../../Models/Sitting';
 // #endregion
 
@@ -63,8 +41,11 @@ export default function ReservationDetailsDrawer({
         onClose={() => {
           onClose();
         }}
-      />
-      {/* <Text>{reservationData.duration}</Text> */}
+      >
+        <Text>Reservation Details</Text>
+
+        <Text>{reservationData?.duration}</Text>
+      </Drawer>
       <UpdateReservationModal
         opened={UpdateReservationModalOpened}
         onClose={() => setUpdateReservationModalOpened(false)}

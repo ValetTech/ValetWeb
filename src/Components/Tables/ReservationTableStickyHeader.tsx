@@ -1,8 +1,8 @@
 // Components
 // #region
-import { useState } from 'react';
-import { createStyles, Table, ScrollArea, UnstyledButton } from '@mantine/core';
+import { createStyles, ScrollArea, Table, UnstyledButton } from '@mantine/core';
 import { IconPencil } from '@tabler/icons';
+import { useState } from 'react';
 import ReservationDetailsDrawer from '../Forms/ReservationDetailsDrawer';
 // #endregion
 
@@ -74,7 +74,7 @@ export default function ReservationTableScrollArea({
               // Reservation ID is assigned as row key, so it is ok to use here for API call.
               getReservationByIdAsync(row.key)
                 .then((response) => {
-                  setSelectedReservation(response.data);
+                  setSelectedReservation(response);
                 })
                 .then(() => {
                   setDetailsDrawerOpened(true);
