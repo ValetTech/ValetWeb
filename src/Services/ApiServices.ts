@@ -26,10 +26,14 @@ export default async function getReservationsAsync() {
   }
 }
 
-export function getReservationByIdAsync(id: number) {
+export async function getReservationByIdAsync(id: number) {
   try {
-    const response = axios.get(`/reservations/${id}`);
-    return response;
+    const response = await axios.get(`/reservations/${id}`, {
+      // withCredentials: false,
+    });
+    console.log('response.data', response.data);
+
+    return response.data;
   } catch (error) {
     throw new Error();
   }

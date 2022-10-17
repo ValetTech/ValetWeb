@@ -1,9 +1,19 @@
 // Components
 // #region
-import { Card, Container, Select, SimpleGrid, Title } from '@mantine/core';
+import {
+  Card,
+  Container,
+  Select,
+  SimpleGrid,
+  Title,
+  Button,
+  Group,
+  Modal,
+} from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useState, useEffect } from 'react';
 import ReservationTableStickyHeader from '../Tables/ReservationTableStickyHeader';
+import CreateReservationModal from '../Forms/CreateReservation';
 // #endregion
 
 // Models
@@ -20,6 +30,7 @@ import {
   getSittingsAsync,
   getReservationByDateAsync,
 } from '../../Services/ApiServices';
+import ReservationDetailsDrawer from '../Forms/ReservationDetailsDrawer';
 // #endregion
 
 export default function DashboardReservationWidget() {
@@ -27,6 +38,11 @@ export default function DashboardReservationWidget() {
   const [areaData, setAreaData] = useState([]);
   const [sittingData, setSittingData] = useState([]);
   const [reservationData, setReservationData] = useState([]);
+  const [createModalOpened, setCreateModalOpened] = useState(false);
+
+  function onCloseCreateModal() {
+    setCreateModalOpened(false);
+  }
 
   useEffect(() => {
     async function fetchAreas() {
@@ -75,7 +91,7 @@ export default function DashboardReservationWidget() {
     dateTime: string;
   }[] = reservationData.map((r) => ({
     key: r.id,
-    name: `${r.customer.firstName} ${r.customer.lastName}`,
+    name: r.customer.fullName,
     phone: r.customer.phone,
     dateTime: r.dateTime,
   }));
@@ -102,7 +118,20 @@ export default function DashboardReservationWidget() {
             <Select data={sittings} />
           </Title>
         </SimpleGrid>
-        <ReservationTableStickyHeader data={reservations} />
+        <ReservationTableStickyHeader
+          data={reservations}
+          sittingData={sittingData}
+        />
+        <Group mt={20} position="left">
+          <Button size="lg" onClick={() => setCreateModalOpened(true)}>
+            Create
+          </Button>
+          <CreateReservationModal
+            sittingData={sittingData}
+            opened={createModalOpened}
+            onClose={() => onCloseCreateModal()}
+          />
+        </Group>
       </Card>
     </Container>
   );

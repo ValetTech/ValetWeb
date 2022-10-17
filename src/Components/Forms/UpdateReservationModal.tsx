@@ -8,7 +8,9 @@
 import {
   Button,
   Card,
+  Drawer,
   Group,
+  List,
   Modal,
   NumberInput,
   Select,
@@ -20,37 +22,26 @@ import {
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
-import Sitting from '../../Models/Sitting';
 // #endregion
 
 // Models
 // #region
 import Reservation from '../../Models/Reservation';
+import Sitting from '../../Models/Sitting';
 // #endregion
 
-// Services
-// #region
-import {
-  createCustomerAsync,
-  createReservationAsync,
-} from '../../Services/ApiServices';
-// #endregion
-
-// Props
-// #region
-interface CreateReservationModalProps {
+interface UpdateReservationModalProps {
   opened: boolean;
   onClose(): void;
   sittingData: Sitting[];
+  //   reservation: Reservation;
 }
-// #endregion
 
-export default function CreateReservationModal({
+export default function UpdateReservationModal({
   opened,
   onClose,
   sittingData,
-}: CreateReservationModalProps) {
-  // const [values, setValues] = useState();
+}: UpdateReservationModalProps) {
   const form = useForm({
     initialValues: {
       firstName: '',
@@ -80,36 +71,17 @@ export default function CreateReservationModal({
     label: s.type,
     value: s.id,
   }));
-
   return (
     <Modal
       centered
       opened={opened}
       onClose={onClose}
-      title="Create New Reservation"
+      title="Update Reservation"
       size="xl"
     >
       <form
         onSubmit={form.onSubmit((values) => {
-          createCustomerAsync({
-            firstName: values.firstName,
-            lastName: values.lastName,
-            email: values.email,
-            phone: values.phone,
-          }).then((customerResponse) => {
-            console.log(customerResponse.data);
-            createReservationAsync({
-              customerId: customerResponse.data.id,
-              sittingId: values.sittingId,
-              dateTime: '2022-10-15T14:00:00',
-              duration: values.duration,
-              noGuests: values.noGuests,
-              notes: values.notes,
-            }).then((reservationResponse) => {
-              console.log(reservationResponse.data);
-              onClose();
-            });
-          });
+          console.log(values);
         })}
       >
         <SimpleGrid cols={1}>
@@ -217,7 +189,7 @@ export default function CreateReservationModal({
         </SimpleGrid>
         <Group mt={20} position="center">
           <Button type="submit" size="lg">
-            Create
+            Update
           </Button>
         </Group>
       </form>

@@ -1,7 +1,7 @@
 import { Button, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import DetailsForm from '../Components/Forms/DetailsReservation';
-import ReservationModal from '../Components/Forms/CreateReservation';
+import CreateReservationModal from '../Components/Forms/CreateReservation';
 import TableSort from '../Components/Reservations/Table';
 import Reservation from '../Models/Reservation';
 import getReservationsAsync, {
@@ -58,7 +58,7 @@ export default function Reservations() {
         Reservation details
       </Button>
       <TableSort data={reservations} />
-      <ReservationModal
+      <CreateReservationModal
         sittingData={sittings}
         opened={modalOpened}
         onClose={() => onCloseModal()}
