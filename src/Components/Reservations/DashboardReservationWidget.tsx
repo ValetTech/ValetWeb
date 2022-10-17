@@ -69,7 +69,6 @@ export default function DashboardReservationWidget() {
       setReservationData(res);
     }
     fetchReservations();
-    console.log(selectedDate);
   }, [selectedDate]);
 
   // Mapping the data so that it can be displayed in <Select> component.

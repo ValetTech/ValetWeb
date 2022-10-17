@@ -17,6 +17,7 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { useState, useRef } from 'react';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
@@ -50,7 +51,26 @@ export default function CreateReservationModal({
   onClose,
   sittingData,
 }: CreateReservationModalProps) {
-  // const [values, setValues] = useState();
+  const [datePickerValue, setDatePickerValue] = useState(new Date());
+  const [timePickerValue, setTimePickerValue] = useState(new Date());
+
+  // function getDateTime(date: Date, time: Date) {
+  //   console.log(`${date.getFullYear()}-${date.getMonth()}-${date.getDay()}T`);
+  //   // console.log(date);
+  //   // console.log(time);
+  //   // return `${date.toISOString().substring(0, 9)}${time
+  //   //   .toISOString()
+  //   //   .substring(10, time.toString().length)}`;
+  // }
+
+  function getDateTimeString() {
+    // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
+    datePickerValue.setDate(datePickerValue.getDate() + 1);
+    return `${
+      datePickerValue.toISOString().split('T')[0]
+    }T${timePickerValue.toLocaleTimeString('it-IT')}`;
+  }
+
   const form = useForm({
     initialValues: {
       firstName: '',
@@ -101,7 +121,7 @@ export default function CreateReservationModal({
             createReservationAsync({
               customerId: customerResponse.data.id,
               sittingId: values.sittingId,
-              dateTime: '2022-10-15T14:00:00',
+              dateTime: getDateTimeString(),
               duration: values.duration,
               noGuests: values.noGuests,
               notes: values.notes,
@@ -168,22 +188,24 @@ export default function CreateReservationModal({
                 {...form.getInputProps('sittingId')}
               />
               <TimeInput
+                value={timePickerValue}
+                onChange={(value) => setTimePickerValue(value)}
                 format="12"
                 label="Time"
                 mt={20}
                 icon={<IconPencil />}
                 withAsterisk
                 required
-                defaultValue={new Date()}
                 {...form.getInputProps('time')}
               />
               <DatePicker
+                value={datePickerValue}
+                onChange={(value) => setDatePickerValue(value ?? new Date())}
                 label="Date"
                 dropdownType="modal"
                 mt={20}
                 withAsterisk
                 required
-                defaultValue={new Date()}
                 {...form.getInputProps('date')}
               />
               <NumberInput
