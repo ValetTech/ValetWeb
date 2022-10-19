@@ -1,5 +1,5 @@
 export default interface Sitting {
-  id: number;
+  id?: number;
   capacity: number;
   type: string;
   startTime: Date;
