@@ -12,7 +12,7 @@ import {
 } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import SittingTableStickyHeader from '../Tables/SittingTableStickyHeader';
-import CreateAreaModal from '../Forms/CreateAreaModal';
+import CreateSittingModal from '../Forms/CreateSittingModal';
 // #endregion
 
 // Models
@@ -31,9 +31,10 @@ import {
 } from '../../Services/ApiServices';
 // #endregion
 
-export default function AreaSettingsWidget() {
+export default function SittingSettingsWidget() {
   const [sittingData, setSittingData] = useState([]);
-  const [createAreaModalOpened, setCreateAreaModalOpened] = useState(false);
+  const [createSittingModalOpened, setCreateSittingModalOpened] =
+    useState(false);
 
   useEffect(() => {
     async function fetchSittings() {
@@ -68,19 +69,19 @@ export default function AreaSettingsWidget() {
           <Button
             size="lg"
             onClick={() => {
-              setCreateAreaModalOpened(true);
+              setCreateSittingModalOpened(true);
             }}
           >
             Create
           </Button>
         </Group>
       </Card>
-      {/* <CreateAreaModal
-        opened={createAreaModalOpened}
+      <CreateSittingModal
+        opened={createSittingModalOpened}
         onClose={() => {
-          setCreateAreaModalOpened(false);
+          setCreateSittingModalOpened(false);
         }}
-      /> */}
+      />
     </Container>
   );
 }

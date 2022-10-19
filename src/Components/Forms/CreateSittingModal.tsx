@@ -87,8 +87,8 @@ export default function CreateSittingModal({
               {...form.getInputProps('capacity')}
             />
             <Select
-              label="Your favorite framework/library"
-              placeholder="Pick one"
+              label="Type"
+              placeholder=""
               data={[
                 { value: 'Breakfast', label: 'Breakfast' },
                 { value: 'Lunch', label: 'Lunch' },
