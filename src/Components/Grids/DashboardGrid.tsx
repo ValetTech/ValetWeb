@@ -2,6 +2,7 @@
 // #region
 import { SimpleGrid, Skeleton } from '@mantine/core';
 import DashboardReservationWidget from '../Reservations/DashboardReservationWidget';
+import VacancyWidget from '../Reservations/VacancyWidget';
 // #endregion
 
 export default function DashboardGrid() {
@@ -31,14 +32,15 @@ export default function DashboardGrid() {
       </div>
       {/* Right Column */}
       <div>
-        <Skeleton
+        <VacancyWidget />
+        {/* <Skeleton
           height={130}
           mt={6}
           mb={10}
           width="100%"
           radius="md"
           animate={false}
-        />
+        /> */}
         <Skeleton
           height={130}
           mb={10}

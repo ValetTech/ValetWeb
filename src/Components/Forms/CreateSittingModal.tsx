@@ -16,6 +16,7 @@ import {
   Textarea,
   Title,
   Modal,
+  MultiSelect,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
@@ -78,6 +79,7 @@ export default function CreateSittingModal({
       reservations: values.reservations,
     };
     createSittingAsync(sitting);
+    console.log(sitting);
     onClose();
   }
 
@@ -91,7 +93,7 @@ export default function CreateSittingModal({
     >
       <Card radius="md" p="xl">
         <Title align="center">Create Sitting</Title>
-        <Box sx={{ maxWidth: 300 }} mx="auto" mt={20}>
+        <Box sx={{ maxWidth: 300 }} mx="auto" mt={20} mb={50}>
           <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
             <NumberInput
               required
@@ -133,8 +135,9 @@ export default function CreateSittingModal({
               required
               {...form.getInputProps('endTime')}
             />
-            <Select
+            <MultiSelect
               mt={20}
+              mb={50}
               required
               withAsterisk
               label="Areas"
