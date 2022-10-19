@@ -1,5 +1,6 @@
 import { SimpleGrid } from '@mantine/core';
 import AreaSettingsWidget from '../Settings/AreaSettingsWidget';
+import SittingSettingsWidget from '../Settings/SittingSettingsWidget';
 
 export default function SettingsGrid() {
   return (
@@ -14,6 +15,7 @@ export default function SettingsGrid() {
       ]}
     >
       <AreaSettingsWidget />
+      <SittingSettingsWidget />
     </SimpleGrid>
   );
 }
