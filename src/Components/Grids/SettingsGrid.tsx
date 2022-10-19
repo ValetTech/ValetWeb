@@ -1,5 +1,5 @@
-import { SimpleGrid, Skeleton } from '@mantine/core';
-import CreateAreaForm from '../Forms/CreateAreaForm';
+import { SimpleGrid } from '@mantine/core';
+import AreaSettingsWidget from '../Settings/AreaSettingsWidget';
 
 export default function SettingsGrid() {
   return (
@@ -13,7 +13,7 @@ export default function SettingsGrid() {
         { maxWidth: 'xl', cols: 2 },
       ]}
     >
-      <CreateAreaForm />
+      <AreaSettingsWidget />
     </SimpleGrid>
   );
 }

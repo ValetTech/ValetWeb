@@ -2,6 +2,7 @@ import axios from 'axios';
 import Customer from '../Models/Customer';
 import Reservation from '../Models/Reservation';
 import Area from '../Models/Area';
+import Sitting from '../Models/Sitting';
 // import { IApiService } from './IApiService';
 // const API_URL = 'https://localhost:7028/api';
 axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api';
@@ -98,6 +99,19 @@ export async function getAreasAsync() {
   }
 }
 
+export async function getAreaByIdAsync(id: number) {
+  try {
+    const response = await axios.get(`/areas/${id}`, {
+      // withCredentials: false,
+    });
+    console.log('response.data', response.data);
+
+    return response.data;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 export async function createAreaAsync(area: Area) {
   try {
     const response = await axios.post('/areas', {
@@ -112,6 +126,19 @@ export async function createAreaAsync(area: Area) {
   }
 }
 
+export function updateAreaAsync(id: number, area: Area) {
+  try {
+    const response = axios.put(`/areas/${id}`, {
+      id: area.id,
+      name: area.name,
+      description: area.description,
+    });
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 // SITTING
 export async function getSittingsAsync() {
   try {
@@ -121,6 +148,21 @@ export async function getSittingsAsync() {
     console.log('response.data', response.data);
 
     return response.data;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
+export async function createSittingAsync(sitting: Sitting) {
+  try {
+    const response = await axios.post(`/sittings`, {
+      capacity: sitting.capacity,
+      type: sitting.type,
+      startTime: sitting.startTime,
+      endTime: sitting.endTime,
+      venueId: sitting.venueId,
+    });
+    return response;
   } catch (error) {
     throw new Error();
   }
