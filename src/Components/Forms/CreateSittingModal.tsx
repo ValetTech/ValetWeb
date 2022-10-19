@@ -44,12 +44,20 @@ export default function CreateSittingModal({
   const form = useForm({
     initialValues: {
       capacity: 50,
-      type: 'Breakfast',
+      type: '',
       startTime: '',
       endTime: '',
       venueId: 1,
       areas: [],
       reservations: [],
+    },
+    validate: {
+      capacity: (value) => (value < 1 ? 'Please enter a valid capacity' : null),
+      type: (value) => (value === '' ? 'Please enter a valid type' : null),
+      startTime: (value) =>
+        value === '' ? 'Please enter a valid start time' : null,
+      endTime: (value) =>
+        value === '' ? 'Please enter a valid end time' : null,
     },
   });
 
@@ -80,6 +88,7 @@ export default function CreateSittingModal({
         <Box sx={{ maxWidth: 300 }} mx="auto" mt={20}>
           <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
             <NumberInput
+              required
               withAsterisk
               label="Capacity"
               placeholder=""
@@ -87,6 +96,8 @@ export default function CreateSittingModal({
               {...form.getInputProps('capacity')}
             />
             <Select
+              required
+              withAsterisk
               label="Type"
               placeholder=""
               data={[
