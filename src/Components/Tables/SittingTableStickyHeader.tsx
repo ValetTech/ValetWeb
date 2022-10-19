@@ -3,12 +3,12 @@
 import { createStyles, ScrollArea, Table, UnstyledButton } from '@mantine/core';
 import { IconPencil } from '@tabler/icons';
 import { useState } from 'react';
-import UpdateAreaModal from '../Forms/UpdateAreaModal';
+import UpdateSittingModal from '../Forms/UpdateSittingModal';
 // #endregion
 
 // Services
 // #region
-import { getAreaByIdAsync } from '../../Services/ApiServices';
+import { getSittingByIdAsync } from '../../Services/ApiServices';
 // #endregion
 
 // Models
@@ -54,16 +54,19 @@ interface TableScrollSittingProps {
     areas: [Area];
     reservations: [Reservation];
   }[];
+  areaData: [Area];
 }
 
 export default function SittingTableScrollArea({
   data,
+  areaData,
 }: TableScrollSittingProps) {
   const { classes, cx } = useStyles();
   const [scrolled, setScrolled] = useState(false);
 
-  //   const [selectedArea, setSelectedArea] = useState();
-  //   const [updateAreaModalOpened, setUpdateAreaModalOpened] = useState(false);
+  const [selectedSitting, setSelectedSitting] = useState();
+  const [updateSittingModalOpened, setUpdateSittingModalOpened] =
+    useState(false);
 
   const rows = data.map((row) => (
     <tr key={row.key}>
@@ -72,6 +75,24 @@ export default function SittingTableScrollArea({
       <td>{row.type}</td>
       <td>{row.startTime}</td>
       <td>{row.endTime}</td>
+      <td>
+        <UnstyledButton px={20}>
+          <IconPencil
+            size={20}
+            stroke={1.5}
+            onClick={() => {
+              // Sitting ID is assigned as row key, so it is ok to use here for API call.
+              getSittingByIdAsync(row.key)
+                .then((response) => {
+                  setSelectedSitting(response);
+                })
+                .then(() => {
+                  setUpdateSittingModalOpened(true);
+                });
+            }}
+          />
+        </UnstyledButton>
+      </td>
     </tr>
   ));
 
@@ -91,18 +112,20 @@ export default function SittingTableScrollArea({
               <th>Type</th>
               <th>Start Time</th>
               <th>End Time</th>
+              <th> </th>
             </tr>
           </thead>
           <tbody>{rows}</tbody>
         </Table>
       </ScrollArea>
-      {/* <UpdateAreaModal
-        areaData={selectedArea}
-        opened={updateAreaModalOpened}
+      <UpdateSittingModal
+        areaData={areaData}
+        sittingData={selectedSitting}
+        opened={updateSittingModalOpened}
         onClose={() => {
-          setUpdateAreaModalOpened(false);
+          setUpdateSittingModalOpened(false);
         }}
-      /> */}
+      />
     </>
   );
 }

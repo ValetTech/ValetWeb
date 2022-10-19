@@ -33,6 +33,7 @@ import {
 
 export default function SittingSettingsWidget() {
   const [sittingData, setSittingData] = useState([]);
+  const [areaData, setAreaData] = useState([]);
   const [createSittingModalOpened, setCreateSittingModalOpened] =
     useState(false);
 
@@ -42,6 +43,13 @@ export default function SittingSettingsWidget() {
       setSittingData(res);
     }
     fetchSittings();
+  }, []);
+  useEffect(() => {
+    async function fetchAreas() {
+      const res: Area[] = await getAreasAsync();
+      setAreaData(res);
+    }
+    fetchAreas();
   }, []);
 
   const sittings: {
@@ -58,13 +66,21 @@ export default function SittingSettingsWidget() {
     endTime: s.endTime,
   }));
 
+  const areas: { key: number; value: string; label: string }[] = areaData.map(
+    (a) => ({
+      key: a.id,
+      value: a.name,
+      label: a.name,
+    })
+  );
+
   return (
     <Container mt={6}>
       <Card withBorder radius="md">
         <Title size="h4" mb={10}>
           Sittings
         </Title>
-        <SittingTableStickyHeader data={sittings} />
+        <SittingTableStickyHeader data={sittings} areaData={areas} />
         <Group mt={20} position="left">
           <Button
             size="lg"
@@ -81,6 +97,7 @@ export default function SittingSettingsWidget() {
         onClose={() => {
           setCreateSittingModalOpened(false);
         }}
+        areaData={areas}
       />
     </Container>
   );

@@ -24,8 +24,7 @@ import { TimeInput } from '@mantine/dates';
 
 // Services
 // #region
-import { createSittingAsync } from '../../Services/ApiServices';
-import { getAreasAsync } from '../../Services/ApiServices';
+import { updateSittingAsync, getAreasAsync } from '../../Services/ApiServices';
 // #endregion
 
 // Models
@@ -37,23 +36,25 @@ import Area from '../../Models/Area';
 interface CreateSittingModalProps {
   opened: boolean;
   onClose(): void;
+  sittingData: Sitting;
   areaData: [Area];
 }
 
-export default function CreateSittingModal({
+export default function UpdateSittingModal({
   opened,
   onClose,
+  sittingData,
   areaData,
 }: CreateSittingModalProps) {
   const form = useForm({
     initialValues: {
-      capacity: 50,
-      type: '',
-      startTime: '',
-      endTime: '',
+      capacity: sittingData?.capacity,
+      type: sittingData?.type,
+      startTime: sittingData?.startTime,
+      endTime: sittingData?.endTime,
       venueId: 1,
-      areas: [],
-      reservations: [],
+      areas: sittingData?.areas,
+      reservations: sittingData?.reservations,
     },
     validate: {
       capacity: (value) => (value < 1 ? 'Please enter a valid capacity' : null),
@@ -77,7 +78,7 @@ export default function CreateSittingModal({
       areas: [values.areas],
       reservations: values.reservations,
     };
-    createSittingAsync(sitting);
+    updateSittingAsync(sitting);
     onClose();
   }
 
@@ -90,14 +91,14 @@ export default function CreateSittingModal({
       size="xl"
     >
       <Card radius="md" p="xl">
-        <Title align="center">Create Sitting</Title>
+        <Title align="center">Update Sitting</Title>
         <Box sx={{ maxWidth: 300 }} mx="auto" mt={20}>
           <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
             <NumberInput
               required
               withAsterisk
               label="Capacity"
-              placeholder=""
+              placeholder={sittingData?.capacity}
               icon={<IconPencil />}
               {...form.getInputProps('capacity')}
             />
@@ -106,7 +107,7 @@ export default function CreateSittingModal({
               required
               withAsterisk
               label="Type"
-              placeholder=""
+              placeholder={sittingData?.type}
               data={[
                 { value: 'Breakfast', label: 'Breakfast' },
                 { value: 'Lunch', label: 'Lunch' },
@@ -116,6 +117,7 @@ export default function CreateSittingModal({
               {...form.getInputProps('type')}
             />
             <TimeInput
+              placeholder={sittingData?.startTime}
               format="12"
               label="Start Time"
               mt={20}
@@ -125,6 +127,7 @@ export default function CreateSittingModal({
               {...form.getInputProps('startTime')}
             />
             <TimeInput
+              placeholder={sittingData?.endTime}
               format="12"
               label="End Time"
               mt={20}
@@ -138,7 +141,7 @@ export default function CreateSittingModal({
               required
               withAsterisk
               label="Areas"
-              placeholder=""
+              placeholder={sittingData?.areas}
               data={areaData}
               {...form.getInputProps('areas')}
             />

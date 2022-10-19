@@ -153,6 +153,19 @@ export async function getSittingsAsync() {
   }
 }
 
+export async function getSittingByIdAsync(id: number) {
+  try {
+    const response = await axios.get(`/sittings/${id}`, {
+      // withCredentials: false,
+    });
+    console.log('response.data', response.data);
+
+    return response.data;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 export async function createSittingAsync(sitting: Sitting) {
   try {
     const response = await axios.post(`/sittings`, {
@@ -162,6 +175,23 @@ export async function createSittingAsync(sitting: Sitting) {
       endTime: sitting.endTime,
       venueId: sitting.venueId,
     });
+    console.log('response.data', response.data);
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
+export async function updateSittingAsync(sitting: Sitting) {
+  try {
+    const response = await axios.put(`/sittings`, {
+      capacity: sitting.capacity,
+      type: sitting.type,
+      startTime: sitting.startTime,
+      endTime: sitting.endTime,
+      venueId: sitting.venueId,
+    });
+    console.log('response.data', response.data);
     return response;
   } catch (error) {
     throw new Error();

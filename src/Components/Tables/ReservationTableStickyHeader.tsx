@@ -63,8 +63,8 @@ export default function ReservationTableScrollArea({
     <tr key={row.key}>
       <td>{row.name}</td>
       <td>{row.phone}</td>
+      <td>{row.dateTime}</td>
       <td>
-        {row.dateTime}
         {/* Edit Button */}
         <UnstyledButton pl={20}>
           <IconPencil
@@ -100,6 +100,7 @@ export default function ReservationTableScrollArea({
               <th>Name</th>
               <th>Phone</th>
               <th>Time</th>
+              <th> </th>
             </tr>
           </thead>
           <tbody>{rows}</tbody>

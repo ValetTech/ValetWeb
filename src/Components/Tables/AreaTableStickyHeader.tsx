@@ -57,8 +57,8 @@ export default function AreaTableScrollArea({ data }: TableScrollAreaProps) {
   const rows = data.map((row) => (
     <tr key={row.key}>
       <td>{row.name}</td>
+      <td>{row.description}</td>
       <td>
-        {row.description}
         {/* Edit Button */}
         <UnstyledButton px={20}>
           <IconPencil
@@ -93,6 +93,7 @@ export default function AreaTableScrollArea({ data }: TableScrollAreaProps) {
             <tr>
               <th>Name</th>
               <th>Description</th>
+              <th> </th>
             </tr>
           </thead>
           <tbody>{rows}</tbody>
