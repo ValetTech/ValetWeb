@@ -13,6 +13,7 @@
     "@emotion/react": "^11.10.4",
     "@fullcalendar/core": "^5.11.3",
     "@fullcalendar/daygrid": "^5.11.3",
+    "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/react": "^5.11.2",
     "@mantine/carousel": "^5.2.6",
     "@mantine/core": "^5.2.6",
