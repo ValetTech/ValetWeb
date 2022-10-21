@@ -8,7 +8,9 @@
 import {
   Button,
   Card,
+  Drawer,
   Group,
+  List,
   Modal,
   NumberInput,
   Select,
@@ -17,72 +19,50 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
-import Sitting from '../../Models/Sitting';
 // #endregion
 
 // Models
 // #region
 import Reservation from '../../Models/Reservation';
+import Sitting from '../../Models/Sitting';
 // #endregion
 
-// Services
-// #region
-import {
-  createCustomerAsync,
-  createReservationAsync,
-} from '../../Services/ApiServices';
-// #endregion
-
-// Props
-// #region
-interface CreateReservationModalProps {
+interface UpdateReservationModalProps {
   opened: boolean;
   onClose(): void;
   sittingData: Sitting[];
+  reservationData: Reservation;
+  //   reservation: Reservation;
 }
-// #endregion
 
-export default function CreateReservationModal({
+export default function UpdateReservationModal({
   opened,
   onClose,
   sittingData,
-}: CreateReservationModalProps) {
+  reservationData,
+}: UpdateReservationModalProps) {
   const [datePickerValue, setDatePickerValue] = useState(new Date());
   const [timePickerValue, setTimePickerValue] = useState(new Date());
 
-  // function getDateTime(date: Date, time: Date) {
-  //   console.log(`${date.getFullYear()}-${date.getMonth()}-${date.getDay()}T`);
-  //   // console.log(date);
-  //   // console.log(time);
-  //   // return `${date.toISOString().substring(0, 9)}${time
-  //   //   .toISOString()
-  //   //   .substring(10, time.toString().length)}`;
-  // }
-
-  function getDateTimeString() {
-    // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
-    datePickerValue.setDate(datePickerValue.getDate() + 1);
-    return `${
-      datePickerValue.toISOString().split('T')[0]
-    }T${timePickerValue.toLocaleTimeString('it-IT')}`;
-  }
-
   const form = useForm({
     initialValues: {
-      firstName: '',
-      lastName: '',
-      phone: '',
-      email: '',
-      sittingId: 0,
-      time: new Date(),
-      date: new Date(),
-      duration: 90,
-      noGuests: 1,
-      notes: '',
+      firstName: reservationData?.customer.firstName,
+      lastName: reservationData?.customer.lastName,
+      phone: reservationData?.customer.phone,
+      email: reservationData?.customer.email,
+      sittingId: reservationData?.sittingId,
+      time: reservationData?.dateTime.substring(
+        11,
+        reservationData?.dateTime.length
+      ),
+      date: reservationData?.dateTime.substring(0, 9),
+      duration: reservationData?.duration,
+      noGuests: reservationData?.noGuests,
+      notes: reservationData?.notes,
     },
     validate: {
       lastName: (value) =>
@@ -100,36 +80,17 @@ export default function CreateReservationModal({
     label: s.type,
     value: s.id,
   }));
-
   return (
     <Modal
       centered
       opened={opened}
       onClose={onClose}
-      title="Create New Reservation"
+      title="Update Reservation"
       size="xl"
     >
       <form
         onSubmit={form.onSubmit((values) => {
-          createCustomerAsync({
-            firstName: values.firstName,
-            lastName: values.lastName,
-            email: values.email,
-            phone: values.phone,
-          }).then((customerResponse) => {
-            console.log(customerResponse.data);
-            createReservationAsync({
-              customerId: customerResponse.data.id,
-              sittingId: values.sittingId,
-              dateTime: getDateTimeString(),
-              duration: values.duration,
-              noGuests: values.noGuests,
-              notes: values.notes,
-            }).then((reservationResponse) => {
-              console.log(reservationResponse.data);
-              onClose();
-            });
-          });
+          console.log(values);
         })}
       >
         <SimpleGrid cols={1}>
@@ -141,30 +102,30 @@ export default function CreateReservationModal({
               <SimpleGrid cols={2}>
                 <>
                   <TextInput
+                    placeholder={reservationData?.customer.firstName}
                     label="First Name"
                     mt={20}
                     icon={<IconPencil />}
                     {...form.getInputProps('firstName')}
                   />
                   <TextInput
+                    placeholder={reservationData?.customer.lastName}
                     label="Last Name"
                     mt={20}
                     icon={<IconPencil />}
-                    withAsterisk
-                    required
                     {...form.getInputProps('lastName')}
                   />
                 </>
                 <>
                   <TextInput
+                    placeholder={reservationData?.customer.phone}
                     label="Phone"
                     mt={20}
                     icon={<IconPencil />}
-                    withAsterisk
-                    required
                     {...form.getInputProps('phone')}
                   />
                   <TextInput
+                    placeholder={reservationData?.customer.email}
                     label="Email"
                     mt={20}
                     icon={<IconPencil />}
@@ -184,47 +145,42 @@ export default function CreateReservationModal({
                 label="Sitting Id"
                 mt={20}
                 icon={<IconPencil />}
-                withAsterisk
                 {...form.getInputProps('sittingId')}
               />
               <TimeInput
                 value={timePickerValue}
-                onChange={(value) => setTimePickerValue(value)}
+                onChange={timePickerValue}
                 format="12"
                 label="Time"
                 mt={20}
                 icon={<IconPencil />}
-                withAsterisk
-                required
                 {...form.getInputProps('time')}
               />
               <DatePicker
                 value={datePickerValue}
-                onChange={(value) => setDatePickerValue(value ?? new Date())}
+                onChange={datePickerValue}
                 label="Date"
                 dropdownType="modal"
                 mt={20}
-                withAsterisk
-                required
+                defaultValue={new Date()}
                 {...form.getInputProps('date')}
               />
               <NumberInput
+                placeholder={reservationData?.duration}
                 label="Duration"
                 mt={20}
                 icon={<IconPencil />}
-                withAsterisk
-                required
                 {...form.getInputProps('duration')}
               />
               <NumberInput
+                placeholder={reservationData?.noGuests}
                 label="Number of Guests"
                 mt={20}
                 icon={<IconPencil />}
-                withAsterisk
-                required
                 {...form.getInputProps('noGuests')}
               />
               <Textarea
+                placeholder={reservationData?.notes}
                 autosize
                 minRows={2}
                 maxRows={4}
@@ -239,7 +195,7 @@ export default function CreateReservationModal({
         </SimpleGrid>
         <Group mt={20} position="center">
           <Button type="submit" size="lg">
-            Create
+            Update
           </Button>
         </Group>
       </form>

@@ -2,12 +2,12 @@ import { AppShell, Text, useMantineTheme } from '@mantine/core';
 import { useState } from 'react';
 import Header from './Header';
 import Nav from './Nav';
-import HomepageGrid from '../Components/Grids/HomepageGrid';
+import Dashboard from '../Pages/Dashboard';
+import RoutesController from './RoutesController';
 
-const links = [
-  { link: '/', label: 'Home' },
-  { link: '/reservations', label: 'Reservations' },
-];
+// These are for the header, not the navbar!!
+// Navbar links are hardcoded into Nav component for now.
+const links = [{ link: '/', label: 'placeholder' }];
 
 export default function DefaultAppShell() {
   const theme = useMantineTheme();
@@ -27,7 +27,7 @@ export default function DefaultAppShell() {
       header={<Header links={links} />}
     >
       {/* content */}
-      <HomepageGrid />
+      <RoutesController />
     </AppShell>
   );
 }

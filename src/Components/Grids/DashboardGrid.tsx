@@ -1,6 +1,11 @@
-import { SimpleGrid, Skeleton, Text } from '@mantine/core';
+// Components
+// #region
+import { SimpleGrid, Skeleton } from '@mantine/core';
+import DashboardReservationWidget from '../Reservations/DashboardReservationWidget';
+import VacancyWidget from '../Reservations/VacancyWidget';
+// #endregion
 
-export default function HomepageGrid() {
+export default function DashboardGrid() {
   return (
     // Breakpoints prop handles responsivity.
     <SimpleGrid
@@ -16,7 +21,8 @@ export default function HomepageGrid() {
       {/* Left Column */}
       <div>
         {/* Radius property smooths the corners of the column border */}
-        <Skeleton
+        <DashboardReservationWidget />
+        {/* <Skeleton
           height={600}
           mt={6}
           width="100%"
@@ -26,14 +32,15 @@ export default function HomepageGrid() {
       </div>
       {/* Right Column */}
       <div>
-        <Skeleton
+        <VacancyWidget />
+        {/* <Skeleton
           height={130}
           mt={6}
           mb={10}
           width="100%"
           radius="md"
           animate={false}
-        />
+        /> */}
         <Skeleton
           height={130}
           mb={10}
