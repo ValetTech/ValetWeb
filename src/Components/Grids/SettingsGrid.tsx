@@ -6,6 +6,7 @@ import SittingSettingsWidget from '../Settings/SittingSettingsWidget';
 export default function SettingsGrid() {
   return (
     <>
+      <SittingScheduler />
       <SimpleGrid
         cols={2}
         breakpoints={[
@@ -19,7 +20,6 @@ export default function SettingsGrid() {
         <AreaSettingsWidget />
         <SittingSettingsWidget />
       </SimpleGrid>
-      <SittingScheduler />
     </>
   );
 }
