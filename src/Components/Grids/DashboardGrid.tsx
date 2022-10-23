@@ -28,7 +28,7 @@ export default function DashboardGrid() {
           width="100%"
           radius="md"
           animate={false}
-        />
+    /> */}
       </div>
       {/* Right Column */}
       <div>
