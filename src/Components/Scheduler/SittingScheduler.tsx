@@ -78,7 +78,7 @@ export default function SittingScheduler() {
       headerToolbar={{
         start: 'today prev next',
         center: 'title',
-        end: 'dayGridMonth dayGridWeek dayGridDay',
+        end: '',
       }}
     />
   );

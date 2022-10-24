@@ -65,11 +65,15 @@ export function createReservationAsync(reservation: Reservation) {
   }
 }
 
-export function updateReservationAsync(id: number, reservation: Reservation) {
+export async function updateReservationAsync(
+  id: number,
+  reservation: Reservation
+) {
   try {
-    const response = axios.put(`/reservations/${id}`, {
+    const response = await axios.put(`/reservations/${id}`, {
       ...reservation,
     });
+    console.log('response.data', response.data);
     return response;
   } catch (error) {
     throw new Error();
@@ -213,11 +217,12 @@ export function createCustomerAsync(customer: Customer) {
   }
 }
 
-export function updateCustomerAsync(id: number, customer: Customer) {
+export async function updateCustomerAsync(id: number, customer: Customer) {
   try {
-    const response = axios.put(`/customers/${id}`, {
+    const response = await axios.put(`/customers/${id}`, {
       ...customer,
     });
+    console.log('response.data', response.data);
     return response;
   } catch (error) {
     throw new Error();

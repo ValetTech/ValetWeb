@@ -92,7 +92,7 @@ export default function ReservationTableScrollArea({
         sx={{ height: 300 }}
         onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
       >
-        <Table sx={{ minWidth: 350 }}>
+        <Table sx={{ minWidth: 620 }}>
           <thead
             className={cx(classes.header, { [classes.scrolled]: scrolled })}
           >

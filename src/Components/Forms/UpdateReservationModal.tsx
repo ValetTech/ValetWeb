@@ -23,14 +23,18 @@ import { IconPencil } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 // #endregion
 
-// Models
+// Services
 // #region
-import Reservation from '../../Models/Reservation';
-import Sitting from '../../Models/Sitting';
 import {
   updateCustomerAsync,
   updateReservationAsync,
 } from '../../Services/ApiServices';
+// #endregion
+
+// Models
+// #region
+import Reservation from '../../Models/Reservation';
+import Sitting from '../../Models/Sitting';
 import ErrorNotification from '../Notifications/NotifyError';
 // #endregion
 
@@ -129,6 +133,7 @@ export default function UpdateReservationModal({
       phone: values.customer.phone,
     }).then((res) => {
       if (!reservationData.id) return;
+      console.log('update customer response', res.data);
       updateReservationAsync(reservationData.id, {
         id: reservationData.id,
         customerId: values.customer.id,
