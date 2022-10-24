@@ -8,9 +8,7 @@
 import {
   Button,
   Card,
-  Drawer,
   Group,
-  List,
   Modal,
   NumberInput,
   Select,
@@ -19,10 +17,10 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { useState } from 'react';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
+import { useEffect, useState } from 'react';
 // #endregion
 
 // Models
@@ -30,8 +28,6 @@ import { IconPencil } from '@tabler/icons';
 import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
 import {
-  createCustomerAsync,
-  createReservationAsync,
   updateCustomerAsync,
   updateReservationAsync,
 } from '../../Services/ApiServices';
@@ -62,22 +58,50 @@ export default function UpdateReservationModal({
     }T${timePickerValue.toLocaleTimeString('it-IT')}`;
   }
 
-  const form = useForm({
-    initialValues: {
-      firstName: reservationData?.customer.firstName,
-      lastName: reservationData?.customer.lastName,
-      phone: reservationData?.customer.phone,
-      email: reservationData?.customer.email,
-      sittingId: reservationData?.sittingId,
-      time: reservationData?.dateTime.substring(
-        11,
-        reservationData?.dateTime.length
-      ),
-      date: reservationData?.dateTime.substring(0, 9),
-      duration: reservationData?.duration,
-      noGuests: reservationData?.noGuests,
-      notes: reservationData?.notes,
+  const initialValues: Reservation = {
+    id: 0,
+    customerId: 0,
+    customer: {
+      id: 0,
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
     },
+    sittingId: 0,
+    sitting: {
+      id: 0,
+      type: '',
+      description: '',
+      capacity: 0,
+      price: 0,
+    },
+    dateTime: '',
+    duration: 90,
+    noGuests: 2,
+    source: '',
+    status: '',
+    notes: '',
+  };
+
+  const form = useForm({
+    // initialValues: {
+    //   firstName: reservationData?.customer.firstName,
+    //   lastName: reservationData?.customer.lastName,
+    //   phone: reservationData?.customer.phone,
+    //   email: reservationData?.customer.email,
+    //   sittingId: reservationData?.sittingId,
+    //   time: reservationData?.dateTime.substring(
+    //     11,
+    //     reservationData?.dateTime.length
+    //   ),
+    //   date: reservationData?.dateTime.substring(0, 9),
+    //   duration: reservationData?.duration,
+    //   noGuests: reservationData?.noGuests,
+    //   notes: reservationData?.notes,
+    // },
+    initialValues,
+    validate: {},
     // validate: {
     //   lastName: (value) =>
     //     value.length < 2 ? 'Please provide a valid first name' : null,
@@ -89,11 +113,59 @@ export default function UpdateReservationModal({
     // },
   });
 
+  function onSubmit(values: any) {
+    if (!form.isDirty()) {
+      onClose();
+      return;
+    }
+
+    updateCustomerAsync(reservationData.customer.id, {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      phone: values.phone,
+    }).then((customerResponse) => {
+      console.log(customerResponse.data);
+      if (!reservationData.id) return;
+      updateReservationAsync(reservationData.id, {
+        customerId: customerResponse.data.id,
+        sittingId: values.sittingId,
+        dateTime: getDateTimeString(),
+        duration: values.duration,
+        noGuests: values.noGuests,
+        notes: values.notes,
+      }).then((reservationResponse) => {
+        console.log(reservationResponse.data);
+        onClose();
+      });
+    });
+  }
+
+  function fillForm(data: Reservation) {
+    // form.setFieldValue('firstName', data.customer.firstName);
+    // form.setFieldValue('lastName', data.customer.lastName);
+    // form.setFieldValue('email', data.customer.email);
+    // form.setFieldValue('phone', data.customer.phone);
+    // form.setFieldValue('sittingId', data.sittingId);
+    // form.setFieldValue('dateTime', data.dateTime);
+    // form.setFieldValue('duration', data.duration);
+    // form.setFieldValue('noGuests', data.noGuests);
+    // form.setFieldValue('notes', data.notes);
+
+    form.setValues(data);
+  }
+
+  useEffect(() => {
+    if (reservationData) fillForm(reservationData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reservationData]);
+
   // Name of sitting will be displayed in select, but it will return the ID number.
-  const sittings: { label: string; value: number }[] = sittingData.map((s) => ({
+  const sittings = sittingData.map((s) => ({
     label: s.type,
     value: s.id,
   }));
+
   return (
     <Modal
       centered
@@ -102,70 +174,7 @@ export default function UpdateReservationModal({
       title="Update Reservation"
       size="xl"
     >
-      <form
-        onSubmit={form.onSubmit((values) => {
-          if (form.isDirty('firstName') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('lastName') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('phone') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('email') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('sittingId') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('time') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('date') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('duration') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('noGuests') === false) {
-            onClose();
-            return;
-          }
-          if (form.isDirty('notes') === false) {
-            onClose();
-            return;
-          }
-
-          updateCustomerAsync(reservationData.customer.id, {
-            firstName: values.firstName,
-            lastName: values.lastName,
-            email: values.email,
-            phone: values.phone,
-          }).then((customerResponse) => {
-            console.log(customerResponse.data);
-            updateReservationAsync(reservationData.id, {
-              customerId: customerResponse.data.id,
-              sittingId: values.sittingId,
-              dateTime: getDateTimeString(),
-              duration: values.duration,
-              noGuests: values.noGuests,
-              notes: values.notes,
-            }).then((reservationResponse) => {
-              console.log(reservationResponse.data);
-              onClose();
-            });
-          });
-        })}
-      >
+      <form onSubmit={onSubmit}>
         <SimpleGrid cols={1}>
           <Group position="center">
             <Card radius="md" p="xl">
@@ -173,38 +182,34 @@ export default function UpdateReservationModal({
                 CUSTOMER DETAILS
               </Title>
               <SimpleGrid cols={2}>
-                <>
-                  <TextInput
-                    placeholder={reservationData?.customer.firstName}
-                    label="First Name"
-                    mt={20}
-                    icon={<IconPencil />}
-                    {...form.getInputProps('firstName')}
-                  />
-                  <TextInput
-                    placeholder={reservationData?.customer.lastName}
-                    label="Last Name"
-                    mt={20}
-                    icon={<IconPencil />}
-                    {...form.getInputProps('lastName')}
-                  />
-                </>
-                <>
-                  <TextInput
-                    placeholder={reservationData?.customer.phone}
-                    label="Phone"
-                    mt={20}
-                    icon={<IconPencil />}
-                    {...form.getInputProps('phone')}
-                  />
-                  <TextInput
-                    placeholder={reservationData?.customer.email}
-                    label="Email"
-                    mt={20}
-                    icon={<IconPencil />}
-                    {...form.getInputProps('email')}
-                  />
-                </>
+                <TextInput
+                  placeholder={reservationData?.customer.firstName}
+                  label="First Name"
+                  mt={20}
+                  icon={<IconPencil />}
+                  {...form.getInputProps('customer.firstName')}
+                />
+                <TextInput
+                  placeholder={reservationData?.customer.lastName}
+                  label="Last Name"
+                  mt={20}
+                  icon={<IconPencil />}
+                  {...form.getInputProps('customer.lastName')}
+                />
+                <TextInput
+                  placeholder={reservationData?.customer.phone}
+                  label="Phone"
+                  mt={20}
+                  icon={<IconPencil />}
+                  {...form.getInputProps('customer.phone')}
+                />
+                <TextInput
+                  placeholder={reservationData?.customer.email}
+                  label="Email"
+                  mt={20}
+                  icon={<IconPencil />}
+                  {...form.getInputProps('customer.email')}
+                />
               </SimpleGrid>
             </Card>
           </Group>
@@ -227,7 +232,7 @@ export default function UpdateReservationModal({
                 label="Time"
                 mt={20}
                 icon={<IconPencil />}
-                {...form.getInputProps('time')}
+                {...form.getInputProps('dateTime')}
               />
               <DatePicker
                 value={datePickerValue}
@@ -236,7 +241,7 @@ export default function UpdateReservationModal({
                 dropdownType="modal"
                 mt={20}
                 defaultValue={new Date()}
-                {...form.getInputProps('date')}
+                {...form.getInputProps('dateTime')}
               />
               <NumberInput
                 placeholder={reservationData?.duration}

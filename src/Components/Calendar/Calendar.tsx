@@ -1,10 +1,12 @@
-import FullCalendar from '@fullcalendar/react';
+import FullCalendar, { EventSourceInput } from '@fullcalendar/react';
 
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from 'react';
 import Sitting from '../../Models/Sitting';
+import { getSittingsAsync } from '../../Services/ApiServices';
+import NewEventModal from './Event';
 
 /* CALENDAR
 New event
@@ -26,28 +28,85 @@ Recurrence
 
 
 */
-interface EventObject {
-  title: string;
-  start: Date;
-  end: Date;
-  allDay: boolean;
-  color: string;
-  guests: number;
-  location: string;
-  notes: string;
-  repeat: string;
-  repeatEvery: number;
-  repeatOn: string;
-  repeatUntil: Date;
-  repeatXTimes: number;
-}
 
 export default function SittingsCalendar() {
-  const [sittings, setSittings] = useState<Sitting[]>([]);
+  const [sittingData, setSittingData] = useState<Sitting[]>([]);
+  const [events, setEvents] = useState<EventSourceInput>();
 
   useEffect(() => {
-    // API Call to get sittings
+    async function fetchSittings() {
+      const res: Sitting[] = await getSittingsAsync();
+      setSittingData(res);
+    }
+    fetchSittings();
   }, []);
+
+  useEffect(() => {
+    function createEvents() {
+      const sittings = sittingData.map((s) => ({
+        title: s.type,
+        start: s.startTime,
+        end: s.endTime,
+      }));
+      setEvents(sittings);
+    }
+    createEvents();
+  }, [sittingData]);
+
+  interface EventObject {
+    repeat: string;
+    repeatEvery: number;
+    repeatOn: string;
+    repeatUntil: Date;
+    repeatXTimes: number;
+  }
+  interface RecurringEvent {
+    title: string; // name of event
+    type: string;
+    capacity: number;
+
+    allDay: boolean;
+    startTime: Date;
+    endTime: Date;
+
+    // Repeat
+    repeat: string; // [none, daily, weekly, monthly]
+    repeatEvery: number; // Every X [days, weeks, months, years]
+    // Daily
+    // Weekly
+    repeatOn: number[]; // [days of week]
+
+    // Monthly
+    repeatOnDay: number; // [day of month]
+
+    // Ends
+    repeatUntil: Date; // Repeat until [date]
+    repeatXTimes: number; // Repeat X times
+
+    // Delete Sitting
+
+    startRecur: Date;
+    endRecur: Date;
+
+    daysOfWeek: number[];
+
+    groupId: number; // UUID
+  }
+
+  const handleSelect = (info: { start: any; end: any }) => {
+    const { start, end } = info;
+    const eventNamePrompt = prompt('Enter event name');
+    if (eventNamePrompt) {
+      setEvents([
+        ...events,
+        {
+          start,
+          end,
+          title: eventNamePrompt,
+        },
+      ]);
+    }
+  };
 
   //   handleDateSelect = (selectInfo) => {
   //     let title = prompt('Please enter a new title for your event');
@@ -83,29 +142,32 @@ export default function SittingsCalendar() {
   //   };
 
   return (
-    <FullCalendar
-      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-      headerToolbar={{
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay',
-      }}
-      initialView="dayGridMonth"
-      editable
-      selectable
-      selectMirror
-      dayMaxEvents
-      weekends
-      events={[]} // Add events
-      //   select={this.handleDateSelect}
-      //   eventContent={renderEventContent} // custom render function
-      //   eventClick={this.handleEventClick}
-      //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-      /* you can update a remote database when these fire:
+    <>
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay',
+        }}
+        initialView="timeGridWeek"
+        editable
+        selectable
+        selectMirror
+        dayMaxEvents
+        weekends
+        events={events} // Add events
+        //   select={this.handleDateSelect}
+        //   eventContent={renderEventContent} // custom render function
+        //   eventClick={this.handleEventClick}
+        //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+        /* you can update a remote database when these fire:
             eventAdd={function(){}}
             eventChange={function(){}}
             eventRemove={function(){}}
             */
-    />
+      />
+      <NewEventModal />
+    </>
   );
 }

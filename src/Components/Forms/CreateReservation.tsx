@@ -17,16 +17,12 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { useState, useRef } from 'react';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
+import { useState } from 'react';
 import Sitting from '../../Models/Sitting';
 // #endregion
-
-// Models
-// #region
-import Reservation from '../../Models/Reservation';
 // #endregion
 
 // Services
@@ -96,7 +92,7 @@ export default function CreateReservationModal({
   });
 
   // Name of sitting will be displayed in select, but it will return the ID number.
-  const sittings: { label: string; value: number }[] = sittingData.map((s) => ({
+  const sittings = sittingData.map((s) => ({
     label: s.type,
     value: s.id,
   }));
