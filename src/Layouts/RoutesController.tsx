@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import SittingsCalendar from '../Components/Calendar/Calendar';
 import Dashboard from '../Pages/Dashboard';
 import NotFound from '../Pages/NotFound';
 import Orders from '../Pages/Orders';
@@ -12,6 +13,7 @@ export default function RoutesController() {
       <Route path="/" element={<Dashboard />} />
       <Route path="/reservations" element={<Reservations />} />
       <Route path="/seating" element={<Seating />} />
+      <Route path="/sittings" element={<SittingsCalendar />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="*" element={<NotFound />} />

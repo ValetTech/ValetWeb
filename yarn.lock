@@ -409,7 +409,7 @@
     "preact" "^10.0.5"
     "tslib" "^2.1.0"
 
-"@fullcalendar/daygrid@^5.11.3":
+"@fullcalendar/daygrid@^5.11.3", "@fullcalendar/daygrid@~5.11.3":
   "integrity" "sha512-PCK0y80DRNCzWuC5lGpIWqCgKDvql1ah7rXql5lu+Gn2EeFj15ZQ8diMFjtNIQucEmFaNOXnR05Pgcry1n6Shg=="
   "resolved" "https://registry.npmjs.org/@fullcalendar/daygrid/-/daygrid-5.11.3.tgz"
   "version" "5.11.3"
@@ -425,12 +425,29 @@
     "@fullcalendar/common" "~5.11.3"
     "tslib" "^2.1.0"
 
+"@fullcalendar/list@^5.11.3":
+  "integrity" "sha512-6m9rJPzB5XfJZg+MlgVpha1cI3NUDeyV3GOmojJWZuti05NfDP4f0lzFUul8W7m1DQcjGS2UPRNE8HouA3guEA=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/list/-/list-5.11.3.tgz"
+  "version" "5.11.3"
+  dependencies:
+    "@fullcalendar/common" "~5.11.3"
+    "tslib" "^2.1.0"
+
 "@fullcalendar/react@^5.11.2":
   "integrity" "sha512-OnLvfV406VEQcK4QGN8xR4ro6Manp9dKE7/n9dhs19J1kKpqS1w1sIEYg1dT11njbk0Ob+TdF3cXLDFq73jUlA=="
   "resolved" "https://registry.npmjs.org/@fullcalendar/react/-/react-5.11.2.tgz"
   "version" "5.11.2"
   dependencies:
     "@fullcalendar/common" "~5.11.2"
+    "tslib" "^2.1.0"
+
+"@fullcalendar/timegrid@^5.11.3":
+  "integrity" "sha512-SjIj2ZQ7nTyL1RxZkCPvNbuUQ0xHT+gfYJdUL3FT4bPjPJCxWtQ2CL8hxaeNmVozYYuy0yrGTW5Oup2+9IplbA=="
+  "resolved" "https://registry.npmjs.org/@fullcalendar/timegrid/-/timegrid-5.11.3.tgz"
+  "version" "5.11.3"
+  dependencies:
+    "@fullcalendar/common" "~5.11.3"
+    "@fullcalendar/daygrid" "~5.11.3"
     "tslib" "^2.1.0"
 
 "@humanwhocodes/config-array@^0.6.0":

@@ -1,43 +1,41 @@
 // Components
 // #region
 import {
+  Button,
   Card,
   Container,
+  Group,
   Select,
   SimpleGrid,
   Title,
-  Button,
-  Group,
-  Modal,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { useState, useEffect } from 'react';
-import ReservationTableStickyHeader from '../Tables/ReservationTableStickyHeader';
+import { useEffect, useState } from 'react';
 import CreateReservationModal from '../Forms/CreateReservation';
+import ReservationTableStickyHeader from '../Tables/ReservationTableStickyHeader';
 // #endregion
 
 // Models
 // #region
 import Area from '../../Models/Area';
-import Sitting from '../../Models/Sitting';
 import Reservation from '../../Models/Reservation';
+import Sitting from '../../Models/Sitting';
 // #endregion
 
 // Services
 // #region
 import {
   getAreasAsync,
-  getSittingsAsync,
   getReservationByDateAsync,
+  getSittingsAsync,
 } from '../../Services/ApiServices';
-import ReservationDetailsDrawer from '../Forms/ReservationDetailsDrawer';
 // #endregion
 
 export default function DashboardReservationWidget() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [areaData, setAreaData] = useState([]);
-  const [sittingData, setSittingData] = useState([]);
-  const [reservationData, setReservationData] = useState([]);
+  const [areaData, setAreaData] = useState<Area[]>([]);
+  const [sittingData, setSittingData] = useState<Sitting[]>([]);
+  const [reservationData, setReservationData] = useState<Reservation[]>([]);
   const [createModalOpened, setCreateModalOpened] = useState(false);
 
   function onCloseCreateModal() {
@@ -46,13 +44,13 @@ export default function DashboardReservationWidget() {
 
   useEffect(() => {
     async function fetchAreas() {
-      const res: Area[] = await getAreasAsync();
-      setAreaData(res);
+      const res = await getAreasAsync();
+      setAreaData(res.areas);
     }
     fetchAreas();
     async function fetchSittings() {
-      const res: Sitting[] = await getSittingsAsync();
-      setSittingData(res);
+      const res = await getSittingsAsync();
+      setSittingData(res.sittings);
     }
     fetchSittings();
   }, []);
@@ -61,34 +59,29 @@ export default function DashboardReservationWidget() {
     // Formatting date for url query. For some reason getMonth returns an incorrect number (e.g. october is 9) so have to do + 1.
     const formattedDate = `${selectedDate.getFullYear()}-${
       // eslint-disable-next-line prettier/prettier
-      (selectedDate.getMonth() + 1)
+      selectedDate.getMonth() + 1
     }-${selectedDate.getDate()}`;
 
     async function fetchReservations() {
-      const res: Reservation[] = await getReservationByDateAsync(formattedDate);
-      setReservationData(res);
+      const res = await getReservationByDateAsync(formattedDate);
+      setReservationData(res.reservations);
     }
     fetchReservations();
   }, [selectedDate]);
 
   // Mapping the data so that it can be displayed in <Select> component.
   // Name of sitting will be displayed in select, but it will return the ID number.
-  const sittings: { label: string; value: number }[] = sittingData.map((s) => ({
+  const sittings = sittingData.map((s) => ({
     label: s.type,
     value: s.id,
   }));
   // Name of area will be displayed in select, but it will return the ID number.
-  const areas: { label: string; value: number }[] = areaData.map((a) => ({
+  const areas = areaData.map((a) => ({
     label: a.name,
     value: a.id,
   }));
   // Mapping reservation data for table
-  const reservations: {
-    key: number;
-    name: string;
-    phone: string;
-    dateTime: string;
-  }[] = reservationData.map((r) => ({
+  const reservations = reservationData.map((r) => ({
     key: r.id,
     name: r.customer.fullName,
     phone: r.customer.phone,
@@ -105,7 +98,7 @@ export default function DashboardReservationWidget() {
           dropdownType="modal"
           placeholder="Pick date"
           value={selectedDate}
-          onChange={setSelectedDate}
+          onChange={(value) => setSelectedDate(value || new Date())}
         />
         <SimpleGrid cols={2} mb={30}>
           <Title size="h4" mt={30} mb={10}>
