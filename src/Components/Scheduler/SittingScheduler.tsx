@@ -1,6 +1,7 @@
 // Components
 // #region
 import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import FullCalendar from '@fullcalendar/react';
 import '@fullcalendar/react/dist/vdom';
@@ -68,12 +69,12 @@ export default function SittingScheduler() {
 
   return (
     <FullCalendar
-      plugins={[dayGridPlugin, interactionPlugin]}
+      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       editable
       selectable
       events={events}
       select={handleSelect}
-      initialView="dayGridMonth"
+      initialView="timeGridWeek"
       headerToolbar={{
         start: 'today prev next',
         center: 'title',
