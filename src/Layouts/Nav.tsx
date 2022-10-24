@@ -26,6 +26,7 @@ import {
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../Assets/Images/Logo/H-LogoLight.png';
+import LightDarkToggleButton from '../Components/Buttons/LightDarkToggleButton';
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -98,7 +99,7 @@ const data = [
   { link: '/settings', icon: IconSettings, label: 'Settings' },
 ];
 
-export default function Nav() {
+export default function Nav(colorScheme: any, setColorScheme: any) {
   const [active, setActive] = useState(0);
 
   const linksList = data.map((link, index) => (
@@ -135,6 +136,7 @@ export default function Nav() {
             {linksList}
           </Stack>
         </Navbar.Section>
+        <LightDarkToggleButton />
       </Navbar>
     </MediaQuery>
   );

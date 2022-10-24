@@ -9,21 +9,14 @@ import RoutesController from './RoutesController';
 // Navbar links are hardcoded into Nav component for now.
 const links = [{ link: '/', label: 'placeholder' }];
 
-export default function DefaultAppShell() {
+export default function DefaultAppShell(colorScheme: any, setColorScheme: any) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
   return (
     <AppShell
-      styles={{
-        main: {
-          background:
-            theme.colorScheme === 'dark'
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
-        },
-      }}
+      styles={colorScheme}
       navbarOffsetBreakpoint="xs" // Removes side navbar and fills in space with page content when extra small resolution is reached
-      navbar={<Nav />}
+      navbar={<Nav colorScheme={colorScheme} setColorScheme={setColorScheme} />}
       header={<Header links={links} />}
     >
       {/* content */}

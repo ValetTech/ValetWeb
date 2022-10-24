@@ -1,21 +1,38 @@
-import { MantineProvider } from '@mantine/core';
+import {
+  ColorScheme,
+  ColorSchemeProvider,
+  MantineProvider,
+} from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
+import { useState } from 'react';
 import { HashRouter } from 'react-router-dom';
 import DefaultAppShell from './Layouts/AppShell';
 import RoutesController from './Layouts/RoutesController';
 
 export default function App() {
+  const [colorScheme, setColorScheme] = useState<ColorScheme>('light');
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+
   return (
-    <MantineProvider
-      theme={{ colorScheme: 'dark' }}
-      withGlobalStyles
-      withNormalizeCSS
+    <ColorSchemeProvider
+      colorScheme={colorScheme}
+      toggleColorScheme={toggleColorScheme}
     >
-      <NotificationsProvider>
-        <HashRouter>
-          <DefaultAppShell />
-        </HashRouter>
-      </NotificationsProvider>
-    </MantineProvider>
+      <MantineProvider
+        theme={{ colorScheme }}
+        withGlobalStyles
+        withNormalizeCSS
+      >
+        <NotificationsProvider>
+          <HashRouter>
+            <DefaultAppShell
+              colorScheme={colorScheme}
+              setColorScheme={setColorScheme}
+            />
+          </HashRouter>
+        </NotificationsProvider>
+      </MantineProvider>
+    </ColorSchemeProvider>
   );
 }
