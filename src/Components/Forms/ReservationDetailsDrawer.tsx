@@ -23,6 +23,11 @@ import UpdateReservationModal from './UpdateReservationModal';
 // #endregion
 // #endregion
 
+// Services
+// #region
+import { deleteReservationAsync } from '../../Services/ApiServices';
+// #endregion
+
 // Models
 // #region
 import Reservation from '../../Models/Reservation';
@@ -130,14 +135,14 @@ export default function ReservationDetailsDrawer({
               >
                 Delete
               </Button>
-              {/* Delete Confirmation Modal
+              {/* Delete Confirmation Modal */}
               <Modal
                 centered
-                opened={deleteModalOpened}
-                onClose={() => setDeleteModalOpened(false)}
+                opened={deleteReservationModalOpened}
+                onClose={() => setDeleteReservationModalOpened(false)}
               >
                 <Group position="center">
-                  <Title size="h3">{drawerContent?.customer.fullName}</Title>
+                  <Title size="h3">{reservationData?.customer.fullName}</Title>
                   <Text italic size="lg">
                     Are you sure you want to delete this reservation?
                   </Text>
@@ -146,25 +151,22 @@ export default function ReservationDetailsDrawer({
                       size="lg"
                       color="red"
                       onClick={() => {
-                        deleteReservationAsync(drawerContent?.id);
-                        setDeleteModalOpened(false);
-                        setDrawerOpened(false);
-                        setTimeout(() => {
-                          window.location.reload();
-                        }, 500);
+                        deleteReservationAsync(reservationData?.id);
+                        setDeleteReservationModalOpened(false);
+                        onClose();
                       }}
                     >
                       Confirm
                     </Button>
                     <Button
                       size="lg"
-                      onClick={() => setDeleteModalOpened(false)}
+                      onClick={() => setDeleteReservationModalOpened(false)}
                     >
                       Cancel
                     </Button>
                   </SimpleGrid>
                 </Group>
-              </Modal> */}
+              </Modal>
             </SimpleGrid>
           </Group>
         </Card>
