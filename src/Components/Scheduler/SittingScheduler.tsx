@@ -1,10 +1,10 @@
 // Components
 // #region
-import '@fullcalendar/react/dist/vdom';
-import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { useState, useEffect } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import '@fullcalendar/react/dist/vdom';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 // #endregion
 
@@ -23,6 +23,14 @@ export default function SittingScheduler() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
+    async function fetchSittings() {
+      const res: Sitting[] = await getSittingsAsync();
+      setSittingData(res);
+    }
+    fetchSittings();
+  }, []);
+
+  useEffect(() => {
     function createEvents() {
       const sittings: { type: string; startTime: string; endTime: string }[] =
         sittingData.map((s) => ({
@@ -32,14 +40,8 @@ export default function SittingScheduler() {
         }));
       setEvents(sittings);
     }
-    async function fetchSittings() {
-      const res: Sitting[] = await getSittingsAsync();
-      setSittingData(res);
-    }
-    fetchSittings().then(() => {
-      createEvents();
-    });
-  }, []);
+    createEvents();
+  }, [sittingData]);
 
   // const sittings: { name: string; startTime: string; endTime: string }[] =
   //   sittingData.map((s) => ({
