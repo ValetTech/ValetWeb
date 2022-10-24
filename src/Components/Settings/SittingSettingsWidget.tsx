@@ -1,34 +1,19 @@
 // Components
 // #region
-import {
-  Card,
-  Container,
-  Select,
-  SimpleGrid,
-  Title,
-  Button,
-  Group,
-  Modal,
-} from '@mantine/core';
-import { useState, useEffect } from 'react';
-import SittingTableStickyHeader from '../Tables/SittingTableStickyHeader';
+import { Button, Card, Container, Group, Title } from '@mantine/core';
+import { useEffect, useState } from 'react';
 import CreateSittingModal from '../Forms/CreateSittingModal';
+import SittingTableStickyHeader from '../Tables/SittingTableStickyHeader';
 // #endregion
 
 // Models
 // #region
 import Area from '../../Models/Area';
-import Sitting from '../../Models/Sitting';
-import Reservation from '../../Models/Reservation';
 // #endregion
 
 // Services
 // #region
-import {
-  getAreasAsync,
-  getSittingsAsync,
-  getReservationByDateAsync,
-} from '../../Services/ApiServices';
+import { getAreasAsync, getSittingsAsync } from '../../Services/ApiServices';
 // #endregion
 
 export default function SittingSettingsWidget() {
@@ -40,14 +25,14 @@ export default function SittingSettingsWidget() {
   useEffect(() => {
     async function fetchSittings() {
       const res: Area[] = await getSittingsAsync();
-      setSittingData(res.sittings);
+      setSittingData(res);
     }
     fetchSittings();
   }, []);
   useEffect(() => {
     async function fetchAreas() {
       const res: Area[] = await getAreasAsync();
-      setAreaData(res.areas);
+      setAreaData(res);
     }
     fetchAreas();
   }, []);

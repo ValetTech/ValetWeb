@@ -1,34 +1,19 @@
 // Components
 // #region
-import {
-  Card,
-  Container,
-  Select,
-  SimpleGrid,
-  Title,
-  Button,
-  Group,
-  Modal,
-} from '@mantine/core';
-import { useState, useEffect } from 'react';
-import AreaTableStickyHeader from '../Tables/AreaTableStickyHeader';
+import { Button, Card, Container, Group, Title } from '@mantine/core';
+import { useEffect, useState } from 'react';
 import CreateAreaModal from '../Forms/CreateAreaModal';
+import AreaTableStickyHeader from '../Tables/AreaTableStickyHeader';
 // #endregion
 
 // Models
 // #region
 import Area from '../../Models/Area';
-import Sitting from '../../Models/Sitting';
-import Reservation from '../../Models/Reservation';
 // #endregion
 
 // Services
 // #region
-import {
-  getAreasAsync,
-  getSittingsAsync,
-  getReservationByDateAsync,
-} from '../../Services/ApiServices';
+import { getAreasAsync } from '../../Services/ApiServices';
 // #endregion
 
 export default function AreaSettingsWidget() {
@@ -38,7 +23,7 @@ export default function AreaSettingsWidget() {
   useEffect(() => {
     async function fetchAreas() {
       const res: Area[] = await getAreasAsync();
-      setAreaData(res.areas);
+      setAreaData(res);
     }
     fetchAreas();
   }, []);

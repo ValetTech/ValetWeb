@@ -1,7 +1,7 @@
 import axios from 'axios';
+import Area from '../Models/Area';
 import Customer from '../Models/Customer';
 import Reservation from '../Models/Reservation';
-import Area from '../Models/Area';
 import Sitting from '../Models/Sitting';
 // import { IApiService } from './IApiService';
 // const API_URL = 'https://localhost:7028/api';
@@ -22,7 +22,7 @@ export default async function getReservationsAsync() {
     });
     console.log('response.data', response.data);
 
-    return response.data;
+    return response.data.reservations;
   } catch (error) {
     throw new Error();
   }
@@ -48,7 +48,7 @@ export async function getReservationByDateAsync(date: string) {
     });
     console.log('response.data', response.data);
 
-    return response.data;
+    return response.data.reservations;
   } catch (error) {
     throw new Error();
   }
@@ -93,7 +93,7 @@ export async function getAreasAsync() {
     });
     console.log('response.data', response.data);
 
-    return response.data;
+    return response.data.areas;
   } catch (error) {
     throw new Error();
   }
@@ -147,7 +147,7 @@ export async function getSittingsAsync() {
     });
     console.log('response.data', response.data);
 
-    return response.data;
+    return response.data.sittings;
   } catch (error) {
     throw new Error();
   }

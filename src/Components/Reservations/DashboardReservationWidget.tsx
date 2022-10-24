@@ -44,13 +44,13 @@ export default function DashboardReservationWidget() {
 
   useEffect(() => {
     async function fetchAreas() {
-      const res = await getAreasAsync();
-      setAreaData(res.areas);
+      const res: Area[] = await getAreasAsync();
+      setAreaData(res);
     }
     fetchAreas();
     async function fetchSittings() {
-      const res = await getSittingsAsync();
-      setSittingData(res.sittings);
+      const res: Sitting[] = await getSittingsAsync();
+      setSittingData(res);
     }
     fetchSittings();
   }, []);
@@ -63,8 +63,8 @@ export default function DashboardReservationWidget() {
     }-${selectedDate.getDate()}`;
 
     async function fetchReservations() {
-      const res = await getReservationByDateAsync(formattedDate);
-      setReservationData(res.reservations);
+      const res: Reservation[] = await getReservationByDateAsync(formattedDate);
+      setReservationData(res);
     }
     fetchReservations();
   }, [selectedDate]);
