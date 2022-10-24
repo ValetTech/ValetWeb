@@ -31,6 +31,7 @@ import {
   updateCustomerAsync,
   updateReservationAsync,
 } from '../../Services/ApiServices';
+import ErrorNotification from '../Notifications/NotifyError';
 // #endregion
 
 interface UpdateReservationModalProps {
@@ -113,50 +114,44 @@ export default function UpdateReservationModal({
     // },
   });
 
-  function onSubmit(values: any) {
+  function onSubmit() {
     if (!form.isDirty()) {
       onClose();
       return;
     }
+    const { values } = form;
 
-    updateCustomerAsync(reservationData.customer.id, {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      email: values.email,
-      phone: values.phone,
-    }).then((customerResponse) => {
-      console.log(customerResponse.data);
+    updateCustomerAsync(values.customer.id, {
+      id: values.customer.id,
+      firstName: values.customer.firstName,
+      lastName: values.customer.lastName,
+      email: values.customer.email,
+      phone: values.customer.phone,
+    }).then((res) => {
       if (!reservationData.id) return;
       updateReservationAsync(reservationData.id, {
-        customerId: customerResponse.data.id,
+        id: reservationData.id,
+        customerId: values.customer.id,
         sittingId: values.sittingId,
         dateTime: getDateTimeString(),
         duration: values.duration,
         noGuests: values.noGuests,
         notes: values.notes,
-      }).then((reservationResponse) => {
-        console.log(reservationResponse.data);
-        onClose();
-      });
+      })
+        .then((reservationResponse) => {
+          console.log(reservationResponse.data);
+          onClose();
+        })
+        .catch((error) => {
+          ErrorNotification(error.message);
+        });
     });
   }
 
-  function fillForm(data: Reservation) {
-    // form.setFieldValue('firstName', data.customer.firstName);
-    // form.setFieldValue('lastName', data.customer.lastName);
-    // form.setFieldValue('email', data.customer.email);
-    // form.setFieldValue('phone', data.customer.phone);
-    // form.setFieldValue('sittingId', data.sittingId);
-    // form.setFieldValue('dateTime', data.dateTime);
-    // form.setFieldValue('duration', data.duration);
-    // form.setFieldValue('noGuests', data.noGuests);
-    // form.setFieldValue('notes', data.notes);
-
-    form.setValues(data);
-  }
-
   useEffect(() => {
-    if (reservationData) fillForm(reservationData);
+    if (reservationData) form.setValues(reservationData);
+    console.log('SomeFUCKINGdata:', reservationData);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reservationData]);
 

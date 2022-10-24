@@ -110,8 +110,14 @@ export default function DetailsForm({
     // Refresh reservations
   }
 
+  function onSubmit(value: any) {
+    console.log(value);
+
+    handleSave();
+  }
+
   return (
-    <form onSubmit={form.onSubmit((v) => console.log(v))}>
+    <form onSubmit={onSubmit}>
       <NumberInput
         label="Customer ID"
         hideControls
