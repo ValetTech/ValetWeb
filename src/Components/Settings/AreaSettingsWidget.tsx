@@ -38,7 +38,7 @@ export default function AreaSettingsWidget() {
   useEffect(() => {
     async function fetchAreas() {
       const res: Area[] = await getAreasAsync();
-      setAreaData(res);
+      setAreaData(res.areas);
     }
     fetchAreas();
   }, []);

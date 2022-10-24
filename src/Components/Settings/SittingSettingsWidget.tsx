@@ -40,14 +40,14 @@ export default function SittingSettingsWidget() {
   useEffect(() => {
     async function fetchSittings() {
       const res: Area[] = await getSittingsAsync();
-      setSittingData(res);
+      setSittingData(res.sittings);
     }
     fetchSittings();
   }, []);
   useEffect(() => {
     async function fetchAreas() {
       const res: Area[] = await getAreasAsync();
-      setAreaData(res);
+      setAreaData(res.areas);
     }
     fetchAreas();
   }, []);
