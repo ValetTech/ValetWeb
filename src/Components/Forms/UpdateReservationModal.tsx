@@ -29,6 +29,12 @@ import { IconPencil } from '@tabler/icons';
 // #region
 import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
+import {
+  createCustomerAsync,
+  createReservationAsync,
+  updateCustomerAsync,
+  updateReservationAsync,
+} from '../../Services/ApiServices';
 // #endregion
 
 interface UpdateReservationModalProps {
@@ -48,6 +54,14 @@ export default function UpdateReservationModal({
   const [datePickerValue, setDatePickerValue] = useState(new Date());
   const [timePickerValue, setTimePickerValue] = useState(new Date());
 
+  function getDateTimeString() {
+    // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
+    datePickerValue.setDate(datePickerValue.getDate() + 1);
+    return `${
+      datePickerValue.toISOString().split('T')[0]
+    }T${timePickerValue.toLocaleTimeString('it-IT')}`;
+  }
+
   const form = useForm({
     initialValues: {
       firstName: reservationData?.customer.firstName,
@@ -64,15 +78,15 @@ export default function UpdateReservationModal({
       noGuests: reservationData?.noGuests,
       notes: reservationData?.notes,
     },
-    validate: {
-      lastName: (value) =>
-        value.length < 2 ? 'Please provide a valid first name' : null,
-      phone: (value) =>
-        value.length < 10 ? 'Please provide a valid phone number' : null,
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      noGuests: (value) =>
-        value < 1 ? 'Please enter a valid number of guests' : null,
-    },
+    // validate: {
+    //   lastName: (value) =>
+    //     value.length < 2 ? 'Please provide a valid first name' : null,
+    //   phone: (value) =>
+    //     value.length < 10 ? 'Please provide a valid phone number' : null,
+    //   email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+    //   noGuests: (value) =>
+    //     value < 1 ? 'Please enter a valid number of guests' : null,
+    // },
   });
 
   // Name of sitting will be displayed in select, but it will return the ID number.
@@ -90,7 +104,66 @@ export default function UpdateReservationModal({
     >
       <form
         onSubmit={form.onSubmit((values) => {
-          console.log(values);
+          if (form.isDirty('firstName') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('lastName') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('phone') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('email') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('sittingId') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('time') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('date') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('duration') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('noGuests') === false) {
+            onClose();
+            return;
+          }
+          if (form.isDirty('notes') === false) {
+            onClose();
+            return;
+          }
+
+          updateCustomerAsync(reservationData.customer.id, {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            email: values.email,
+            phone: values.phone,
+          }).then((customerResponse) => {
+            console.log(customerResponse.data);
+            updateReservationAsync(reservationData.id, {
+              customerId: customerResponse.data.id,
+              sittingId: values.sittingId,
+              dateTime: getDateTimeString(),
+              duration: values.duration,
+              noGuests: values.noGuests,
+              notes: values.notes,
+            }).then((reservationResponse) => {
+              console.log(reservationResponse.data);
+              onClose();
+            });
+          });
         })}
       >
         <SimpleGrid cols={1}>
