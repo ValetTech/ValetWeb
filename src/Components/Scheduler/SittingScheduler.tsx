@@ -80,6 +80,7 @@ export default function SittingScheduler() {
         center: 'title',
         end: '',
       }}
+      nowIndicator
     />
   );
 }

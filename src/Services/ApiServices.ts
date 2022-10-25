@@ -71,12 +71,18 @@ export async function updateReservationAsync(
 ) {
   try {
     const response = await axios.put(`/reservations/${id}`, {
-      ...reservation,
+      id: reservation.id,
+      customerId: reservation.customerId,
+      sittingId: reservation.sittingId,
+      dateTime: reservation.dateTime,
+      duration: reservation.duration,
+      noGuests: reservation.noGuests,
+      notes: reservation.notes,
     });
     console.log('response.data', response.data);
     return response;
   } catch (error) {
-    throw new Error();
+    console.log(error);
   }
 }
 
@@ -130,13 +136,14 @@ export async function createAreaAsync(area: Area) {
   }
 }
 
-export function updateAreaAsync(id: number, area: Area) {
+export async function updateAreaAsync(id: number, area: Area) {
   try {
-    const response = axios.put(`/areas/${id}`, {
+    const response = await axios.put(`/areas/${id}`, {
       id: area.id,
       name: area.name,
       description: area.description,
     });
+    console.log('response.data', response.data);
     return response;
   } catch (error) {
     throw new Error();
@@ -225,6 +232,6 @@ export async function updateCustomerAsync(id: number, customer: Customer) {
     console.log('response.data', response.data);
     return response;
   } catch (error) {
-    throw new Error();
+    console.log(error);
   }
 }

@@ -133,7 +133,7 @@ export default function UpdateReservationModal({
       phone: values.customer.phone,
     }).then((res) => {
       if (!reservationData.id) return;
-      console.log('update customer response', res.data);
+      console.log('update customer response', res);
       updateReservationAsync(reservationData.id, {
         id: reservationData.id,
         customerId: values.customer.id,
