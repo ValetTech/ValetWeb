@@ -193,9 +193,10 @@ export async function createSittingAsync(sitting: Sitting) {
   }
 }
 
-export async function updateSittingAsync(sitting: Sitting) {
+export async function updateSittingAsync(id: number, sitting: Sitting) {
   try {
-    const response = await axios.put(`/sittings`, {
+    const response = await axios.put(`/sittings/${id}`, {
+      id: sitting.id,
       capacity: sitting.capacity,
       type: sitting.type,
       startTime: sitting.startTime,

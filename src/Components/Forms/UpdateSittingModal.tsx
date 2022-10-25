@@ -24,6 +24,7 @@ import { TimeInput } from '@mantine/dates';
 
 // Services
 // #region
+import { useEffect } from 'react';
 import { updateSittingAsync, getAreasAsync } from '../../Services/ApiServices';
 // #endregion
 
@@ -46,30 +47,30 @@ export default function UpdateSittingModal({
   sittingData,
   areaData,
 }: CreateSittingModalProps) {
+  const initialValues: Sitting = {
+    capacity: 0,
+    type: '',
+    startTime: new Date(),
+    endTime: new Date(),
+    venueId: 1,
+    areas: [],
+    reservations: [],
+  };
+
   const form = useForm({
-    initialValues: {
-      capacity: sittingData?.capacity,
-      type: sittingData?.type,
-      startTime: sittingData?.startTime,
-      endTime: sittingData?.endTime,
-      venueId: 1,
-      areas: sittingData?.areas,
-      reservations: sittingData?.reservations,
-    },
-    validate: {
-      capacity: (value) => (value < 1 ? 'Please enter a valid capacity' : null),
-      type: (value) => (value === '' ? 'Please enter a valid type' : null),
-      startTime: (value) =>
-        value === '' ? 'Please enter a valid start time' : null,
-      endTime: (value) =>
-        value === '' ? 'Please enter a valid end time' : null,
-      areas: (value) =>
-        value.length === 0 ? 'Please enter a valid area' : null,
-    },
+    initialValues,
+    validate: {},
   });
 
-  function onSubmit(values: any) {
+  function onSubmit() {
+    if (!form.isDirty()) {
+      onClose();
+      return;
+    }
+    const { values } = form;
+
     const sitting: Sitting = {
+      id: sittingData.id,
       capacity: values.capacity,
       type: values.type,
       startTime: values.startTime,
@@ -78,25 +79,30 @@ export default function UpdateSittingModal({
       areas: [values.areas],
       reservations: values.reservations,
     };
-    updateSittingAsync(sitting);
+    updateSittingAsync(sitting.id, sitting);
+    console.log('NEW SITTING', sitting);
     onClose();
   }
+
+  useEffect(() => {
+    if (sittingData) form.setValues(sittingData);
+    console.log('SittingData:', sittingData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sittingData]);
 
   return (
     <Modal
       centered
       opened={opened}
       onClose={onClose}
-      title="Create New Sitting"
+      title="Update Sitting"
       size="xl"
     >
       <Card radius="md" p="xl">
         <Title align="center">Update Sitting</Title>
         <Box sx={{ maxWidth: 300 }} mx="auto" mt={20}>
-          <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
+          <form onSubmit={onSubmit}>
             <NumberInput
-              required
-              withAsterisk
               label="Capacity"
               placeholder={sittingData?.capacity}
               icon={<IconPencil />}
@@ -104,8 +110,6 @@ export default function UpdateSittingModal({
             />
             <Select
               mt={20}
-              required
-              withAsterisk
               label="Type"
               placeholder={sittingData?.type}
               data={[
@@ -114,7 +118,7 @@ export default function UpdateSittingModal({
                 { value: 'Dinner', label: 'Dinner' },
                 { value: 'Special', label: 'Special' },
               ]}
-              {...form.getInputProps('type')}
+              {...form.getInputProps('sitting.type')}
             />
             <TimeInput
               placeholder={sittingData?.startTime}
@@ -122,8 +126,6 @@ export default function UpdateSittingModal({
               label="Start Time"
               mt={20}
               icon={<IconPencil />}
-              withAsterisk
-              required
               {...form.getInputProps('startTime')}
             />
             <TimeInput
@@ -132,14 +134,10 @@ export default function UpdateSittingModal({
               label="End Time"
               mt={20}
               icon={<IconPencil />}
-              withAsterisk
-              required
               {...form.getInputProps('endTime')}
             />
             <Select
               mt={20}
-              required
-              withAsterisk
               label="Areas"
               placeholder={sittingData?.areas}
               data={areaData}
