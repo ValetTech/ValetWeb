@@ -6,6 +6,7 @@ import Orders from '../Pages/Orders';
 import Reservations from '../Pages/Reservations';
 import Seating from '../Pages/Seating';
 import Settings from '../Pages/Settings';
+import TablesPage from '../Pages/TablesPage';
 
 export default function RoutesController() {
   return (
@@ -15,6 +16,7 @@ export default function RoutesController() {
       <Route path="/seating" element={<Seating />} />
       <Route path="/sittings" element={<SittingsCalendar />} />
       <Route path="/orders" element={<Orders />} />
+      <Route path="/tables" element={<TablesPage />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

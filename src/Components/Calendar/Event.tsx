@@ -11,9 +11,13 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { useTheme } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import type {} from '@mui/x-date-pickers/themeAugmentation';
 import { IconPencil } from '@tabler/icons';
+import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
 
 interface RecurringEvent {
@@ -51,7 +55,11 @@ interface RecurringEvent {
 
 export default function NewEventModal() {
   const [opened, setOpened] = useState(false);
-
+  const [dateTime, setDateTime] = useState<Date | null>(new Date());
+  const [value, setValue] = useState<Dayjs | null>(
+    dayjs('2018-01-01T00:00:00.000Z')
+  );
+  const theme = useTheme();
   const initialValues: RecurringEvent = {
     title: '',
     type: '',
@@ -79,7 +87,7 @@ export default function NewEventModal() {
   });
 
   return (
-    <>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
@@ -119,12 +127,28 @@ export default function NewEventModal() {
                 {...form.getInputProps('capacity')}
               />
               <Switch
+                mt={20}
+                label="All Day"
                 // checked={checked}
                 // onChange={(event) => setChecked(event.currentTarget.checked)}
                 {...form.getInputProps('allDay')}
               />
-
-              <TimeInput
+              {/* //https://mantine.dev/core/collapse/ */}
+              {/* <DateTimePicker
+                label="Responsive"
+                renderInput={(params) => <TextField {...params} {...theme} />}
+                value={value}
+                onChange={(newValue) => {
+                  setValue(newValue);
+                }}
+              /> */}
+              {/* <DateTimePicker
+                label="Date Time Picker"
+                placeholder="Pick date time"
+                inputFormat="DD-MMM-YYYY hh:mm a"
+                {...form.getInputProps('endTime')}
+              /> */}
+              {/* <TimeInput
                 format="12"
                 label="Start Time"
                 mt={20}
@@ -132,8 +156,8 @@ export default function NewEventModal() {
                 withAsterisk
                 required
                 {...form.getInputProps('startTime')}
-              />
-              <TimeInput
+                />
+                <TimeInput
                 format="12"
                 label="End Time"
                 mt={20}
@@ -141,7 +165,7 @@ export default function NewEventModal() {
                 withAsterisk
                 required
                 {...form.getInputProps('endTime')}
-              />
+              /> */}
               <Group position="center" mt="md">
                 <Button type="submit">Submit</Button>
               </Group>
@@ -153,6 +177,6 @@ export default function NewEventModal() {
       <Group position="center">
         <Button onClick={() => setOpened(true)}>Open Modal</Button>
       </Group>
-    </>
+    </LocalizationProvider>
   );
 }

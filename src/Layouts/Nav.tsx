@@ -12,15 +12,12 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import {
+  IconBrandAirtable,
   IconCalendarStats,
   IconDeviceDesktopAnalytics,
-  IconFingerprint,
   IconGauge,
   IconHome2,
-  IconLogout,
   IconSettings,
-  IconSwitchHorizontal,
-  IconUser,
   TablerIcon,
 } from '@tabler/icons';
 import { useState } from 'react';
@@ -96,6 +93,7 @@ const data = [
   { link: '/reservations', icon: IconCalendarStats, label: 'Reservations' },
   { link: '/seating', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
   { link: '/orders', icon: IconGauge, label: 'Orders' },
+  { link: '/tables', icon: IconBrandAirtable, label: 'Tables' },
   { link: '/settings', icon: IconSettings, label: 'Settings' },
 ];
 
@@ -116,7 +114,7 @@ export default function Nav(colorScheme: any, setColorScheme: any) {
     <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
       <Navbar
         withBorder={false}
-        width={{ base: 80 }}
+        width={{ base: 70 }}
         p="md"
         className="fixed top-0 left-0 z-50 h-full"
       >

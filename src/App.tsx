@@ -5,10 +5,8 @@ import {
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
-import { useState } from 'react';
 import { HashRouter } from 'react-router-dom';
 import DefaultAppShell from './Layouts/AppShell';
-import RoutesController from './Layouts/RoutesController';
 
 export default function App() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
