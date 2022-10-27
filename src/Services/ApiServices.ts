@@ -150,6 +150,15 @@ export async function updateAreaAsync(id: number, area: Area) {
   }
 }
 
+export function deleteAreaAsync(id: number) {
+  try {
+    const response = axios.delete(`/areas/${id}`);
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 // SITTING
 export async function getSittingsAsync() {
   try {

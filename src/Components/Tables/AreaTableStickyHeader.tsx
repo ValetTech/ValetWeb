@@ -1,14 +1,25 @@
 // Components
 // #region
-import { createStyles, ScrollArea, Table, UnstyledButton } from '@mantine/core';
-import { IconPencil } from '@tabler/icons';
+import {
+  createStyles,
+  Group,
+  Modal,
+  ScrollArea,
+  Table,
+  Title,
+  UnstyledButton,
+  Text,
+  SimpleGrid,
+  Button,
+} from '@mantine/core';
+import { IconPencil, IconTrash } from '@tabler/icons';
 import { useState } from 'react';
 import UpdateAreaModal from '../Forms/UpdateAreaModal';
 // #endregion
 
 // Services
 // #region
-import { getAreaByIdAsync } from '../../Services/ApiServices';
+import { getAreaByIdAsync, deleteAreaAsync } from '../../Services/ApiServices';
 // #endregion
 
 // Models
@@ -53,6 +64,7 @@ export default function AreaTableScrollArea({ data }: TableScrollAreaProps) {
 
   const [selectedArea, setSelectedArea] = useState();
   const [updateAreaModalOpened, setUpdateAreaModalOpened] = useState(false);
+  const [deleteAreaModalOpened, setDeleteAreaModalOpened] = useState(false);
 
   const rows = data.map((row) => (
     <tr key={row.key}>
@@ -76,6 +88,50 @@ export default function AreaTableScrollArea({ data }: TableScrollAreaProps) {
             }}
           />
         </UnstyledButton>
+        <UnstyledButton px={20}>
+          <IconTrash
+            size={20}
+            stroke={1.5}
+            onClick={() => {
+              // Reservation ID is assigned as row key, so it is ok to use here for API call.
+              getAreaByIdAsync(row.key)
+                .then((response) => {
+                  setSelectedArea(response);
+                })
+                .then(() => {
+                  setDeleteAreaModalOpened(true);
+                });
+            }}
+          />
+        </UnstyledButton>
+        {/* Delete Confirmation Modal */}
+        <Modal
+          centered
+          opened={deleteAreaModalOpened}
+          onClose={() => setDeleteAreaModalOpened(false)}
+        >
+          <Group position="center">
+            <Title size="h3">{selectedArea?.name}</Title>
+            <Text italic size="lg">
+              Are you sure you want to delete this area?
+            </Text>
+            <SimpleGrid cols={2}>
+              <Button
+                size="lg"
+                color="red"
+                onClick={() => {
+                  deleteAreaAsync(selectedArea?.id);
+                  setDeleteAreaModalOpened(false);
+                }}
+              >
+                Confirm
+              </Button>
+              <Button size="lg" onClick={() => setDeleteAreaModalOpened(false)}>
+                Cancel
+              </Button>
+            </SimpleGrid>
+          </Group>
+        </Modal>
       </td>
     </tr>
   ));
@@ -86,7 +142,7 @@ export default function AreaTableScrollArea({ data }: TableScrollAreaProps) {
         sx={{ height: 300 }}
         onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
       >
-        <Table sx={{ minWidth: 620 }}>
+        <Table sx={{ minWidth: 720 }}>
           <thead
             className={cx(classes.header, { [classes.scrolled]: scrolled })}
           >
