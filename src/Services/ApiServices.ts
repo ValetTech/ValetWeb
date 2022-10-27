@@ -210,6 +210,15 @@ export async function updateSittingAsync(id: number, sitting: Sitting) {
   }
 }
 
+export function deleteSittingAsync(id: number) {
+  try {
+    const response = axios.delete(`/sittings/${id}`);
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 // CUSTOMER
 export function createCustomerAsync(customer: Customer) {
   try {

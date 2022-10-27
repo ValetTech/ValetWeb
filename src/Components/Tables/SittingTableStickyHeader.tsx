@@ -1,14 +1,28 @@
 // Components
 // #region
-import { createStyles, ScrollArea, Table, UnstyledButton } from '@mantine/core';
-import { IconPencil } from '@tabler/icons';
+import {
+  createStyles,
+  Group,
+  Modal,
+  ScrollArea,
+  Table,
+  Title,
+  UnstyledButton,
+  Text,
+  SimpleGrid,
+  Button,
+} from '@mantine/core';
+import { IconPencil, IconTrash } from '@tabler/icons';
 import { useState } from 'react';
 import UpdateSittingModal from '../Forms/UpdateSittingModal';
 // #endregion
 
 // Services
 // #region
-import { getSittingByIdAsync } from '../../Services/ApiServices';
+import {
+  getSittingByIdAsync,
+  deleteSittingAsync,
+} from '../../Services/ApiServices';
 // #endregion
 
 // Models
@@ -67,6 +81,8 @@ export default function SittingTableScrollArea({
   const [selectedSitting, setSelectedSitting] = useState();
   const [updateSittingModalOpened, setUpdateSittingModalOpened] =
     useState(false);
+  const [deleteSittingModalOpened, setDeleteSittingModalOpened] =
+    useState(false);
 
   const rows = data.map((row) => (
     <tr key={row.key}>
@@ -92,6 +108,53 @@ export default function SittingTableScrollArea({
             }}
           />
         </UnstyledButton>
+        <UnstyledButton px={20}>
+          <IconTrash
+            size={20}
+            stroke={1.5}
+            onClick={() => {
+              // Sitting ID is assigned as row key, so it is ok to use here for API call.
+              getSittingByIdAsync(row.key)
+                .then((response) => {
+                  setSelectedSitting(response);
+                })
+                .then(() => {
+                  setDeleteSittingModalOpened(true);
+                });
+            }}
+          />
+        </UnstyledButton>
+        {/* Delete Confirmation Modal */}
+        <Modal
+          centered
+          opened={deleteSittingModalOpened}
+          onClose={() => setDeleteSittingModalOpened(false)}
+        >
+          <Group position="center">
+            <Title size="h3">{selectedSitting?.type}</Title>
+            <Text italic size="lg">
+              Are you sure you want to delete this sitting?
+            </Text>
+            <SimpleGrid cols={2}>
+              <Button
+                size="lg"
+                color="red"
+                onClick={() => {
+                  deleteSittingAsync(selectedSitting?.id);
+                  setDeleteSittingModalOpened(false);
+                }}
+              >
+                Confirm
+              </Button>
+              <Button
+                size="lg"
+                onClick={() => setDeleteSittingModalOpened(false)}
+              >
+                Cancel
+              </Button>
+            </SimpleGrid>
+          </Group>
+        </Modal>
       </td>
     </tr>
   ));
