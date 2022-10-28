@@ -12,6 +12,7 @@ import {
 } from '@mantine/core';
 import {
   IconBrandAirtable,
+  IconCalendarEvent,
   IconCalendarStats,
   IconDeviceDesktopAnalytics,
   IconGauge,
@@ -104,7 +105,7 @@ const data = [
   { link: '/seating', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
   { link: '/orders', icon: IconGauge, label: 'Orders' },
   { link: '/tables', icon: IconBrandAirtable, label: 'Tables' },
-  // { link: '/settings', icon: IconSettings, label: 'Settings' },
+  { link: '/calendar', icon: IconCalendarEvent, label: 'Calendar' },
 ];
 
 export default function NavbarMinimal() {
@@ -112,7 +113,7 @@ export default function NavbarMinimal() {
   const { id } = useParams();
   const { pathname } = useLocation();
 
-  console.log(id);
+  // console.log(id);
 
   const { classes } = useStyles();
 
