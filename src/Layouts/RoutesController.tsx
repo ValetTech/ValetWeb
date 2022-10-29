@@ -5,6 +5,7 @@ import NotFound from '../Pages/NotFound';
 import Orders from '../Pages/Orders';
 import Reservations from '../Pages/Reservations';
 import Seating from '../Pages/Seating';
+import Settings from '../Pages/Settings';
 import TablesPage from '../Pages/TablesPage';
 
 export default function RoutesController() {
@@ -16,7 +17,7 @@ export default function RoutesController() {
       <Route path="/orders" element={<Orders />} />
       <Route path="/tables" element={<TablesPage />} />
       <Route path="/calendar" element={<Calendar />} />
-      {/* <Route path="/settings" element={<Settings />} /> */}
+      <Route path="/settings" element={<Settings />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
