@@ -1,3 +1,5 @@
+import '@fullcalendar/react/dist/vdom';
+
 import FullCalendar, { EventSourceInput } from '@fullcalendar/react';
 
 import { DndContext, DragEndEvent } from '@dnd-kit/core';

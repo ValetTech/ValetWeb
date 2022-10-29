@@ -1,4 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import '@fullcalendar/react/dist/vdom';
+
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import { ThirdPartyDraggable } from '@fullcalendar/interaction';
 import { Button, Paper } from '@mantine/core';

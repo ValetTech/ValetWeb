@@ -1,10 +1,12 @@
+// import '@fullcalendar/react/dist/vdom';
+import '@fullcalendar/react/dist/vdom';
+
+import FullCalendar from '@fullcalendar/react';
 // Components
 // #region
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import FullCalendar from '@fullcalendar/react';
-import '@fullcalendar/react/dist/vdom';
+import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 // #endregion
