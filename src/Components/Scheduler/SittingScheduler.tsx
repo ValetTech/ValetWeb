@@ -13,7 +13,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Services
 // #region
-import { getSittingsAsync } from '../../Services/ApiServices';
+import {
+  getSittingsAsync,
+  getSittingByIdAsync,
+  updateSittingAsync,
+} from '../../Services/ApiServices';
 // #endregion
 
 // Models
@@ -35,47 +39,50 @@ export default function SittingScheduler() {
 
   useEffect(() => {
     function createEvents() {
-      const sittings: { type: string; startTime: string; endTime: string }[] =
-        sittingData.map((s) => ({
-          title: s.type,
-          start: s.startTime,
-          end: s.endTime,
-        }));
+      const sittings: {
+        id: number;
+        type: string;
+        startTime: string;
+        endTime: string;
+      }[] = sittingData.map((s) => ({
+        id: s.id,
+        title: s.type,
+        start: s.startTime,
+        end: s.endTime,
+      }));
       setEvents(sittings);
     }
     createEvents();
   }, [sittingData]);
 
-  // const sittings: { name: string; startTime: string; endTime: string }[] =
-  //   sittingData.map((s) => ({
-  //     title: s.name,
-  //     start: s.startTime,
-  //     end: s.endTime,
-  //   }));
-
-  const handleSelect = (info: { start: any; end: any }) => {
-    const { start, end } = info;
-    const eventNamePrompt = prompt('Enter event name');
-    if (eventNamePrompt) {
-      setEvents([
-        ...events,
-        {
-          start,
-          end,
-          title: eventNamePrompt,
-          id: uuidv4(),
-        },
-      ]);
-    }
+  const eventDrop = (info: any) => {
+    getSittingByIdAsync(info.event.id).then((response) => {
+      // updateSittingAsync(response.id, {
+      //   id: info.event.id,
+      //   capacity: response.capacity,
+      //   type: response.type,
+      //   startTime: info.event.start.toISOString(),
+      //   endTime: info.event.end.toISOString(),
+      //   venueId: response.venueId,
+      // });
+      console.log('DEETS', {
+        id: info.event.id,
+        capacity: response.capacity,
+        type: response.type,
+        startTime: info.event.start.toISOString(),
+        endTime: info.event.end.toISOString(),
+        venueId: response.venueId,
+      });
+    });
   };
-
   return (
     <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
       editable
       selectable
       events={events}
-      select={handleSelect}
+      // select={handleSelect}
+      eventDrop={eventDrop}
       initialView="timeGridWeek"
       headerToolbar={{
         start: 'today prev next',
