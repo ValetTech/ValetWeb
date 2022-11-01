@@ -11,7 +11,8 @@ import { useScrollLock, useViewportSize } from '@mantine/hooks';
 import { keys } from '@mantine/utils';
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons';
 import { useEffect, useState } from 'react';
-import ReservationsList from './TableItem';
+import { ReservationsList } from '../../Pages/TablesPage';
+// import ReservationsList from './TableItem';
 
 export interface BoxProps {
   name: string;
@@ -65,7 +66,7 @@ export default function ReservationsTable({ data }: any) {
   ];
   return (
     <div className="m-2 ">
-      <ScrollArea.Autosize maxHeight={height} className="">
+      <ScrollArea.Autosize maxHeight={height} className="overscroll-contain">
         {/* <TableSort data={rowData} /> */}
         {Array.isArray(data) && data.length ? (
           <ReservationsList data={data} />

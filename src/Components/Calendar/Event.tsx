@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  Collapse,
   Group,
   Modal,
   NumberInput,
@@ -13,12 +14,13 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useTheme } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import type {} from '@mui/x-date-pickers/themeAugmentation';
 import { IconPencil } from '@tabler/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
+import BasicDateTimePicker, {
+  BasicDateTimePickerNew,
+} from '../Forms/DateTimePicker';
+import Recurrence from './Recurrence';
 
 interface RecurringEvent {
   title: string; // name of event
@@ -53,12 +55,13 @@ interface RecurringEvent {
   groupId: number; // UUID
 }
 
-export default function NewEventModal() {
+export default function NewEventModal({ isOpen, onClose }: any) {
   const [opened, setOpened] = useState(false);
   const [dateTime, setDateTime] = useState<Date | null>(new Date());
-  const [value, setValue] = useState<Dayjs | null>(
-    dayjs('2018-01-01T00:00:00.000Z')
-  );
+  const [value, setValue] = useState<Dayjs | null>(dayjs('2022-04-07T12:00'));
+  const [recurring, setRecurring] = useState(false);
+  const [allDay, setAllDay] = useState(false);
+
   const theme = useTheme();
   const initialValues: RecurringEvent = {
     title: '',
@@ -87,7 +90,7 @@ export default function NewEventModal() {
   });
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <>
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
@@ -126,47 +129,37 @@ export default function NewEventModal() {
                 // icon={<IconPencil />}
                 {...form.getInputProps('capacity')}
               />
-              <Switch
-                mt={20}
-                label="All Day"
-                // checked={checked}
-                // onChange={(event) => setChecked(event.currentTarget.checked)}
-                {...form.getInputProps('allDay')}
-              />
-              {/* //https://mantine.dev/core/collapse/ */}
-              {/* <DateTimePicker
-                label="Responsive"
-                renderInput={(params) => <TextField {...params} {...theme} />}
+              {/* Start time */}
+              <BasicDateTimePicker my="md" value={value} onChange={setValue} />
+              <BasicDateTimePickerNew
+                my="md"
                 value={value}
-                onChange={(newValue) => {
-                  setValue(newValue);
-                }}
-              /> */}
-              {/* <DateTimePicker
-                label="Date Time Picker"
-                placeholder="Pick date time"
-                inputFormat="DD-MMM-YYYY hh:mm a"
-                {...form.getInputProps('endTime')}
-              /> */}
-              {/* <TimeInput
-                format="12"
-                label="Start Time"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                required
-                {...form.getInputProps('startTime')}
-                />
-                <TimeInput
-                format="12"
-                label="End Time"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                required
-                {...form.getInputProps('endTime')}
-              /> */}
-              <Group position="center" mt="md">
+                onChange={setValue}
+              />
+              <Collapse in={allDay}>
+                {/* End time */}
+                <BasicDateTimePicker value={value} onChange={setValue} />
+              </Collapse>
+              <Switch
+                my="md"
+                size="md"
+                label="All Day"
+                checked={allDay}
+                onChange={(event) => setAllDay(event.currentTarget.checked)}
+              />
+
+              <Switch
+                my="md"
+                size="md"
+                label="Recurring"
+                checked={recurring}
+                onChange={(event) => setRecurring(event.currentTarget.checked)}
+              />
+              {/* Reoccurring */}
+              <Collapse in={recurring}>
+                <Recurrence />
+              </Collapse>
+              <Group position="center" my="md">
                 <Button type="submit">Submit</Button>
               </Group>
             </form>
@@ -177,6 +170,59 @@ export default function NewEventModal() {
       <Group position="center">
         <Button onClick={() => setOpened(true)}>Open Modal</Button>
       </Group>
-    </LocalizationProvider>
+    </>
   );
 }
+
+/*
+Title
+Type
+Capacity
+[
+  {
+    "capacity": 0,
+    "type": "Breakfast",
+    "startTime": "2022-10-31T10:30:24.473Z",
+    "endTime": "2022-10-31T10:30:24.473Z",
+    "venueId": 0,
+    "areas": [ 0 ],
+  }
+]
+
+Event
+    Title 
+    Description
+    Type
+    Capacity
+    Start Time
+    End Time
+    Venue
+    Areas
+
+Recurring
+    Frequency
+      freq
+      Repeat Every
+        Day, Week, Month
+    Interval
+      interval
+      Interval between iterations
+        int (1, 2, 3, 4, 5, 6, 7)
+    Week Days
+      byweekday
+      Days of the week
+        [0, 1, 2, 3, 4, 5, 6]
+    Start Date
+      dtstart
+      Recurring Start Date
+        Date
+    Count
+      count
+      Number of iterations
+    Until
+      until
+      Recurring End Date
+        Date
+
+    
+*/

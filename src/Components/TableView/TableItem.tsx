@@ -1,20 +1,19 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
-import { createStyles, Text } from '@mantine/core';
-import { useListState } from '@mantine/hooks';
-import * as dayjs from 'dayjs';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
+import { createStyles } from '@mantine/core';
 import Reservation from '../../Models/Reservation';
 
 const useStyles = createStyles((theme) => ({
   item: {
     ...theme.fn.focusStyles(),
-    display: 'flex',
+    // display: 'flex',
     alignItems: 'center',
     borderRadius: theme.radius.md,
     border: `1px solid ${
       theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]
     }`,
-    padding: `${theme.spacing.sm}px ${theme.spacing.xl}px`,
+    // padding: `${theme.spacing.sm}px ${theme.spacing.xl}px`,
+    padding: `${theme.spacing.xs}px ${theme.spacing.xs}px`,
     backgroundColor:
       theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.white,
     marginBottom: theme.spacing.sm,
@@ -31,7 +30,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-function Draggable({ id, data, children }: any) {
+function Draggable({ id, data, children, className }: any) {
   const { classes, cx } = useStyles();
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -44,15 +43,17 @@ function Draggable({ id, data, children }: any) {
     : undefined;
 
   return (
-    <div
-      style={style}
-      className="border"
+    // eslint-disable-next-line react/button-has-type
+    <button
       ref={setNodeRef}
+      style={style}
+      // className=""
+      className={`${cx(classes.item)} ${className}`}
       {...listeners}
       {...attributes}
     >
-      <div className={`${cx(classes.item)}`}>{children}</div>
-    </div>
+      {children}
+    </button>
   );
 }
 
@@ -72,33 +73,4 @@ function Droppable({ id, children }: any) {
 }
 interface TableProps {
   data: Reservation[] | undefined;
-}
-
-export default function ReservationsList({ data }: TableProps) {
-  const { classes, cx } = useStyles();
-  const [state, handlers] = useListState(data);
-
-  const items = state.map((item, index) => (
-    <Draggable key={item.id} index={index} draggableId={item.id} data={item}>
-      <Text className="pr-2">{item.customer.fullName}</Text>
-      <div>
-        <Text>{dayjs(item.dateTime).format('h:mm A - D MMM YY')}</Text>
-        <Text color="dimmed" size="sm">
-          Source: {item.source} | Status: {item.status}
-        </Text>
-      </div>
-    </Draggable>
-  ));
-  return <div>{items}</div>;
-  return (
-    <DndContext
-    // onDragEnd={({ destination, source }) =>
-    //   handlers.reorder({ from: source.index, to: destination?.index || 0 })
-    // }
-    >
-      {/* <Droppable id="reservationsList" direction="vertical"> */}
-      {items}
-      {/* </Droppable> */}
-    </DndContext>
-  );
 }
