@@ -57,15 +57,7 @@ export default function SittingScheduler() {
 
   const eventDrop = (info: any) => {
     getSittingByIdAsync(info.event.id).then((response) => {
-      // updateSittingAsync(response.id, {
-      //   id: info.event.id,
-      //   capacity: response.capacity,
-      //   type: response.type,
-      //   startTime: info.event.start,
-      //   endTime: info.event.end,
-      //   venueId: response.venueId,
-      // });
-      console.log('DEETS', {
+      updateSittingAsync(response.id, {
         id: info.event.id,
         capacity: response.capacity,
         type: response.type,
@@ -73,20 +65,20 @@ export default function SittingScheduler() {
         endTime: info.event.end,
         venueId: response.venueId,
       });
+      // console.log('DEETS', {
+      //   id: info.event.id,
+      //   capacity: response.capacity,
+      //   type: response.type,
+      //   startTime: info.event.start,
+      //   endTime: info.event.end,
+      //   venueId: response.venueId,
+      // });
     });
   };
 
   const eventResizeInfo = (info: any) => {
     getSittingByIdAsync(info.event.id).then((response) => {
-      // updateSittingAsync(response.id, {
-      //   id: info.event.id,
-      //   capacity: response.capacity,
-      //   type: response.type,
-      //   startTime: info.event.start,
-      //   endTime: info.event.end,
-      //   venueId: response.venueId,
-      // });
-      console.log('DEETS', {
+      updateSittingAsync(response.id, {
         id: info.event.id,
         capacity: response.capacity,
         type: response.type,
@@ -94,6 +86,14 @@ export default function SittingScheduler() {
         endTime: info.event.end,
         venueId: response.venueId,
       });
+      // console.log('DEETS', {
+      //   id: info.event.id,
+      //   capacity: response.capacity,
+      //   type: response.type,
+      //   startTime: info.event.start,
+      //   endTime: info.event.end,
+      //   venueId: response.venueId,
+      // });
     });
   };
 
