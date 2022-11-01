@@ -61,20 +61,63 @@ export default function SittingScheduler() {
       //   id: info.event.id,
       //   capacity: response.capacity,
       //   type: response.type,
-      //   startTime: info.event.start.toISOString(),
-      //   endTime: info.event.end.toISOString(),
+      //   startTime: info.event.start,
+      //   endTime: info.event.end,
       //   venueId: response.venueId,
       // });
       console.log('DEETS', {
         id: info.event.id,
         capacity: response.capacity,
         type: response.type,
-        startTime: info.event.start.toISOString(),
-        endTime: info.event.end.toISOString(),
+        startTime: info.event.start,
+        endTime: info.event.end,
         venueId: response.venueId,
       });
     });
   };
+
+  const eventResizeInfo = (info: any) => {
+    getSittingByIdAsync(info.event.id).then((response) => {
+      // updateSittingAsync(response.id, {
+      //   id: info.event.id,
+      //   capacity: response.capacity,
+      //   type: response.type,
+      //   startTime: info.event.start,
+      //   endTime: info.event.end,
+      //   venueId: response.venueId,
+      // });
+      console.log('DEETS', {
+        id: info.event.id,
+        capacity: response.capacity,
+        type: response.type,
+        startTime: info.event.start,
+        endTime: info.event.end,
+        venueId: response.venueId,
+      });
+    });
+  };
+
+  // const eventResizeStop = (info: any) => {
+  //   getSittingByIdAsync(info.event.id).then((response) => {
+  //     // updateSittingAsync(response.id, {
+  //     //   id: info.event.id,
+  //     //   capacity: response.capacity,
+  //     //   type: response.type,
+  //     //   startTime: info.event.start,
+  //     //   endTime: info.event.end,
+  //     //   venueId: response.venueId,
+  //     // });
+  //     console.log('DEETS', {
+  //       id: info.event.id,
+  //       capacity: response.capacity,
+  //       type: response.type,
+  //       startTime: info.event.start,
+  //       endTime: info.event.end,
+  //       venueId: response.venueId,
+  //     });
+  //   });
+  // };
+
   return (
     <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -83,6 +126,8 @@ export default function SittingScheduler() {
       events={events}
       // select={handleSelect}
       eventDrop={eventDrop}
+      // eventResizeStop={eventResizeStop}
+      eventResize={eventResizeInfo}
       initialView="timeGridWeek"
       headerToolbar={{
         start: 'today prev next',
@@ -90,6 +135,7 @@ export default function SittingScheduler() {
         end: '',
       }}
       nowIndicator
+      timeZone="local"
     />
   );
 }
