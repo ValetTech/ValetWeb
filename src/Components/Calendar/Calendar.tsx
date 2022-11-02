@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/jsx-no-bind */
 import '@fullcalendar/react/dist/vdom';
 
@@ -11,10 +13,16 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import rrulePlugin from '@fullcalendar/rrule';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from 'react';
+import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
-import { getSittingsAsync } from '../../Services/ApiServices';
+import {
+  getAreasAsync,
+  getSittingByIdAsync,
+  getSittingsAsync,
+  updateSittingAsync,
+} from '../../Services/ApiServices';
+import CreateEventModal from './CreateEventModal';
 import Droppable from './Droppable';
-import NewEventModal from './Event';
 
 interface EventObject {
   repeat: string;
@@ -75,9 +83,129 @@ Recurrence
 
 
 */
+
+// function CustomRadioButton({
+//   checked,
+//   defaultChecked,
+//   onChange,
+//   title,
+//   description,
+//   className,
+//   ...others
+// }: any) {
+//   const [value, handleChange] = useUncontrolled({
+//     value: checked,
+//     defaultValue: defaultChecked,
+//     finalValue: false,
+//     onChange,
+//   });
+//   return (
+//     <UnstyledButton
+//       {...others}
+//       onClick={() => handleChange(!value)}
+//       className={className}
+//     >
+//       <Radio
+//         checked={value}
+//         onChange={() => {}}
+//         tabIndex={-1}
+//         size="md"
+//         mr="xl"
+//         styles={{ input: { cursor: 'pointer' } }}
+//       />
+
+//       <div>
+//         <Text weight={500} mb={7} sx={{ lineHeight: 1 }}>
+//           {title}
+//         </Text>
+//         <Text size="sm" color="dimmed">
+//           {description}
+//         </Text>
+//       </div>
+//     </UnstyledButton>
+//   );
+// }
+// function Calendar() {
+//   const [events, setEvents] = useState<EventSourceInput[]>([]);
+//   const [sittings, setSittings] = useState<Sitting[]>([]);
+//   const [selectedEvent, setSelectedEvent] = useState<RecurringEvent>();
+//   const [showModal, setShowModal] = useState(false);
+
+//   useEffect(() => {
+//     getSittingsAsync().then((sittings) => {
+//       setSittings(sittings);
+//       setEvents(sittings.map((s) => s.toEvent()));
+//     });
+//   }, []);
+
+//   const handleEventClick = (event: any) => {
+//     const sitting = sittings.find((s) => s.id === event.event.id);
+//     if (sitting) {
+//       setSelectedEvent(sitting.toRecurringEvent());
+//       setShowModal(true);
+//     }
+//   };
+
+//   const handleEventDrop = (event: DragEndEvent) => {
+//     const sitting = sittings.find((s) => s.id === event.active.id);
+//     if (sitting) {
+//       const newSitting = sitting.clone();
+//       newSitting.start = event.active.data.date;
+//       newSitting.end = event.active.data.date;
+//       newSitting.save();
+//     }
+//   };
+
+//   const handleEventResize = (event: DragEndEvent) => {
+//     const sitting = sittings.find((s) => s.id === event.active.id);
+//     if (sitting) {
+//       const newSitting = sitting.clone();
+//       newSitting.end = event.active.data.date;
+//       newSitting.save();
+//     }
+//   };
+
+//   const handleEventAdd = (event: any) => {
+//     const
+// }
+
 export default function SittingsCalendar() {
   const [sittingData, setSittingData] = useState<Sitting[]>([]);
   const [events, setEvents] = useState<EventSourceInput>();
+  const [selectedEvent, setSelectedEvent] = useState<any>();
+  const [show, setShow] = useState(false);
+  const [areas, setAreas] = useState<Area[]>([
+    {
+      id: 1,
+      name: 'Area 1',
+      venueId: 1,
+      size: {
+        x: 10,
+        y: 10,
+      },
+    },
+    {
+      id: 2,
+      name: 'Area 2',
+      venueId: 1,
+      size: {
+        x: 10,
+        y: 10,
+      },
+    },
+    {
+      id: 3,
+      name: 'Area 3',
+      venueId: 1,
+      size: {
+        x: 10,
+        y: 10,
+      },
+    },
+  ]);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   useEffect(() => {
     async function fetchSittings() {
@@ -85,6 +213,14 @@ export default function SittingsCalendar() {
       setSittingData(res);
     }
     fetchSittings();
+    // get areas
+    getAreasAsync()
+      .then((res) => {
+        setAreas(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, []);
 
   useEffect(() => {
@@ -99,24 +235,13 @@ export default function SittingsCalendar() {
     createEvents();
   }, [sittingData]);
 
-  const handleSelect = (info: { start: any; end: any }) => {
+  const handleSelect = (info: { start: Date; end: Date; resource: string }) => {
     const { start, end } = info;
-    const eventNamePrompt = prompt('Enter event name');
-    if (eventNamePrompt) {
-      setEvents([
-        ...events,
-        {
-          start,
-          end,
-          title: eventNamePrompt,
-        },
-      ]);
-    }
-  };
+    console.log('Resource', info.resource);
 
-  function handleDateSelect({ start, end }: { start: any; end: any }) {
-    alert(`date selected ${start}, ${end}`);
-  }
+    setSelectedEvent({ ...selectedEvent, ...info });
+    setShow(true);
+  };
 
   function handleDragEnd(event: DragEndEvent) {
     const { over } = event;
@@ -152,6 +277,32 @@ export default function SittingsCalendar() {
   //   }
   // }
 
+  const handleDrop = (info: any) => {
+    getSittingByIdAsync(info.event.id).then((response) => {
+      updateSittingAsync(response.id, {
+        id: info.event.id,
+        capacity: response.capacity,
+        type: response.type,
+        startTime: info.event.start,
+        endTime: info.event.end,
+        venueId: response.venueId,
+      });
+    });
+  };
+
+  const handleResize = (info: any) => {
+    getSittingByIdAsync(info.event.id).then((response) => {
+      updateSittingAsync(response.id, {
+        id: info.event.id,
+        capacity: response.capacity,
+        type: response.type,
+        startTime: info.event.start,
+        endTime: info.event.end,
+        venueId: response.venueId,
+      });
+    });
+  };
+
   const sampleEvents = [
     {
       id: 1,
@@ -183,10 +334,9 @@ export default function SittingsCalendar() {
               resourceTimelinePlugin,
             ]}
             headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right:
-                'dayGridMonth,timeGridWeek,timeGridDay,resourceTimeGridDay',
+              left: 'title',
+              center: 'prev,today,next',
+              right: 'dayGridMonth,timeGridWeek,resourceTimeGridDay',
             }}
             customButtons={{
               myCustomButton: {
@@ -220,11 +370,10 @@ export default function SittingsCalendar() {
             //   // if so, remove the element from the "Draggable Events" list
             //   info.draggedEl.parentNode.removeChild(info.draggedEl);
             // }
-            resources={[
-              { id: 'a', title: 'Area A' },
-              { id: 'b', title: 'Area B' },
-              { id: 'c', title: 'Area C' },
-            ]}
+            resources={areas.map((area) => ({
+              id: area?.id.toString(),
+              title: area?.name,
+            }))}
             events={events} // Add events
             //   eventContent={renderEventContent} // custom render function
             //   eventClick={this.handleEventClick}
@@ -233,10 +382,21 @@ export default function SittingsCalendar() {
             eventChange={function(){}}
             eventRemove={function(){}}
             */
-            select={handleDateSelect}
-            // eventAdd={<NewEventModal />}
+            select={handleSelect}
+            // select={handleSelect}
+            eventDrop={handleDrop}
+            // eventResizeStop={eventResizeStop}
+            eventResize={handleResize}
+            // eventAdd={<CreateEventModal />}
           />
-          <NewEventModal />
+          {/* <NewEventModal /> */}
+          <CreateEventModal
+            show={show}
+            handleShow={handleShow}
+            handleClose={handleClose}
+            event={selectedEvent}
+            areas={areas}
+          />
         </Droppable>
         {/* <DefaultSittings /> */}
         {/* <NewEventModal /> */}
@@ -253,3 +413,20 @@ export default function SittingsCalendar() {
     </DndContext>
   );
 }
+
+/*
+[
+  {
+    "id": 0,
+    "capacity": 0,
+    "type": "Breakfast",
+    "startTime": "2022-11-02T01:13:28.943Z",
+    "endTime": "2022-11-02T01:13:28.943Z",
+    "venueId": 0,
+    "areas": [
+      
+    ],
+    
+  }
+]
+*/

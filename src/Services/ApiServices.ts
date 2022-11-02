@@ -254,3 +254,20 @@ export async function updateCustomerAsync(id: number, customer: Customer) {
     console.log(error);
   }
 }
+
+// Get sitting types
+export async function getSittingTypesAsync(date?: string) {
+  try {
+    const response = await axios.get(
+      `/sittings/types${date ? `date=${date}` : ''}`,
+      {
+        // withCredentials: false,
+      }
+    );
+    console.log('Sitting Types', response.data);
+
+    return response.data;
+  } catch (error) {
+    throw new Error();
+  }
+}

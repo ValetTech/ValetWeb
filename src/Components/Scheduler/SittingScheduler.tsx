@@ -8,14 +8,13 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 // #endregion
 
 // Services
 // #region
 import {
-  getSittingsAsync,
   getSittingByIdAsync,
+  getSittingsAsync,
   updateSittingAsync,
 } from '../../Services/ApiServices';
 // #endregion
