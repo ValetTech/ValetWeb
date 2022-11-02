@@ -6,6 +6,8 @@ import {
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import { HashRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './Redux/store';
 import DefaultAppShell from './Layouts/AppShell';
 
 export default function App() {
@@ -21,24 +23,26 @@ export default function App() {
   useHotkeys([['mod+J', () => toggleColorScheme()]]);
 
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        theme={{ colorScheme }}
-        withGlobalStyles
-        withNormalizeCSS
+    <Provider store={store}>
+      <ColorSchemeProvider
+        colorScheme={colorScheme}
+        toggleColorScheme={toggleColorScheme}
       >
-        <NotificationsProvider>
-          <HashRouter>
-            <DefaultAppShell
-              colorScheme={colorScheme}
-              setColorScheme={setColorScheme}
-            />
-          </HashRouter>
-        </NotificationsProvider>
-      </MantineProvider>
-    </ColorSchemeProvider>
+        <MantineProvider
+          theme={{ colorScheme }}
+          withGlobalStyles
+          withNormalizeCSS
+        >
+          <NotificationsProvider>
+            <HashRouter>
+              <DefaultAppShell
+                colorScheme={colorScheme}
+                setColorScheme={setColorScheme}
+              />
+            </HashRouter>
+          </NotificationsProvider>
+        </MantineProvider>
+      </ColorSchemeProvider>
+    </Provider>
   );
 }
