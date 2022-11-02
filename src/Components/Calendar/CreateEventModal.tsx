@@ -59,26 +59,29 @@ export default function CreateEventModal({
   const [recurType, setRecurType] = useState<StopCondition>(
     StopCondition.never
   );
+  const [eventData, setEventData] = useState<any>(
+    event?.event?.extendedProps?.data
+  );
 
   const form = useForm({
     initialValues: {
       sitting: {
-        id: event?.id || 0,
-        title: event?.title || '',
-        capacity: event?.capacity || 1,
-        type: event?.type || '',
-        startTime: event?.startTime || dayjs().toDate(),
-        endTime: event?.endTime || dayjs().add(1, 'hour').toDate(),
-        venueId: event?.venueId || 1,
-        groupId: event?.groupId || 0,
-        areas: event?.areas || [event?.resource?.id] || [],
+        id: eventData?.id ?? 0,
+        title: eventData?.title ?? '',
+        capacity: eventData?.capacity ?? 1,
+        type: eventData?.type ?? '',
+        startTime: eventData?.start ?? dayjs().toDate(),
+        endTime: eventData?.end ?? dayjs().add(1, 'hour').toDate(),
+        venueId: eventData?.venueId ?? 1,
+        groupId: eventData?.groupId ?? 0,
+        areas: eventData?.areas ?? [event?.event?.resource?.id] ?? [],
       },
       rrule: {
-        freq: rrule.freq || 'none',
-        interval: rrule.interval || 1,
-        byweekday: rrule.byweekday || [dayjs().day()],
-        until: rrule.until || dayjs().add(1, 'week').toDate(),
-        count: rrule.count || 1,
+        freq: rrule.freq ?? 'none',
+        interval: rrule.interval ?? 1,
+        byweekday: rrule.byweekday ?? [dayjs().day()],
+        until: rrule.until ?? dayjs().add(1, 'week').toDate(),
+        count: rrule.count ?? 1,
       },
     },
   });
@@ -89,6 +92,45 @@ export default function CreateEventModal({
       setTypes(data);
     });
   }, []);
+
+  // useEffect(() => {
+  //   // form.setFieldValue('sitting.id', event?.event?.id ?? 0);
+  //   // form.setFieldValue('sitting.title', event?.event?.title);
+
+  //   form.setValues({
+  //     sitting: {
+  //       id: event?.event?.id ?? 0,
+  //       title: event?.event?.title ?? '',
+  //       capacity: event?.event?.capacity ?? 1,
+  //       type: event?.event?.type ?? '',
+  //       startTime: event?.event?.startTime ?? dayjs().toDate(),
+  //       endTime: event?.event?.endTime ?? dayjs().add(1, 'hour').toDate(),
+  //       venueId: event?.event?.venueId ?? 1,
+  //       groupId: event?.event?.groupId ?? 0,
+  //       areas: event?.event?.areas ?? [event?.event?.resource?.id] ?? [],
+  //     },
+  //     rrule: {
+  //       freq: rrule.freq ?? 'none',
+  //       interval: rrule.interval ?? 1,
+  //       byweekday: rrule.byweekday ?? [dayjs().day()],
+  //       until: rrule.until ?? dayjs().add(1, 'week').toDate(),
+  //       count: rrule.count ?? 1,
+  //     },
+  //   });
+  //   // console.log('Form values: ', form.values);
+  // }, [event?.event]);
+
+  useEffect(() => {
+    // form.setFieldValue('sitting.id', event?.event?.id ?? 0);
+    // form.setFieldValue('sitting.title', event?.event?.title);
+    // console.log('Form values: ', form.values);
+    setEventData(event?.event?.extendedProps?.data);
+  }, [event]);
+
+  useEffect(() => {
+    form.setValues(eventData);
+    console.log('Form evenb: ', eventData);
+  }, [eventData]);
 
   // ?????????????????????
   const handleRecurTypeChange = (value: StopCondition) => {
@@ -128,7 +170,12 @@ export default function CreateEventModal({
         size="auto"
         title="Create Sitting"
       >
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form
+          onSubmit={form.onSubmit((values) => {
+            form.reset();
+            console.log(values);
+          })}
+        >
           <Stack spacing="sm">
             <div>
               <Text color="dimmed" className="mb-0 cursor-default">
@@ -157,8 +204,8 @@ export default function CreateEventModal({
                   description: area.description,
                   group: area.tables?.length > 0 ? 'Tables' : 'Rooms',
                 }))}
-                // {...form.getInputProps('sitting.areas')}
-                defaultValue={['1', '2', '3']}
+                {...form.getInputProps('sitting.areas')}
+                // defaultValue={['1', '2', '3']}
               />
             </div>
 
@@ -185,8 +232,7 @@ export default function CreateEventModal({
                 <NumberInput
                   className="mt-0"
                   min={0}
-                  value={1}
-                  onChange={() => {}}
+                  {...form.getInputProps('sitting.capacity')}
                 />
               </div>
             </Group>
@@ -198,8 +244,7 @@ export default function CreateEventModal({
                 </Text>
                 <DatePicker
                   className="mt-0"
-                  value={new Date()}
-                  onChange={() => {}}
+                  {...form.getInputProps('sitting.startTime')}
                 />
               </div>
               <div className="flex flex-col">
@@ -208,8 +253,7 @@ export default function CreateEventModal({
                 </Text>
                 <DatePicker
                   className="mt-0"
-                  value={new Date()}
-                  onChange={() => {}}
+                  {...form.getInputProps('sitting.endTime')}
                 />
               </div>
             </Group>

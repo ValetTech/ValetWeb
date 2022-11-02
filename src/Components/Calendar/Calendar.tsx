@@ -3,9 +3,14 @@
 /* eslint-disable react/jsx-no-bind */
 import '@fullcalendar/react/dist/vdom';
 
-import FullCalendar, { EventSourceInput } from '@fullcalendar/react';
+import FullCalendar, {
+  DateSelectArg,
+  EventClickArg,
+  EventSourceInput,
+} from '@fullcalendar/react';
 
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { DragEndEvent } from '@dnd-kit/core';
+import allLocales from '@fullcalendar/core/locales-all';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
@@ -22,7 +27,6 @@ import {
   updateSittingAsync,
 } from '../../Services/ApiServices';
 import CreateEventModal from './CreateEventModal';
-import Droppable from './Droppable';
 
 interface EventObject {
   repeat: string;
@@ -174,6 +178,7 @@ export default function SittingsCalendar() {
   const [events, setEvents] = useState<EventSourceInput>();
   const [selectedEvent, setSelectedEvent] = useState<any>();
   const [show, setShow] = useState(false);
+
   const [areas, setAreas] = useState<Area[]>([
     {
       id: 1,
@@ -208,12 +213,10 @@ export default function SittingsCalendar() {
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    async function fetchSittings() {
-      const res: Sitting[] = await getSittingsAsync();
-      setSittingData(res);
-    }
-    fetchSittings();
-    // get areas
+    getSittingsAsync().then((sittings) => {
+      setSittingData(sittings);
+      // setEvents(sittings.map((s) => s.toEvent()));
+    });
     getAreasAsync()
       .then((res) => {
         setAreas(res);
@@ -226,22 +229,28 @@ export default function SittingsCalendar() {
   useEffect(() => {
     function createEvents() {
       const sittings = sittingData.map((s) => ({
+        id: s.id,
         title: s.type,
         start: s.startTime,
         end: s.endTime,
+        resourceIds: s.areas?.map((a) => a.id),
+        groupId: s.groupId,
+        data: s,
       }));
       setEvents(sittings);
     }
     createEvents();
   }, [sittingData]);
 
-  const handleSelect = (info: { start: Date; end: Date; resource: string }) => {
-    const { start, end } = info;
-    console.log('Resource', info.resource);
-
-    setSelectedEvent({ ...selectedEvent, ...info });
+  const handleSelect = (arg: DateSelectArg) => {
+    setSelectedEvent({ ...selectedEvent, ...arg });
     setShow(true);
   };
+
+  function handleEventClick(arg: EventClickArg) {
+    setSelectedEvent({ ...arg });
+    setShow(true);
+  }
 
   function handleDragEnd(event: DragEndEvent) {
     const { over } = event;
@@ -320,87 +329,91 @@ export default function SittingsCalendar() {
 
   return (
     // eslint-disable-next-line react/jsx-no-bind
-    <DndContext onDragEnd={handleDragEnd}>
-      <div className="w-full h-full pb-2 px-1 ml-0">
-        <Droppable key={1} id="calendar">
-          <FullCalendar
-            schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
-            plugins={[
-              rrulePlugin,
-              dayGridPlugin,
-              timeGridPlugin,
-              interactionPlugin,
-              resourceTimeGridPlugin,
-              resourceTimelinePlugin,
-            ]}
-            headerToolbar={{
-              left: 'title',
-              center: 'prev,today,next',
-              right: 'dayGridMonth,timeGridWeek,resourceTimeGridDay',
-            }}
-            customButtons={{
-              myCustomButton: {
-                text: 'custom!',
-                click: () => {
-                  alert('clicked the custom button!');
-                },
-              },
-            }}
-            // footerToolbar={
-            //   {
-            //     // left: 'myCustomButton',
-            //   }
-            // }
-            droppable
-            height="100%"
-            initialView="resourceTimeGridDay"
-            editable
-            selectable
-            selectMirror
-            dayMaxEvents
-            weekends
-            firstDay={1}
-            allDaySlot={false}
-            dropAccept=".sitting"
-            drop={() => {
-              alert('dropped!');
-            }}
-            // is the "remove after drop" checkbox checked?
-            // if (checkbox.checked) {
-            //   // if so, remove the element from the "Draggable Events" list
-            //   info.draggedEl.parentNode.removeChild(info.draggedEl);
-            // }
-            resources={areas.map((area) => ({
-              id: area?.id.toString(),
-              title: area?.name,
-            }))}
-            events={events} // Add events
-            //   eventContent={renderEventContent} // custom render function
-            //   eventClick={this.handleEventClick}
-            //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-            /* you can update a remote database when these fire:
+    // <DndContext onDragEnd={handleDragEnd}>
+    <div className="w-full h-full pb-2 px-1 ml-0">
+      {/* <Droppable key={1} id="calendar"> */}
+      <FullCalendar
+        schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+        plugins={[
+          rrulePlugin,
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin,
+          resourceTimeGridPlugin,
+          resourceTimelinePlugin,
+        ]}
+        headerToolbar={{
+          left: 'title',
+          center: 'prev,today,next',
+          right: 'dayGridMonth,timeGridWeek,resourceTimeGridDay',
+        }}
+        customButtons={{
+          myCustomButton: {
+            text: 'custom!',
+            click: () => {
+              alert('clicked the custom button!');
+            },
+          },
+        }}
+        // footerToolbar={
+        //   {
+        //     // left: 'myCustomButton',
+        //   }
+        // }
+        locales={allLocales}
+        locale="en-au"
+        droppable
+        height="100%"
+        initialView="resourceTimeGridDay"
+        editable
+        eventResizableFromStart
+        selectable
+        selectMirror
+        dayMaxEvents
+        weekends
+        firstDay={1}
+        allDaySlot={false}
+        dropAccept=".sitting"
+        drop={() => {
+          alert('dropped!');
+        }}
+        // is the "remove after drop" checkbox checked?
+        // if (checkbox.checked) {
+        //   // if so, remove the element from the "Draggable Events" list
+        //   info.draggedEl.parentNode.removeChild(info.draggedEl);
+        // }
+        resources={areas.map((area) => ({
+          id: area?.id.toString(),
+          title: area?.name,
+        }))}
+        events={events} // Add events
+        //   eventContent={renderEventContent} // custom render function
+        //   eventClick={this.handleEventClick}
+        //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+        /* you can update a remote database when these fire:
             eventChange={function(){}}
             eventRemove={function(){}}
             */
-            select={handleSelect}
-            // select={handleSelect}
-            eventDrop={handleDrop}
-            // eventResizeStop={eventResizeStop}
-            eventResize={handleResize}
-            // eventAdd={<CreateEventModal />}
-          />
-          {/* <NewEventModal /> */}
-          <CreateEventModal
-            show={show}
-            handleShow={handleShow}
-            handleClose={handleClose}
-            event={selectedEvent}
-            areas={areas}
-          />
-        </Droppable>
-        {/* <DefaultSittings /> */}
-        {/* <NewEventModal /> */}
-        {/* <div className="flex flex-row flex-wrap">
+        select={handleSelect}
+        eventClick={handleEventClick}
+        // select={handleSelect}
+        eventDrop={handleDrop}
+        // eventResizeStop={eventResizeStop}
+        eventResize={handleResize}
+        // eventAdd={<CreateEventModal />}
+      />
+      {/* <NewEventModal /> */}
+      <CreateEventModal
+        show={show}
+        handleShow={handleShow}
+        handleClose={handleClose}
+        event={selectedEvent}
+        areas={areas}
+      />
+      {/* </Droppable> */}
+      {/* <DefaultSittings /> */}
+      {/* <NewEventModal /> */}
+      {/* <div className="flex flex-row flex-wrap">
           {sampleEvents.map((event) => (
             <Draggable key={event.id} id={event.id}>
               <div className="sitting bg-blue-500 text-white p-2 m-1 rounded">
@@ -409,8 +422,8 @@ export default function SittingsCalendar() {
             </Draggable>
           ))}
         </div> */}
-      </div>
-    </DndContext>
+      {/* </DndContext> */}
+    </div>
   );
 }
 
