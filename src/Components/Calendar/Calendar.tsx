@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import '@fullcalendar/react/dist/vdom';
 
 import FullCalendar, { EventSourceInput } from '@fullcalendar/react';
@@ -5,11 +6,15 @@ import FullCalendar, { EventSourceInput } from '@fullcalendar/react';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
+import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
+import rrulePlugin from '@fullcalendar/rrule';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from 'react';
 import Sitting from '../../Models/Sitting';
 import { getSittingsAsync } from '../../Services/ApiServices';
 import Droppable from './Droppable';
+import NewEventModal from './Event';
 
 interface EventObject {
   repeat: string;
@@ -109,6 +114,10 @@ export default function SittingsCalendar() {
     }
   };
 
+  function handleDateSelect({ start, end }: { start: any; end: any }) {
+    alert(`date selected ${start}, ${end}`);
+  }
+
   function handleDragEnd(event: DragEndEvent) {
     const { over } = event;
     console.log('event', event);
@@ -164,11 +173,20 @@ export default function SittingsCalendar() {
       <div className="w-full h-full pb-2 px-1 ml-0">
         <Droppable key={1} id="calendar">
           <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+            plugins={[
+              rrulePlugin,
+              dayGridPlugin,
+              timeGridPlugin,
+              interactionPlugin,
+              resourceTimeGridPlugin,
+              resourceTimelinePlugin,
+            ]}
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay',
+              right:
+                'dayGridMonth,timeGridWeek,timeGridDay,resourceTimeGridDay',
             }}
             customButtons={{
               myCustomButton: {
@@ -178,17 +196,21 @@ export default function SittingsCalendar() {
                 },
               },
             }}
-            footerToolbar={{
-              left: 'myCustomButton',
-            }}
+            // footerToolbar={
+            //   {
+            //     // left: 'myCustomButton',
+            //   }
+            // }
             droppable
             height="100%"
-            initialView="timeGridWeek"
+            initialView="resourceTimeGridDay"
             editable
             selectable
             selectMirror
             dayMaxEvents
             weekends
+            firstDay={1}
+            allDaySlot={false}
             dropAccept=".sitting"
             drop={() => {
               alert('dropped!');
@@ -198,20 +220,35 @@ export default function SittingsCalendar() {
             //   // if so, remove the element from the "Draggable Events" list
             //   info.draggedEl.parentNode.removeChild(info.draggedEl);
             // }
+            resources={[
+              { id: 'a', title: 'Area A' },
+              { id: 'b', title: 'Area B' },
+              { id: 'c', title: 'Area C' },
+            ]}
             events={events} // Add events
-            //   select={this.handleDateSelect}
             //   eventContent={renderEventContent} // custom render function
             //   eventClick={this.handleEventClick}
             //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
             /* you can update a remote database when these fire:
-            eventAdd={function(){}}
             eventChange={function(){}}
             eventRemove={function(){}}
             */
+            select={handleDateSelect}
+            // eventAdd={<NewEventModal />}
           />
+          <NewEventModal />
         </Droppable>
         {/* <DefaultSittings /> */}
         {/* <NewEventModal /> */}
+        {/* <div className="flex flex-row flex-wrap">
+          {sampleEvents.map((event) => (
+            <Draggable key={event.id} id={event.id}>
+              <div className="sitting bg-blue-500 text-white p-2 m-1 rounded">
+                {event.title}
+              </div>
+            </Draggable>
+          ))}
+        </div> */}
       </div>
     </DndContext>
   );
