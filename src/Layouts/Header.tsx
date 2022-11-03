@@ -9,8 +9,8 @@ import {
 } from '@mantine/core';
 import { useColorScheme, useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
-import LogoLight from '../Assets/Images/Logo/H-LogoDark.png';
-import LogoDark from '../Assets/Images/Logo/H-LogoLight.png';
+import LogoBlack from '../Assets/Images/Logo/H-LogoBlack.png';
+import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
 import UserButton from '../Components/User/UserButton';
 
 interface HeaderSimpleProps {
@@ -33,14 +33,14 @@ export default function Header({ links }: HeaderSimpleProps) {
                   <Image
                     fit="contain"
                     height={40}
-                    src={LogoLight}
+                    src={LogoWhite}
                     alt="Valet Logo"
                   />
                 ) : (
                   <Image
                     fit="contain"
                     height={40}
-                    src={LogoDark}
+                    src={LogoBlack}
                     alt="Valet Logo"
                   />
                 )}

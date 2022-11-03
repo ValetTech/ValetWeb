@@ -8,12 +8,13 @@ import {
   Stack,
   Tooltip,
   UnstyledButton,
+  useMantineColorScheme,
 } from '@mantine/core';
-import { useColorScheme } from '@mantine/hooks';
 import { IconSettings, TablerIcon } from '@tabler/icons';
+import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import LogoLight from '../Assets/Images/Logo/H-LogoDark.png';
-import LogoDark from '../Assets/Images/Logo/H-LogoLight.png';
+import LogoBlack from '../Assets/Images/Logo/H-LogoBlack.png';
+import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
 import ToggleColor from '../Components/Buttons/ToggleColorScheme';
 
 const useStyles = createStyles((theme) => ({
@@ -98,10 +99,20 @@ interface NavbarProps {
   }[];
 }
 
+function Logo({ colorScheme }: { colorScheme: 'light' | 'dark' }) {
+  return colorScheme === 'dark' ? (
+    <Image fit="contain" height={40} src={LogoWhite} alt="Valet Logo" />
+  ) : (
+    <Image fit="contain" height={40} src={LogoBlack} alt="Valet Logo" />
+  );
+}
 export default function Nav({ links }: NavbarProps) {
   const { pathname } = useLocation();
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
+  const { colorScheme } = useMantineColorScheme();
   const { classes } = useStyles();
+
+  useEffect(() => {}, [colorScheme]);
 
   const linksList = links.map((link) => (
     <NavbarLink
@@ -123,21 +134,7 @@ export default function Nav({ links }: NavbarProps) {
       >
         <Center>
           <Anchor component={Link} to="/">
-            {colorScheme === 'dark' ? (
-              <Image
-                fit="contain"
-                height={40}
-                src={LogoLight}
-                alt="Valet Logo"
-              />
-            ) : (
-              <Image
-                fit="contain"
-                height={40}
-                src={LogoDark}
-                alt="Valet Logo"
-              />
-            )}
+            <Logo colorScheme={colorScheme} />
           </Anchor>
         </Center>
         <Navbar.Section grow mt={50}>
