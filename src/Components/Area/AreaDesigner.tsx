@@ -36,6 +36,8 @@ import { useForm } from '@mantine/form';
 import { forwardRef, useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import { createAreaAsync, getAreasAsync } from '../../Services/ApiServices';
+import CreatedNotification from '../Notifications/NotifyCreate';
+import ErrorNotification from '../Notifications/NotifyError';
 
 function App() {
   const [activeId, setActiveId] = useState(null);
@@ -134,6 +136,7 @@ export default function AreaDesigner() {
       })
       .catch((error) => {
         console.log(error);
+        ErrorNotification(error.message);
       });
   }, []);
 
@@ -169,11 +172,12 @@ export default function AreaDesigner() {
 
     createAreaAsync(rest)
       .then((response) => {
-        console.log(response);
         setAreas([...areas, response]);
+        CreatedNotification();
       })
       .catch((err) => {
         console.log(err);
+        ErrorNotification(err.message);
       });
   }
 
@@ -274,16 +278,27 @@ export default function AreaDesigner() {
             nothingFound="Nothing found"
             clearable
             className="mb-2"
+            creatable
+            getCreateLabel={(query) => `+ Create ${query}`}
+            onCreate={(query) => {
+              const item = {
+                value: query,
+                label: query,
+                type: query,
+                capacity: 5,
+              };
+              form.setFieldValue('tables', [
+                ...(form.values.tables ?? []),
+                item,
+              ]);
+              return item;
+            }}
             {...form.getInputProps('tables')}
             // value={tables}
             // onChange={(value) => {
             //   console.log(value);
             //   setTables(value);
             //   form.setFieldValue('tables', value);
-            // }}
-            // onChange={(value) => {
-            //   console.log(value);
-            //   // form.setFieldValue('tables',);
             // }}
           />
           <Button variant="outline" onClick={() => form.reset()}>

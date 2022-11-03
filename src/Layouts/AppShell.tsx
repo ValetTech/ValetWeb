@@ -1,5 +1,6 @@
 import { AppShell } from '@mantine/core';
 import {
+  IconBoxModel2,
   IconBrandAirtable,
   IconCalendarEvent,
   IconCalendarStats,
@@ -21,6 +22,7 @@ const links = [
   { link: '/orders', icon: IconGauge, label: 'Orders' },
   { link: '/tables', icon: IconBrandAirtable, label: 'Tables' },
   { link: '/calendar', icon: IconCalendarEvent, label: 'Calendar' },
+  { link: '/areas', icon: IconBoxModel2, label: 'Area Designer' },
 ];
 
 export default function DefaultAppShell() {
