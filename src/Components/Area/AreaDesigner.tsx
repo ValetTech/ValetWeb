@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   closestCenter,
@@ -24,6 +25,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   Button,
+  Container,
   Group,
   MultiSelect,
   NumberInput,
@@ -33,17 +35,18 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { forwardRef, useEffect, useState } from 'react';
+import Area from '../../Models/Area';
 import { createAreaAsync, getAreasAsync } from '../../Services/ApiServices';
 
 export default function AreaDesigner() {
-  const form = useForm({
+  const form = useForm<Area>({
     initialValues: {
       name: '',
       description: '',
       width: 0,
       height: 0,
       venueId: 1,
-      tables: [],
+      tables: [{}],
     },
     validate: {
       name: (value) => (value.length < 1 ? 'Please enter a valid name' : null),
@@ -51,14 +54,35 @@ export default function AreaDesigner() {
         value.length < 1 ? 'Please enter a valid description' : null,
     },
   });
+  const [areas, setAreas] = useState<Area[]>([]);
+  const [selectedArea, setSelectedArea] = useState<Area | null>(null);
+  const [tables, setTables] = useState<any[]>([]);
 
-  const [areas, setAreas] = useState([]);
+  const tableTypes = [
+    {
+      label: 'Table',
+      value: 'table',
+      type: 'table',
+      capacity: 4,
+    },
+    {
+      label: 'Bar',
+      value: 'bar',
+      type: 'bar',
+      capacity: 12,
+    },
+    {
+      label: 'Booth',
+      value: 'booth',
+      type: 'booth',
+      capacity: 6,
+    },
+  ];
 
   useEffect(() => {
     // on load call api to get areas
     getAreasAsync()
       .then((response) => {
-        console.log(response);
         setAreas(response);
       })
       .catch((error) => {
@@ -85,79 +109,150 @@ export default function AreaDesigner() {
   //       )}
   //     </Draggable>
   //   ));
-  const tableTypes = [
-    { label: 'Table', value: 'table' },
-    { label: 'Bar', value: 'bar' },
-    { label: 'Booth', value: 'booth' },
-  ];
 
   function handleSubmit() {
-    console.log(form.values);
-    createAreaAsync(form.values)
+    const { sittings, id, ...rest } = form.values;
+    rest.tables = [...tableTypes, ...tables]
+      .filter((t) => form.values?.tables?.includes(t.type))
+      .map((t) => ({
+        type: t.type,
+        capacity: t.capacity,
+        position: t.position ?? null,
+      }));
+
+    createAreaAsync(rest)
       .then((response) => {
         console.log(response);
+        setAreas([...areas, response]);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        console.log(err);
       });
+  }
+
+  function handleLayoutChange(value: string) {
+    const area = areas.filter((a) => a.id === +value)[0];
+    setSelectedArea(area);
+    const tablesData = area.tables?.map((t) => {
+      return {
+        label: t.type,
+        value: t.type,
+        ...t,
+      };
+    });
+    setTables(tablesData ?? []);
+
+    const tablesForm =
+      selectedArea?.tables?.map((t) => ({
+        label: t.type,
+        value: t.type,
+        type: t.type,
+        capacity: t.capacity ?? 0,
+        position: t.position ?? null,
+      })) ?? [];
+
+    // form.setFieldValue('tables', tablesForm);
+    if (area) {
+      form.setValues(area);
+    }
   }
 
   return (
     <DndContext modifiers={[restrictToVerticalAxis]}>
       <DragOverlay modifiers={[restrictToWindowEdges]}>{}</DragOverlay>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={form.onSubmit(handleSubmit)}>
         <h1>Area Designer</h1>
-        <Group>
-          <TextInput
-            label="Name"
-            placeholder="Name"
-            required
-            {...form.getInputProps('name')}
-          />
-          <Select
-            label="Copy default layout"
-            placeholder="Select layout"
-            data={areas.map((area) => ({
-              label: area.name,
-              value: area.id,
-            }))}
+        <Container>
+          <div className="flex flex-row w-full">
+            <TextInput
+              label="Name"
+              placeholder="Name"
+              required
+              {...form.getInputProps('name')}
+              className="mr-3 w-1/2"
+            />
+            <Select
+              label="Copy default layout"
+              placeholder="Select layout"
+              data={areas.map((area) => ({
+                label: area.name,
+                value: area.id,
+                ...area,
+              }))}
+              searchable
+              allowDeselect
+              nothingFound="No areas"
+              className="w-1/2"
+              onChange={handleLayoutChange}
+            />
+          </div>
+          <div className="flex flex-row">
+            <Textarea
+              label="Description"
+              placeholder="Description"
+              required
+              // autosize
+              minRows={3}
+              maxRows={5}
+              {...form.getInputProps('description')}
+              className="mr-3 w-1/2 h-full [&>*>*]:pb-[20px]"
+            />
+            <Group className="flex-col w-1/2" spacing={0}>
+              <NumberInput
+                label="Width"
+                required
+                {...form.getInputProps('width')}
+                className="w-full"
+              />
+              <NumberInput
+                label="Height"
+                required
+                {...form.getInputProps('height')}
+                className="w-full"
+              />
+            </Group>
+          </div>
+          <MultiSelect
+            label="Tables"
+            placeholder="Add tables"
+            data={[
+              ...tableTypes,
+              ...tables.map((t) => ({
+                label: t.type,
+                value: t.type,
+                capacity: t.capacity ?? 0,
+              })),
+            ]}
             searchable
-            allowDeselect
-            nothingFound="No areas"
+            nothingFound="Nothing found"
+            clearable
+            className="mb-2"
+            {...form.getInputProps('tables')}
+            // value={tables}
+            // onChange={(value) => {
+            //   console.log(value);
+            //   setTables(value);
+            //   form.setFieldValue('tables', value);
+            // }}
+            // onChange={(value) => {
+            //   console.log(value);
+            //   // form.setFieldValue('tables',);
+            // }}
           />
-        </Group>
-        <Group>
-          <Textarea
-            label="Description"
-            placeholder="Description"
-            required
-            {...form.getInputProps('description')}
-          />
-        </Group>
-        <Group>
-          <NumberInput
-            label="Width"
-            required
-            {...form.getInputProps('width')}
-          />
-          <NumberInput
-            label="Height"
-            required
-            {...form.getInputProps('height')}
-          />
-        </Group>
-        <MultiSelect
-          label="Tables"
-          data={tableTypes}
-          searchable
-          nothingFound="Nothing found"
-          clearable
-          {...form.getInputProps('tables')}
-        />
-        <Button className="mt-2" type="submit" variant="outline" color="blue">
-          Create Area
-        </Button>
-        <App />
+          <Button variant="outline" onClick={() => form.reset()}>
+            Clear
+          </Button>
+          <Button
+            className="mt-2 ml-5"
+            variant="outline"
+            color="blue"
+            // onClick={handleSubmit}
+            type="submit"
+          >
+            Create Area
+          </Button>
+          <App />
+        </Container>
       </form>
     </DndContext>
   );

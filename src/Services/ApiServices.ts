@@ -125,8 +125,7 @@ export async function getAreaByIdAsync(id: number) {
 export async function createAreaAsync(area: Area) {
   try {
     const response = await axios.post('/areas', {
-      name: area.name,
-      description: area.description,
+      ...area,
     });
     console.log('response.data', response.data);
 

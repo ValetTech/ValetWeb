@@ -1,9 +1,9 @@
 export default interface Table {
-  id: number;
+  id?: number;
   type: string;
   capacity: number;
-  areaId: number;
-  position: TablePosition;
+  areaId?: number;
+  position?: TablePosition;
 }
 
 export interface TablePosition {
