@@ -174,6 +174,7 @@ export default function AreaDesigner() {
       .then((response) => {
         setAreas([...areas, response]);
         CreatedNotification();
+        form.reset();
       })
       .catch((err) => {
         console.log(err);
@@ -208,10 +209,16 @@ export default function AreaDesigner() {
     }
   }
 
+  function handleReset() {
+    form.reset();
+    setSelectedArea(null);
+    setTables([]);
+  }
+
   return (
     <DndContext modifiers={[restrictToVerticalAxis]}>
       <DragOverlay modifiers={[restrictToWindowEdges]}>{}</DragOverlay>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
+      <form onSubmit={form.onSubmit(handleSubmit)} onReset={handleReset}>
         <h1>Area Designer</h1>
         <Container>
           <div className="flex flex-row w-full">
@@ -234,6 +241,7 @@ export default function AreaDesigner() {
               allowDeselect
               nothingFound="No areas"
               className="w-1/2"
+              value={selectedArea?.id?.toString()}
               onChange={handleLayoutChange}
             />
           </div>
