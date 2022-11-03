@@ -35,10 +35,18 @@ interface HeaderSimpleProps {
 
 const useStyles = createStyles((theme) => ({
   header: {
-    backgroundColor:
-      theme.colorScheme === 'dark'
-        ? theme.colors.dark[6]
-        : theme.colors.gray[0],
+    // backgroundColor:
+    //   theme.colorScheme === 'dark'
+    //     ? theme.colors.dark[6]
+    //     : theme.colors.gray[0],
+    [theme.fn.smallerThan('xs')]: {
+      borderBottom: `1px solid ${
+        theme.colorScheme === 'dark'
+          ? theme.colors.dark[5]
+          : theme.colors.gray[2]
+      }`,
+    },
+
     // borderBottom: `1px solid ${
     //   theme.colorScheme === 'dark' ? 'transparent' : theme.colors.gray[2]
     // }`,

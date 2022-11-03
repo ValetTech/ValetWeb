@@ -11,7 +11,7 @@ export default function Calendar() {
 
   return (
     // <DndContext>
-    <div className="px-4 w-full h-full py-2">
+    <div className="px-4 w-full h-full py-2 ">
       <SittingsCalendar />
     </div>
     // </DndContext>
