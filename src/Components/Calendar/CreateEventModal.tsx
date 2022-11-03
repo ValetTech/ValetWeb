@@ -40,6 +40,7 @@ export default function CreateEventModal({
   show,
   handleClose,
   handleShow,
+  setEvent,
   event,
   areas,
 }: any) {
@@ -93,32 +94,32 @@ export default function CreateEventModal({
     });
   }, []);
 
-  // useEffect(() => {
-  //   // form.setFieldValue('sitting.id', event?.event?.id ?? 0);
-  //   // form.setFieldValue('sitting.title', event?.event?.title);
+  useEffect(() => {
+    // form.setFieldValue('sitting.id', event?.event?.id ?? 0);
+    // form.setFieldValue('sitting.title', event?.event?.title);
 
-  //   form.setValues({
-  //     sitting: {
-  //       id: event?.event?.id ?? 0,
-  //       title: event?.event?.title ?? '',
-  //       capacity: event?.event?.capacity ?? 1,
-  //       type: event?.event?.type ?? '',
-  //       startTime: event?.event?.startTime ?? dayjs().toDate(),
-  //       endTime: event?.event?.endTime ?? dayjs().add(1, 'hour').toDate(),
-  //       venueId: event?.event?.venueId ?? 1,
-  //       groupId: event?.event?.groupId ?? 0,
-  //       areas: event?.event?.areas ?? [event?.event?.resource?.id] ?? [],
-  //     },
-  //     rrule: {
-  //       freq: rrule.freq ?? 'none',
-  //       interval: rrule.interval ?? 1,
-  //       byweekday: rrule.byweekday ?? [dayjs().day()],
-  //       until: rrule.until ?? dayjs().add(1, 'week').toDate(),
-  //       count: rrule.count ?? 1,
-  //     },
-  //   });
-  //   // console.log('Form values: ', form.values);
-  // }, [event?.event]);
+    form.setValues({
+      sitting: {
+        id: event?.event?.id ?? 0,
+        title: event?.event?.title ?? '',
+        capacity: event?.event?.capacity ?? 1,
+        type: event?.event?.type ?? '',
+        startTime: event?.event?.startTime ?? dayjs().toDate(),
+        endTime: event?.event?.endTime ?? dayjs().add(1, 'hour').toDate(),
+        venueId: event?.event?.venueId ?? 1,
+        groupId: event?.event?.groupId ?? 0,
+        areas: event?.event?.areas ?? [event?.event?.resource?.id] ?? [],
+      },
+      rrule: {
+        freq: rrule.freq ?? 'none',
+        interval: rrule.interval ?? 1,
+        byweekday: rrule.byweekday ?? [dayjs().day()],
+        until: rrule.until ?? dayjs().add(1, 'week').toDate(),
+        count: rrule.count ?? 1,
+      },
+    });
+    // console.log('Form values: ', form.values);
+  }, [event]);
 
   useEffect(() => {
     // form.setFieldValue('sitting.id', event?.event?.id ?? 0);
@@ -158,6 +159,11 @@ export default function CreateEventModal({
     return query;
   }
 
+  function handleReset() {
+    form.reset();
+    handleClose();
+    setEvent(null);
+  }
   return (
     <>
       {/* <Button onClick={handleShow}>Launch demo modal</Button> */}
@@ -175,6 +181,7 @@ export default function CreateEventModal({
             form.reset();
             console.log(values);
           })}
+          onReset={handleReset}
         >
           <Stack spacing="sm">
             <div>

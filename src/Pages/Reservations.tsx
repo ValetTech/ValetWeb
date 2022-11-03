@@ -38,9 +38,9 @@ export default function Reservations() {
   }
 
   return (
-    <>
+    <div className="px-4">
       <Button
-        className="m-2"
+        className="my-2"
         // color="red"
         variant="outline"
         type="button"
@@ -75,6 +75,6 @@ export default function Reservations() {
           onClose={() => onCloseModal()}
         />
       </Modal>
-    </>
+    </div>
   );
 }

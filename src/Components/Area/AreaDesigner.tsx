@@ -219,8 +219,8 @@ export default function AreaDesigner() {
     <DndContext modifiers={[restrictToVerticalAxis]}>
       <DragOverlay modifiers={[restrictToWindowEdges]}>{}</DragOverlay>
       <form onSubmit={form.onSubmit(handleSubmit)} onReset={handleReset}>
-        <h1>Area Designer</h1>
-        <Container>
+        <Container className="mt-2">
+          <h1>Area Designer</h1>
           <div className="flex flex-row w-full">
             <TextInput
               label="Name"

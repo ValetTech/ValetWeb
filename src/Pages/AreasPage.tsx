@@ -12,24 +12,25 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useScrollLock } from '@mantine/hooks';
 import { IconPencil } from '@tabler/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AreaDesigner from '../Components/Area/AreaDesigner';
 import Area from '../Models/Area';
 import { createAreaAsync } from '../Services/ApiServices';
 
 export default function AreasPage() {
   const [opened, setOpened] = useState(false);
+  const [scrollLocked, setScrollLocked] = useScrollLock();
+
+  useEffect(() => {
+    setScrollLocked(true);
+  }, []);
 
   function modalClose() {
     setOpened(false);
   }
-  return (
-    <div>
-      <AreaDesigner />
-      {/* <CreateAreaModal opened={opened} onClose={modalClose} /> */}
-    </div>
-  );
+  return <AreaDesigner />;
 }
 
 interface CreateAreaModalProps {

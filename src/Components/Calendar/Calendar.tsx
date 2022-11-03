@@ -306,21 +306,6 @@ export default function SittingsCalendar() {
     });
   };
 
-  const sampleEvents = [
-    {
-      id: 1,
-      title: 'event1',
-      start: '2022-08-11T10:00:00',
-      end: '2022-08-11T16:00:00',
-    },
-    {
-      id: 2,
-      title: 'event2',
-      start: '2022-08-13T10:00:00',
-      end: '2022-08-13T16:00:00',
-    },
-  ];
-
   return (
     // eslint-disable-next-line react/jsx-no-bind
     // <DndContext onDragEnd={handleDragEnd}>
@@ -357,7 +342,7 @@ export default function SittingsCalendar() {
         locales={allLocales}
         locale="en-au"
         droppable
-        height="100%"
+        height="90%"
         initialView="resourceTimeGridDay"
         editable
         eventResizableFromStart
@@ -377,7 +362,7 @@ export default function SittingsCalendar() {
         //   info.draggedEl.parentNode.removeChild(info.draggedEl);
         // }
         resources={areas.map((area) => ({
-          id: area?.id.toString(),
+          id: area?.id?.toString(),
           title: area?.name,
         }))}
         events={events} // Add events
@@ -402,6 +387,7 @@ export default function SittingsCalendar() {
         handleShow={handleShow}
         handleClose={handleClose}
         event={selectedEvent}
+        setEvent={setSelectedEvent}
         areas={areas}
       />
       {/* </Droppable> */}

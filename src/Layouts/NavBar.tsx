@@ -23,6 +23,10 @@ const useStyles = createStyles((theme) => ({
     [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
       display: 'none',
     },
+    backgroundColor:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[6]
+        : theme.colors.gray[0],
   },
 
   link: {
@@ -99,18 +103,11 @@ interface NavbarProps {
   }[];
 }
 
-function Logo({ colorScheme }: { colorScheme: 'light' | 'dark' }) {
-  return colorScheme === 'dark' ? (
-    <Image fit="contain" height={40} src={LogoWhite} alt="Valet Logo" />
-  ) : (
-    <Image fit="contain" height={40} src={LogoBlack} alt="Valet Logo" />
-  );
-}
 export default function Nav({ links }: NavbarProps) {
   const { pathname } = useLocation();
   // const colorScheme = useColorScheme();
   const { colorScheme } = useMantineColorScheme();
-  const { classes } = useStyles();
+  const { classes, cx } = useStyles();
 
   useEffect(() => {}, [colorScheme]);
 
@@ -130,11 +127,25 @@ export default function Nav({ links }: NavbarProps) {
         withBorder={false}
         width={{ base: 80 }}
         p="md"
-        className="fixed top-0 left-0 z-50 h-full"
+        className={cx('fixed top-0 left-0 z-50 h-full', classes.NavBar)}
       >
         <Center>
           <Anchor component={Link} to="/">
-            <Logo colorScheme={colorScheme} />
+            {colorScheme === 'dark' ? (
+              <Image
+                fit="contain"
+                height={40}
+                src={LogoWhite}
+                alt="Valet Logo"
+              />
+            ) : (
+              <Image
+                fit="contain"
+                height={40}
+                src={LogoBlack}
+                alt="Valet Logo"
+              />
+            )}
           </Anchor>
         </Center>
         <Navbar.Section grow mt={50}>
