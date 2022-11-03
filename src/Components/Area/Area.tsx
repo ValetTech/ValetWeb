@@ -1,5 +1,9 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  useDraggable,
+  useDroppable,
+} from '@dnd-kit/core';
 import { Box, Grid, Group, SimpleGrid } from '@mantine/core';
 import { useState } from 'react';
 
@@ -22,32 +26,12 @@ export default function Area() {
     { id: 'LS', name: 'Lg Square', size: { xSpan: 3, ySpan: 3 } },
     { id: 'LC', name: 'Lg Circle', size: { xSpan: 3, ySpan: 3 } },
   ];
-
-  return (
-    <DndContext onDragEnd={handleDragEnd}>
-      {/* {parent === null ? draggableMarkup : null} */}
-      <Group position="left" spacing="xs">
-        {tableTypes.map((value, index) => (
-          <Draggable key={index} id={value.id} size={value.size}>
-            {value.name}
-          </Draggable>
-        ))}
-      </Group>
-
-      {/* <Droppable key="AreaView" id="AreaView"> */}
-      <Box className="border m-2 p-2">
-        <CreateGrid parent={parent} size={size} grid={grid} />
-      </Box>
-      {/* </Droppable> */}
-    </DndContext>
-  );
-
-  function handleDragEnd(event) {
+  function handleDragEnd(event: DragEndEvent) {
     const { over, active } = event;
 
     // If the item is dropped over a container, set it as the parent
     // otherwise reset the parent to `null`
-    console.log(active.data.current.size);
+    console.log(active.data.current?.size);
     console.log(over);
     const { xSpan, ySpan } = active.data.current.size;
     const newGrid = [...grid];
@@ -61,6 +45,25 @@ export default function Area() {
     setGrid(newGrid);
     setParent(over ? over.id : null);
   }
+
+  return (
+    <DndContext onDragEnd={handleDragEnd}>
+      {/* {parent === null ? draggableMarkup : null} */}
+      <Group position="left" spacing="xs">
+        {tableTypes.map((value, index) => (
+          <Draggable key={value.id} id={value.id} size={value.size}>
+            {value.name}
+          </Draggable>
+        ))}
+      </Group>
+
+      {/* <Droppable key="AreaView" id="AreaView"> */}
+      <Box className="border m-2 p-2">
+        <CreateGrid parent={parent} size={size} grid={grid} />
+      </Box>
+      {/* </Droppable> */}
+    </DndContext>
+  );
 }
 
 function CreateGrid({
@@ -136,10 +139,10 @@ export function Droppable({ id, children }: any) {
   );
 }
 
-export function Draggable(props) {
+export function Draggable({ id, size, children }: any) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: props.id,
-    data: { size: props.size },
+    id,
+    data: { size },
   });
   const style = transform
     ? {
@@ -148,8 +151,14 @@ export function Draggable(props) {
     : undefined;
 
   return (
-    <button ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {props.children}
+    <button
+      type="button"
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+    >
+      {children}
     </button>
   );
 }

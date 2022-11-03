@@ -1,8 +1,13 @@
 /* eslint-disable react/jsx-no-bind */
-/* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/jsx-props-no-spreading */
-import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  UniqueIdentifier,
+  useDraggable,
+  useDroppable,
+} from '@dnd-kit/core';
 import { createSnapModifier } from '@dnd-kit/modifiers';
 import { Group, Table } from '@mantine/core';
 import { IconTable } from '@tabler/icons';
@@ -13,13 +18,13 @@ function TableItem({ id }: any) {
 }
 
 export function App() {
-  const [activeId, setActiveId] = useState(null);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
-  function handleDragStart(event) {
-    setActiveId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active?.id);
   }
 
-  function handleDragEnd() {
+  function handleDragEnd(event: DragEndEvent) {
     setActiveId(null);
   }
 
@@ -57,7 +62,7 @@ export function App() {
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <Group position="left">
         {tableTypes.map((tableType, index) => (
-          <Draggable key={index} id={tableType.type}>
+          <Draggable key={tableType.type} id={tableType.type}>
             <TableItem id={tableType.type} />
           </Draggable>
         ))}
@@ -68,12 +73,12 @@ export function App() {
   );
 }
 
-function DroppableContainer(props) {
+function DroppableContainer({ id, children }: any) {
   const { setNodeRef } = useDroppable({
-    id: props.id,
+    id,
   });
 
-  return <div ref={setNodeRef}>{props.children}</div>;
+  return <div ref={setNodeRef}>{children}</div>;
 }
 
 function Droppable({ id, children }: any) {

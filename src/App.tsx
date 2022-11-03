@@ -33,8 +33,8 @@ export default function App() {
         <NotificationsProvider>
           <HashRouter>
             <DefaultAppShell
-              colorScheme={colorScheme}
-              setColorScheme={setColorScheme}
+            // colorScheme={colorScheme}
+            // setColorScheme={setColorScheme}
             />
           </HashRouter>
         </NotificationsProvider>

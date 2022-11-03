@@ -30,19 +30,19 @@ interface CheckboxCardProps {
   title: React.ReactNode;
   input?: any;
   description: React.ReactNode;
+  className?: string;
 }
 
 export default function CustomRadioButton({
-  checked,
-  defaultChecked,
-  onChange,
+  checked = false,
+  defaultChecked = false,
+  onChange = () => {},
   title,
   input = null,
   description,
-  className,
-  ...others
-}: CheckboxCardProps &
-  Omit<React.ComponentPropsWithoutRef<'button'>, keyof CheckboxCardProps>) {
+  className = '',
+}: // ...others
+CheckboxCardProps) {
   const { classes, cx } = useStyles();
 
   const [value, handleChange] = useUncontrolled({

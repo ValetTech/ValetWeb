@@ -1,7 +1,5 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import { SegmentedControl } from '@mantine/core';
 import type {} from '@mui/x-date-pickers/themeAugmentation';
-import { useState } from 'react';
 import Area from './DragArea';
 
 // TODO - Nav | Area | Date | Sitting |
@@ -9,7 +7,6 @@ import Area from './DragArea';
 // TODO - Add table footer [Square, Circle, Etc]
 
 function ViewHeader() {
-  const [value, setValue] = useState<Date | null>();
   return (
     <div className="flex flex-row justify-between">
       <SegmentedControl

@@ -2,50 +2,16 @@ import {
   Anchor,
   Burger,
   Container,
-  createStyles,
   Group,
   Header as MantineHeader,
   Image,
   MediaQuery,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useColorScheme, useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
-import Logo from '../Assets/Images/Logo/H-LogoLight.png';
+import LogoLight from '../Assets/Images/Logo/H-LogoDark.png';
+import LogoDark from '../Assets/Images/Logo/H-LogoLight.png';
 import UserButton from '../Components/User/UserButton';
-
-// const useStyles = createStyles((theme) => ({
-//   link: {
-//     display: 'block',
-//     lineHeight: 1,
-//     padding: '8px 12px',
-//     borderRadius: theme.radius.sm,
-//     textDecoration: 'none',
-//     color:
-//       theme.colorScheme === 'dark'
-//         ? theme.colors.dark[0]
-//         : theme.colors.gray[7],
-//     fontSize: theme.fontSizes.sm,
-//     fontWeight: 500,
-
-//     '&:hover': {
-//       backgroundColor:
-//         theme.colorScheme === 'dark'
-//           ? theme.colors.dark[6]
-//           : theme.colors.gray[0],
-//     },
-//   },
-
-//   linkActive: {
-//     '&, &:hover': {
-//       backgroundColor: theme.fn.variant({
-//         variant: 'light',
-//         color: theme.primaryColor,
-//       }).background,
-//       color: theme.fn.variant({ variant: 'light', color: theme.primaryColor })
-//         .color,
-//     },
-//   },
-// }));
 
 interface HeaderSimpleProps {
   links: { link: string; label: string }[];
@@ -53,6 +19,7 @@ interface HeaderSimpleProps {
 
 export default function Header({ links }: HeaderSimpleProps) {
   const [opened, { toggle }] = useDisclosure(false);
+  const colorScheme = useColorScheme();
 
   return (
     <MantineHeader withBorder={false} height={60} mb={120} className="z-10">
@@ -62,7 +29,21 @@ export default function Header({ links }: HeaderSimpleProps) {
             <Group>
               <Burger opened={opened} onClick={toggle} size="sm" />
               <Anchor component={Link} to="/">
-                <Image fit="contain" height={40} src={Logo} alt="Valet Logo" />
+                {colorScheme === 'dark' ? (
+                  <Image
+                    fit="contain"
+                    height={40}
+                    src={LogoLight}
+                    alt="Valet Logo"
+                  />
+                ) : (
+                  <Image
+                    fit="contain"
+                    height={40}
+                    src={LogoDark}
+                    alt="Valet Logo"
+                  />
+                )}
               </Anchor>
               <Container className="flex items-end h-full">
                 <UserButton

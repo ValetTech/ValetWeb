@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import {
   Anchor,
   Center,
@@ -10,19 +9,11 @@ import {
   Tooltip,
   UnstyledButton,
 } from '@mantine/core';
-import {
-  IconBrandAirtable,
-  IconCalendarEvent,
-  IconCalendarStats,
-  IconDeviceDesktopAnalytics,
-  IconGauge,
-  IconHome2,
-  IconSettings,
-  TablerIcon,
-} from '@tabler/icons';
-import { useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
-import Logo from '../Assets/Images/Logo/H-LogoLight.png';
+import { useColorScheme } from '@mantine/hooks';
+import { IconSettings, TablerIcon } from '@tabler/icons';
+import { Link, useLocation } from 'react-router-dom';
+import LogoLight from '../Assets/Images/Logo/H-LogoDark.png';
+import LogoDark from '../Assets/Images/Logo/H-LogoLight.png';
 import ToggleColor from '../Components/Buttons/ToggleColorScheme';
 
 const useStyles = createStyles((theme) => ({
@@ -99,31 +90,25 @@ NavbarLinkProps) {
   );
 }
 
-const data = [
-  { link: '/', icon: IconHome2, label: 'Dashboard' },
-  { link: '/reservations', icon: IconCalendarStats, label: 'Reservations' },
-  { link: '/seating', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
-  { link: '/orders', icon: IconGauge, label: 'Orders' },
-  { link: '/tables', icon: IconBrandAirtable, label: 'Tables' },
-  { link: '/calendar', icon: IconCalendarEvent, label: 'Calendar' },
-];
+interface NavbarProps {
+  links: {
+    icon: TablerIcon;
+    label: string;
+    link: string;
+  }[];
+}
 
-export default function NavbarMinimal() {
-  const [active, setActive] = useState(2);
-  const { id } = useParams();
+export default function Nav({ links }: NavbarProps) {
   const { pathname } = useLocation();
-
-  // console.log(id);
-
+  const colorScheme = useColorScheme();
   const { classes } = useStyles();
 
-  const links = data.map((link, index) => (
+  const linksList = links.map((link) => (
     <NavbarLink
       {...link}
       key={link.label}
       active={pathname === link.link}
       to={link.link}
-      // onClick={() => setActive(index)}
     />
   ));
 
@@ -138,18 +123,26 @@ export default function NavbarMinimal() {
       >
         <Center>
           <Anchor component={Link} to="/">
-            <Image
-              fit="contain"
-              height={40}
-              //   width={'auto'}
-              src={Logo}
-              alt="Valet Logo"
-            />
+            {colorScheme === 'dark' ? (
+              <Image
+                fit="contain"
+                height={40}
+                src={LogoLight}
+                alt="Valet Logo"
+              />
+            ) : (
+              <Image
+                fit="contain"
+                height={40}
+                src={LogoDark}
+                alt="Valet Logo"
+              />
+            )}
           </Anchor>
         </Center>
         <Navbar.Section grow mt={50}>
           <Stack justify="center" spacing={0}>
-            {links}
+            {linksList}
           </Stack>
         </Navbar.Section>
         <Navbar.Section>

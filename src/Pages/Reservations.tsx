@@ -1,13 +1,13 @@
 import { Button, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import DetailsForm from '../Components/Forms/DetailsReservation';
 import CreateReservationModal from '../Components/Forms/CreateReservation';
+import DetailsForm from '../Components/Forms/DetailsReservation';
 import TableSort from '../Components/Reservations/Table';
 import Reservation from '../Models/Reservation';
+import Sitting from '../Models/Sitting';
 import getReservationsAsync, {
   getSittingsAsync,
 } from '../Services/ApiServices';
-import Sitting from '../Models/Sitting';
 
 export default function Reservations() {
   const [reservations, setReservations] = useState<Reservation[]>([]);

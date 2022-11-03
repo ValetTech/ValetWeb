@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable react/jsx-props-no-spreading */
 
 import {
   Box,
@@ -16,6 +15,7 @@ import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
 import { useState } from 'react';
 import AreaDesigner from '../Components/Area/AreaDesigner';
+import Area from '../Models/Area';
 import { createAreaAsync } from '../Services/ApiServices';
 
 export default function AreasPage() {

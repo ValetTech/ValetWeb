@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { createStyles } from '@mantine/core';
 import Reservation from '../../Models/Reservation';

@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-no-bind */
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import {
   closestCenter,
   DndContext,
@@ -38,6 +37,54 @@ import { forwardRef, useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import { createAreaAsync, getAreasAsync } from '../../Services/ApiServices';
 
+function App() {
+  const [activeId, setActiveId] = useState(null);
+  const [items, setItems] = useState(['1', '2', '3']);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        {items.map((id) => (
+          <SortableItem key={id} id={id} />
+        ))}
+      </SortableContext>
+      <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay>
+    </DndContext>
+  );
+
+  function handleDragStart(event) {
+    const { active } = event;
+
+    setActiveId(active.id);
+  }
+
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+
+    setActiveId(null);
+  }
+}
+
 export default function AreaDesigner() {
   const form = useForm<Area>({
     initialValues: {
@@ -50,7 +97,7 @@ export default function AreaDesigner() {
     },
     validate: {
       name: (value) => (value.length < 1 ? 'Please enter a valid name' : null),
-      description: (value) =>
+      description: (value: any) =>
         value.length < 1 ? 'Please enter a valid description' : null,
     },
   });
@@ -279,54 +326,6 @@ function Draggable({ id, children }: any) {
       {children}
     </button>
   );
-}
-
-function App() {
-  const [activeId, setActiveId] = useState(null);
-  const [items, setItems] = useState(['1', '2', '3']);
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map((id) => (
-          <SortableItem key={id} id={id} />
-        ))}
-      </SortableContext>
-      <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay>
-    </DndContext>
-  );
-
-  function handleDragStart(event) {
-    const { active } = event;
-
-    setActiveId(active.id);
-  }
-
-  function handleDragEnd(event) {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
-
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-
-    setActiveId(null);
-  }
 }
 
 function SortableItem(props) {

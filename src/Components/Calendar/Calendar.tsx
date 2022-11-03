@@ -184,28 +184,22 @@ export default function SittingsCalendar() {
       id: 1,
       name: 'Area 1',
       venueId: 1,
-      size: {
-        x: 10,
-        y: 10,
-      },
+      width: 10,
+      height: 10,
     },
     {
       id: 2,
       name: 'Area 2',
       venueId: 1,
-      size: {
-        x: 10,
-        y: 10,
-      },
+      width: 10,
+      height: 10,
     },
     {
       id: 3,
       name: 'Area 3',
       venueId: 1,
-      size: {
-        x: 10,
-        y: 10,
-      },
+      width: 10,
+      height: 10,
     },
   ]);
 

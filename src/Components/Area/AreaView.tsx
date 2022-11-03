@@ -16,14 +16,15 @@ export default function SnapToGrid() {
 
   return (
     <>
-      <DraggableStory
+      {/* <DraggableStory
         label={`Snapping to ${gridSize}px increments`}
         modifiers={[snapToGrid]}
         style={style}
         buttonStyle={buttonStyle}
         key={gridSize}
       />
-      <Grid size={gridSize} onSizeChange={setGridSize} />
+      <Grid size={gridSize} onSizeChange={setGridSize} /> */}
+      <div>NOT IMPLEMENTED</div>
     </>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react/button-has-type */
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { Text } from '@mantine/core';

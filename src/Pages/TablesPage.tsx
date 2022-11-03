@@ -1,6 +1,5 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/jsx-no-bind */
-/* eslint-disable react/jsx-props-no-spreading */
 
 import { DndContext, useDraggable } from '@dnd-kit/core';
 import { Center, createStyles, Grid, Text } from '@mantine/core';
