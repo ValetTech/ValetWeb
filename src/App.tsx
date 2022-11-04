@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import DefaultAppShell from './Layouts/AppShell';
 
 export default function App() {
@@ -30,14 +30,14 @@ export default function App() {
         withGlobalStyles
         withNormalizeCSS
       >
-        <NotificationsProvider>
-          <HashRouter>
+        <Router>
+          <NotificationsProvider>
             <DefaultAppShell
             // colorScheme={colorScheme}
             // setColorScheme={setColorScheme}
             />
-          </HashRouter>
-        </NotificationsProvider>
+          </NotificationsProvider>
+        </Router>
       </MantineProvider>
     </ColorSchemeProvider>
   );
