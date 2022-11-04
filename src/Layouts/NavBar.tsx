@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import {
   Anchor,
   Center,
@@ -9,20 +8,13 @@ import {
   Stack,
   Tooltip,
   UnstyledButton,
+  useMantineColorScheme,
 } from '@mantine/core';
-import {
-  IconBrandAirtable,
-  IconCalendarEvent,
-  IconCalendarStats,
-  IconDeviceDesktopAnalytics,
-  IconGauge,
-  IconHome2,
-  IconSettings,
-  TablerIcon,
-} from '@tabler/icons';
-import { useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
-import Logo from '../Assets/Images/Logo/H-LogoLight.png';
+import { IconSettings, TablerIcon } from '@tabler/icons';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import LogoBlack from '../Assets/Images/Logo/H-LogoBlack.png';
+import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
 import ToggleColor from '../Components/Buttons/ToggleColorScheme';
 
 const useStyles = createStyles((theme) => ({
@@ -31,6 +23,12 @@ const useStyles = createStyles((theme) => ({
     [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
       display: 'none',
     },
+    borderRight: `1px solid ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]
+    }`,
+    // theme.colorScheme === 'dark'
+    //   ? theme.colors.dark[6]
+    //   : theme.colors.gray[0],
   },
 
   link: {
@@ -99,31 +97,28 @@ NavbarLinkProps) {
   );
 }
 
-const data = [
-  { link: '/', icon: IconHome2, label: 'Dashboard' },
-  { link: '/reservations', icon: IconCalendarStats, label: 'Reservations' },
-  { link: '/seating', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
-  { link: '/orders', icon: IconGauge, label: 'Orders' },
-  { link: '/tables', icon: IconBrandAirtable, label: 'Tables' },
-  { link: '/calendar', icon: IconCalendarEvent, label: 'Calendar' },
-];
+interface NavbarProps {
+  links: {
+    icon: TablerIcon;
+    label: string;
+    link: string;
+  }[];
+}
 
-export default function NavbarMinimal() {
-  const [active, setActive] = useState(2);
-  const { id } = useParams();
+export default function Nav({ links }: NavbarProps) {
   const { pathname } = useLocation();
+  // const colorScheme = useColorScheme();
+  const { colorScheme } = useMantineColorScheme();
+  const { classes, cx } = useStyles();
 
-  // console.log(id);
+  useEffect(() => {}, [colorScheme]);
 
-  const { classes } = useStyles();
-
-  const links = data.map((link, index) => (
+  const linksList = links.map((link) => (
     <NavbarLink
       {...link}
       key={link.label}
       active={pathname === link.link}
       to={link.link}
-      // onClick={() => setActive(index)}
     />
   ));
 
@@ -134,22 +129,30 @@ export default function NavbarMinimal() {
         withBorder={false}
         width={{ base: 80 }}
         p="md"
-        className="fixed top-0 left-0 z-50 h-full"
+        className={cx('fixed top-0 left-0 z-50 h-full', classes.NavBar)}
       >
         <Center>
           <Anchor component={Link} to="/">
-            <Image
-              fit="contain"
-              height={40}
-              //   width={'auto'}
-              src={Logo}
-              alt="Valet Logo"
-            />
+            {colorScheme === 'dark' ? (
+              <Image
+                fit="contain"
+                height={40}
+                src={LogoWhite}
+                alt="Valet Logo"
+              />
+            ) : (
+              <Image
+                fit="contain"
+                height={40}
+                src={LogoBlack}
+                alt="Valet Logo"
+              />
+            )}
           </Anchor>
         </Center>
         <Navbar.Section grow mt={50}>
           <Stack justify="center" spacing={0}>
-            {links}
+            {linksList}
           </Stack>
         </Navbar.Section>
         <Navbar.Section>

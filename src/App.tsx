@@ -8,6 +8,7 @@ import { NotificationsProvider } from '@mantine/notifications';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './Redux/store';
+import { BrowserRouter as Router } from 'react-router-dom';
 import DefaultAppShell from './Layouts/AppShell';
 
 export default function App() {
@@ -44,5 +45,15 @@ export default function App() {
         </MantineProvider>
       </ColorSchemeProvider>
     </Provider>
+        <Router>
+          <NotificationsProvider>
+            <DefaultAppShell
+            // colorScheme={colorScheme}
+            // setColorScheme={setColorScheme}
+            />
+          </NotificationsProvider>
+        </Router>
+      </MantineProvider>
+    </ColorSchemeProvider>
   );
 }

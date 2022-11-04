@@ -1,9 +1,16 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/jsx-no-bind */
 import '@fullcalendar/react/dist/vdom';
 
-import FullCalendar, { EventSourceInput } from '@fullcalendar/react';
+import FullCalendar, {
+  DateSelectArg,
+  EventClickArg,
+  EventSourceInput,
+} from '@fullcalendar/react';
 
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { DragEndEvent } from '@dnd-kit/core';
+import allLocales from '@fullcalendar/core/locales-all';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
@@ -11,10 +18,15 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import rrulePlugin from '@fullcalendar/rrule';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from 'react';
+import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
-import { getSittingsAsync } from '../../Services/ApiServices';
-import Droppable from './Droppable';
-import NewEventModal from './Event';
+import {
+  getAreasAsync,
+  getSittingByIdAsync,
+  getSittingsAsync,
+  updateSittingAsync,
+} from '../../Services/ApiServices';
+import CreateEventModal from './CreateEventModal';
 
 interface EventObject {
   repeat: string;
@@ -75,47 +87,163 @@ Recurrence
 
 
 */
+
+// function CustomRadioButton({
+//   checked,
+//   defaultChecked,
+//   onChange,
+//   title,
+//   description,
+//   className,
+//   ...others
+// }: any) {
+//   const [value, handleChange] = useUncontrolled({
+//     value: checked,
+//     defaultValue: defaultChecked,
+//     finalValue: false,
+//     onChange,
+//   });
+//   return (
+//     <UnstyledButton
+//       {...others}
+//       onClick={() => handleChange(!value)}
+//       className={className}
+//     >
+//       <Radio
+//         checked={value}
+//         onChange={() => {}}
+//         tabIndex={-1}
+//         size="md"
+//         mr="xl"
+//         styles={{ input: { cursor: 'pointer' } }}
+//       />
+
+//       <div>
+//         <Text weight={500} mb={7} sx={{ lineHeight: 1 }}>
+//           {title}
+//         </Text>
+//         <Text size="sm" color="dimmed">
+//           {description}
+//         </Text>
+//       </div>
+//     </UnstyledButton>
+//   );
+// }
+// function Calendar() {
+//   const [events, setEvents] = useState<EventSourceInput[]>([]);
+//   const [sittings, setSittings] = useState<Sitting[]>([]);
+//   const [selectedEvent, setSelectedEvent] = useState<RecurringEvent>();
+//   const [showModal, setShowModal] = useState(false);
+
+//   useEffect(() => {
+//     getSittingsAsync().then((sittings) => {
+//       setSittings(sittings);
+//       setEvents(sittings.map((s) => s.toEvent()));
+//     });
+//   }, []);
+
+//   const handleEventClick = (event: any) => {
+//     const sitting = sittings.find((s) => s.id === event.event.id);
+//     if (sitting) {
+//       setSelectedEvent(sitting.toRecurringEvent());
+//       setShowModal(true);
+//     }
+//   };
+
+//   const handleEventDrop = (event: DragEndEvent) => {
+//     const sitting = sittings.find((s) => s.id === event.active.id);
+//     if (sitting) {
+//       const newSitting = sitting.clone();
+//       newSitting.start = event.active.data.date;
+//       newSitting.end = event.active.data.date;
+//       newSitting.save();
+//     }
+//   };
+
+//   const handleEventResize = (event: DragEndEvent) => {
+//     const sitting = sittings.find((s) => s.id === event.active.id);
+//     if (sitting) {
+//       const newSitting = sitting.clone();
+//       newSitting.end = event.active.data.date;
+//       newSitting.save();
+//     }
+//   };
+
+//   const handleEventAdd = (event: any) => {
+//     const
+// }
+
 export default function SittingsCalendar() {
   const [sittingData, setSittingData] = useState<Sitting[]>([]);
   const [events, setEvents] = useState<EventSourceInput>();
+  const [selectedEvent, setSelectedEvent] = useState<any>();
+  const [show, setShow] = useState(false);
+
+  const [areas, setAreas] = useState<Area[]>([
+    {
+      id: 1,
+      name: 'Area 1',
+      venueId: 1,
+      width: 10,
+      height: 10,
+    },
+    {
+      id: 2,
+      name: 'Area 2',
+      venueId: 1,
+      width: 10,
+      height: 10,
+    },
+    {
+      id: 3,
+      name: 'Area 3',
+      venueId: 1,
+      width: 10,
+      height: 10,
+    },
+  ]);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   useEffect(() => {
-    async function fetchSittings() {
-      const res: Sitting[] = await getSittingsAsync();
-      setSittingData(res);
-    }
-    fetchSittings();
+    getSittingsAsync().then((sittings) => {
+      setSittingData(sittings);
+      // setEvents(sittings.map((s) => s.toEvent()));
+    });
+    getAreasAsync()
+      .then((res) => {
+        setAreas(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, []);
 
   useEffect(() => {
     function createEvents() {
       const sittings = sittingData.map((s) => ({
+        id: s.id,
         title: s.type,
         start: s.startTime,
         end: s.endTime,
+        resourceIds: s.areas?.map((a) => a.id),
+        groupId: s.groupId,
+        data: s,
       }));
       setEvents(sittings);
     }
     createEvents();
   }, [sittingData]);
 
-  const handleSelect = (info: { start: any; end: any }) => {
-    const { start, end } = info;
-    const eventNamePrompt = prompt('Enter event name');
-    if (eventNamePrompt) {
-      setEvents([
-        ...events,
-        {
-          start,
-          end,
-          title: eventNamePrompt,
-        },
-      ]);
-    }
+  const handleSelect = (arg: DateSelectArg) => {
+    setSelectedEvent({ ...selectedEvent, ...arg });
+    setShow(true);
   };
 
-  function handleDateSelect({ start, end }: { start: any; end: any }) {
-    alert(`date selected ${start}, ${end}`);
+  function handleEventClick(arg: EventClickArg) {
+    setSelectedEvent({ ...arg });
+    setShow(true);
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -152,95 +280,120 @@ export default function SittingsCalendar() {
   //   }
   // }
 
-  const sampleEvents = [
-    {
-      id: 1,
-      title: 'event1',
-      start: '2022-08-11T10:00:00',
-      end: '2022-08-11T16:00:00',
-    },
-    {
-      id: 2,
-      title: 'event2',
-      start: '2022-08-13T10:00:00',
-      end: '2022-08-13T16:00:00',
-    },
-  ];
+  const handleDrop = (info: any) => {
+    getSittingByIdAsync(info.event.id).then((response) => {
+      updateSittingAsync(response.id, {
+        id: info.event.id,
+        capacity: response.capacity,
+        type: response.type,
+        startTime: info.event.start,
+        endTime: info.event.end,
+        venueId: response.venueId,
+      });
+    });
+  };
+
+  const handleResize = (info: any) => {
+    getSittingByIdAsync(info.event.id).then((response) => {
+      updateSittingAsync(response.id, {
+        id: info.event.id,
+        capacity: response.capacity,
+        type: response.type,
+        startTime: info.event.start,
+        endTime: info.event.end,
+        venueId: response.venueId,
+      });
+    });
+  };
 
   return (
     // eslint-disable-next-line react/jsx-no-bind
-    <DndContext onDragEnd={handleDragEnd}>
-      <div className="w-full h-full pb-2 px-1 ml-0">
-        <Droppable key={1} id="calendar">
-          <FullCalendar
-            schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
-            plugins={[
-              rrulePlugin,
-              dayGridPlugin,
-              timeGridPlugin,
-              interactionPlugin,
-              resourceTimeGridPlugin,
-              resourceTimelinePlugin,
-            ]}
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right:
-                'dayGridMonth,timeGridWeek,timeGridDay,resourceTimeGridDay',
-            }}
-            customButtons={{
-              myCustomButton: {
-                text: 'custom!',
-                click: () => {
-                  alert('clicked the custom button!');
-                },
-              },
-            }}
-            // footerToolbar={
-            //   {
-            //     // left: 'myCustomButton',
-            //   }
-            // }
-            droppable
-            height="100%"
-            initialView="resourceTimeGridDay"
-            editable
-            selectable
-            selectMirror
-            dayMaxEvents
-            weekends
-            firstDay={1}
-            allDaySlot={false}
-            dropAccept=".sitting"
-            drop={() => {
-              alert('dropped!');
-            }}
-            // is the "remove after drop" checkbox checked?
-            // if (checkbox.checked) {
-            //   // if so, remove the element from the "Draggable Events" list
-            //   info.draggedEl.parentNode.removeChild(info.draggedEl);
-            // }
-            resources={[
-              { id: 'a', title: 'Area A' },
-              { id: 'b', title: 'Area B' },
-              { id: 'c', title: 'Area C' },
-            ]}
-            events={events} // Add events
-            //   eventContent={renderEventContent} // custom render function
-            //   eventClick={this.handleEventClick}
-            //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-            /* you can update a remote database when these fire:
+    // <DndContext onDragEnd={handleDragEnd}>
+    <div className="w-full h-full pb-2 px-1 ml-0">
+      {/* <Droppable key={1} id="calendar"> */}
+      <FullCalendar
+        schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+        plugins={[
+          rrulePlugin,
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin,
+          resourceTimeGridPlugin,
+          resourceTimelinePlugin,
+        ]}
+        headerToolbar={{
+          left: 'title',
+          center: 'prev,today,next',
+          right: 'dayGridMonth,timeGridWeek,resourceTimeGridDay',
+        }}
+        customButtons={{
+          myCustomButton: {
+            text: 'custom!',
+            click: () => {
+              alert('clicked the custom button!');
+            },
+          },
+        }}
+        // footerToolbar={
+        //   {
+        //     // left: 'myCustomButton',
+        //   }
+        // }
+        locales={allLocales}
+        locale="en-au"
+        droppable
+        height="90%"
+        initialView="resourceTimeGridDay"
+        editable
+        eventResizableFromStart
+        selectable
+        selectMirror
+        dayMaxEvents
+        weekends
+        firstDay={1}
+        allDaySlot={false}
+        dropAccept=".sitting"
+        drop={() => {
+          alert('dropped!');
+        }}
+        // is the "remove after drop" checkbox checked?
+        // if (checkbox.checked) {
+        //   // if so, remove the element from the "Draggable Events" list
+        //   info.draggedEl.parentNode.removeChild(info.draggedEl);
+        // }
+        resources={areas.map((area) => ({
+          id: area?.id?.toString(),
+          title: area?.name,
+        }))}
+        events={events} // Add events
+        //   eventContent={renderEventContent} // custom render function
+        //   eventClick={this.handleEventClick}
+        //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+        /* you can update a remote database when these fire:
             eventChange={function(){}}
             eventRemove={function(){}}
             */
-            select={handleDateSelect}
-            // eventAdd={<NewEventModal />}
-          />
-          <NewEventModal />
-        </Droppable>
-        {/* <DefaultSittings /> */}
-        {/* <NewEventModal /> */}
-        {/* <div className="flex flex-row flex-wrap">
+        select={handleSelect}
+        eventClick={handleEventClick}
+        // select={handleSelect}
+        eventDrop={handleDrop}
+        // eventResizeStop={eventResizeStop}
+        eventResize={handleResize}
+        // eventAdd={<CreateEventModal />}
+      />
+      {/* <NewEventModal /> */}
+      <CreateEventModal
+        show={show}
+        handleShow={handleShow}
+        handleClose={handleClose}
+        event={selectedEvent}
+        setEvent={setSelectedEvent}
+        areas={areas}
+      />
+      {/* </Droppable> */}
+      {/* <DefaultSittings /> */}
+      {/* <NewEventModal /> */}
+      {/* <div className="flex flex-row flex-wrap">
           {sampleEvents.map((event) => (
             <Draggable key={event.id} id={event.id}>
               <div className="sitting bg-blue-500 text-white p-2 m-1 rounded">
@@ -249,7 +402,24 @@ export default function SittingsCalendar() {
             </Draggable>
           ))}
         </div> */}
-      </div>
-    </DndContext>
+      {/* </DndContext> */}
+    </div>
   );
 }
+
+/*
+[
+  {
+    "id": 0,
+    "capacity": 0,
+    "type": "Breakfast",
+    "startTime": "2022-11-02T01:13:28.943Z",
+    "endTime": "2022-11-02T01:13:28.943Z",
+    "venueId": 0,
+    "areas": [
+      
+    ],
+    
+  }
+]
+*/

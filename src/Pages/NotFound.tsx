@@ -6,6 +6,8 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { useScrollLock } from '@mantine/hooks';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
@@ -50,7 +52,12 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function NotFound() {
+  const [scrollLocked, setScrollLocked] = useScrollLock();
   const { classes } = useStyles();
+
+  useEffect(() => {
+    setScrollLocked(true);
+  }, []);
 
   return (
     <Container className={classes.root}>

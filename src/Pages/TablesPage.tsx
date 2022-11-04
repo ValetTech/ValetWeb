@@ -1,10 +1,9 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/jsx-no-bind */
-/* eslint-disable react/jsx-props-no-spreading */
 
 import { DndContext, useDraggable } from '@dnd-kit/core';
 import { Center, createStyles, Grid, Text } from '@mantine/core';
-import { useListState, useViewportSize } from '@mantine/hooks';
+import { useListState, useScrollLock, useViewportSize } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import TableSideBar from '../Components/TableView/TableSideBar';
@@ -154,6 +153,11 @@ export interface BoxSpec {
 export default function TablesPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const { height, width } = useViewportSize();
+  const [scrollLocked, setScrollLocked] = useScrollLock();
+
+  useEffect(() => {
+    setScrollLocked(true);
+  }, []);
 
   function loadReservations() {
     getReservationsAsync()
@@ -178,7 +182,7 @@ export default function TablesPage() {
 
   return (
     <DndContext onDragEnd={handleDragEnd} autoScroll={false}>
-      <div className="h-full w-full xs:pl-0 my-5">
+      <div className="h-full w-full xs:pl-0 my-5 mx-4">
         <Grid className="w-full">
           <Grid.Col span={12}>
             <Center className="w-full ">

@@ -1,7 +1,20 @@
+export interface Rrule {
+  freq?: string;
+  interval?: number;
+  byweekday?: number[];
+  until?: Date;
+  count?: number;
+}
+
 export default interface Event {
+  sitting: Sitting;
+  rrule?: Rrule;
+}
+
+export interface Eventt {
   id?: number;
+
   groupId: number;
-  allDay: boolean;
   start: Date;
   end: Date;
   daysOfWeek: number[];
@@ -39,15 +52,6 @@ export interface EventInput {
   exrule: rrule | rrule[];
   duration: number;
 }
-
-export interface Rrule {
-  freq: string;
-  interval: number;
-  byweekday: string[];
-  dtstart: Date;
-  until: Date;
-}
-
 export interface SimpleEvent {
   daysOfWeek: number[];
   startTime: string;

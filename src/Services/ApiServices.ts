@@ -20,7 +20,6 @@ export default async function getReservationsAsync() {
     const response = await axios.get('/reservations', {
       // withCredentials: false,
     });
-    console.log('response.data', response.data);
 
     return response.data.reservations;
   } catch (error) {
@@ -33,7 +32,6 @@ export async function getReservationByIdAsync(id: number) {
     const response = await axios.get(`/reservations/${id}`, {
       // withCredentials: false,
     });
-    console.log('response.data', response.data);
 
     return response.data;
   } catch (error) {
@@ -46,7 +44,6 @@ export async function getReservationByDateAsync(date: string) {
     const response = await axios.get(`/reservations?Date=${date}`, {
       // withCredentials: false,
     });
-    console.log('response.data', response.data);
 
     return response.data.reservations;
   } catch (error) {
@@ -71,18 +68,11 @@ export async function updateReservationAsync(
 ) {
   try {
     const response = await axios.put(`/reservations/${id}`, {
-      id: reservation.id,
-      customerId: reservation.customerId,
-      sittingId: reservation.sittingId,
-      dateTime: reservation.dateTime,
-      duration: reservation.duration,
-      noGuests: reservation.noGuests,
-      notes: reservation.notes,
+      ...reservation,
     });
-    console.log('response.data', response.data);
     return response;
   } catch (error) {
-    console.log(error);
+    throw new Error();
   }
 }
 
@@ -101,7 +91,6 @@ export async function getAreasAsync() {
     const response = await axios.get('/areas', {
       // withCredentials: false,
     });
-    console.log('response.data', response.data);
 
     return response.data.areas;
   } catch (error) {
@@ -114,7 +103,6 @@ export async function getAreaByIdAsync(id: number) {
     const response = await axios.get(`/areas/${id}`, {
       // withCredentials: false,
     });
-    console.log('response.data', response.data);
 
     return response.data;
   } catch (error) {
@@ -125,10 +113,8 @@ export async function getAreaByIdAsync(id: number) {
 export async function createAreaAsync(area: Area) {
   try {
     const response = await axios.post('/areas', {
-      name: area.name,
-      description: area.description,
+      ...area,
     });
-    console.log('response.data', response.data);
 
     return response.data;
   } catch (error) {
@@ -139,11 +125,8 @@ export async function createAreaAsync(area: Area) {
 export async function updateAreaAsync(id: number, area: Area) {
   try {
     const response = await axios.put(`/areas/${id}`, {
-      id: area.id,
-      name: area.name,
-      description: area.description,
+      ...area,
     });
-    console.log('response.data', response.data);
     return response;
   } catch (error) {
     throw new Error();
@@ -165,7 +148,6 @@ export async function getSittingsAsync() {
     const response = await axios.get('/sittings', {
       // withCredentials: false,
     });
-    console.log('response.data', response.data);
 
     return response.data.sittings;
   } catch (error) {
@@ -178,7 +160,6 @@ export async function getSittingByIdAsync(id: number) {
     const response = await axios.get(`/sittings/${id}`, {
       // withCredentials: false,
     });
-    console.log('response.data', response.data);
 
     return response.data;
   } catch (error) {
@@ -189,13 +170,8 @@ export async function getSittingByIdAsync(id: number) {
 export async function createSittingAsync(sitting: Sitting) {
   try {
     const response = await axios.post(`/sittings`, {
-      capacity: sitting.capacity,
-      type: sitting.type,
-      startTime: sitting.startTime,
-      endTime: sitting.endTime,
-      venueId: sitting.venueId,
+      ...sitting,
     });
-    console.log('response.data', response.data);
     return response;
   } catch (error) {
     throw new Error();
@@ -205,14 +181,8 @@ export async function createSittingAsync(sitting: Sitting) {
 export async function updateSittingAsync(id: number, sitting: Sitting) {
   try {
     const response = await axios.put(`/sittings/${id}`, {
-      id: sitting.id,
-      capacity: sitting.capacity,
-      type: sitting.type,
-      startTime: sitting.startTime,
-      endTime: sitting.endTime,
-      venueId: sitting.venueId,
+      ...sitting,
     });
-    console.log('response.data', response.data);
     return response;
   } catch (error) {
     throw new Error();
@@ -232,10 +202,7 @@ export function deleteSittingAsync(id: number) {
 export function createCustomerAsync(customer: Customer) {
   try {
     const response = axios.post(`/customers`, {
-      firstName: customer.firstName,
-      lastName: customer.lastName,
-      email: customer.email,
-      phone: customer.phone,
+      ...customer,
     });
     return response;
   } catch (error) {
@@ -248,9 +215,24 @@ export async function updateCustomerAsync(id: number, customer: Customer) {
     const response = await axios.put(`/customers/${id}`, {
       ...customer,
     });
-    console.log('response.data', response.data);
     return response;
   } catch (error) {
-    console.log(error);
+    throw new Error();
+  }
+}
+
+// Get sitting types
+export async function getSittingTypesAsync(date?: string) {
+  try {
+    const response = await axios.get(
+      `/sittings/types${date ? `date=${date}` : ''}`,
+      {
+        // withCredentials: false,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error();
   }
 }
