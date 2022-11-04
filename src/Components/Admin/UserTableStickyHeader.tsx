@@ -64,10 +64,10 @@ export default function UserTableScrollArea({
         <Select
           placeholder="Current role"
           data={[
-            { value: 'react', label: 'React' },
-            { value: 'ng', label: 'Angular' },
-            { value: 'svelte', label: 'Svelte' },
-            { value: 'vue', label: 'Vue' },
+            { value: 'role1', label: 'role1' },
+            { value: 'role2', label: 'role2' },
+            { value: 'role3', label: 'role3' },
+            { value: 'role4', label: 'role4' },
           ]}
         />
       </td>

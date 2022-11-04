@@ -1,5 +1,6 @@
 // Components
 // #region
+import { useState } from 'react';
 import {
   Button,
   Card,
@@ -9,30 +10,22 @@ import {
   SimpleGrid,
   Title,
 } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
-import { useEffect, useState } from 'react';
-import CreateReservationModal from '../Forms/CreateReservation';
-import ReservationTableStickyHeader from '../Tables/ReservationTableStickyHeader';
+import UserTableStickyHeader from './UserTableStickyHeader';
+import CreateUserModal from '../Forms/CreateUserModal';
 // #endregion
 
 // Models
 // #region
-import Area from '../../Models/Area';
-import Reservation from '../../Models/Reservation';
-import Sitting from '../../Models/Sitting';
 // #endregion
 
 // Services
 // #region
-import {
-  getAreasAsync,
-  getReservationByDateAsync,
-  getSittingsAsync,
-} from '../../Services/ApiServices';
-import UserTableStickyHeader from './UserTableStickyHeader';
+import {} from '../../Services/ApiServices';
 // #endregion
 
 export default function AdminUserWidget() {
+  const [createUserModalOpened, setCreateUserModalOpened] = useState(false);
+
   const userData = [
     {
       key: 1,
@@ -62,9 +55,15 @@ export default function AdminUserWidget() {
         </Title>
         <UserTableStickyHeader data={userData} />
         <Group mt={20} position="left">
-          <Button size="lg">Create</Button>
+          <Button size="lg" onClick={() => setCreateUserModalOpened(true)}>
+            Create
+          </Button>
         </Group>
       </Card>
+      <CreateUserModal
+        opened={createUserModalOpened}
+        onClose={() => setCreateUserModalOpened(false)}
+      />
     </Container>
   );
 }
