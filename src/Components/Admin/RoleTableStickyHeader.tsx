@@ -13,7 +13,7 @@ import {
   SimpleGrid,
   Button,
 } from '@mantine/core';
-import { IconKey, IconPencil, IconUserX } from '@tabler/icons';
+import { IconKey, IconPencil, IconTrash, IconUserX } from '@tabler/icons';
 import { useState } from 'react';
 // #endregion
 
@@ -52,70 +52,55 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface UserTableScrollAreaProps {
-  data: { key: number; name: string; phone: string; role: string }[];
+interface RoleTableScrollAreaProps {
+  data: { key: number; role: string }[];
 }
 
-export default function UserTableScrollArea({
+export default function RoleTableScrollArea({
   data,
-}: UserTableScrollAreaProps) {
+}: RoleTableScrollAreaProps) {
   const { classes, cx } = useStyles();
   const [scrolled, setScrolled] = useState(false);
 
-  const [deleteUserModalOpened, setDeleteUserModalOpened] = useState(false);
+  const [deleteRoleModalOpened, setDeleteRoleModalOpened] = useState(false);
 
   const rows = data.map((row) => (
     <tr key={row.key}>
-      <td>{row.name}</td>
-      <td>{row.phone}</td>
-      <td>
-        <Select
-          placeholder="Current role"
-          data={[
-            { value: 'role1', label: 'role1' },
-            { value: 'role2', label: 'role2' },
-            { value: 'role3', label: 'role3' },
-            { value: 'role4', label: 'role4' },
-          ]}
-        />
-      </td>
+      <td>{row.role}</td>
       <td>
         {/* Edit Button */}
-        <UnstyledButton pl={20}>
+        <UnstyledButton pl={140}>
           <IconPencil size={20} stroke={1.5} />
         </UnstyledButton>
         {/* Delete Button */}
         <UnstyledButton pl={20}>
-          <IconUserX
+          <IconTrash
             size={20}
             stroke={1.5}
-            onClick={setDeleteUserModalOpened}
+            onClick={setDeleteRoleModalOpened}
           />
-        </UnstyledButton>
-        <UnstyledButton pl={20}>
-          <IconKey size={20} stroke={1.5} />
         </UnstyledButton>
         <Modal
           centered
-          opened={deleteUserModalOpened}
-          onClose={() => setDeleteUserModalOpened(false)}
+          opened={deleteRoleModalOpened}
+          onClose={() => setDeleteRoleModalOpened(false)}
         >
           <Group position="center">
-            <Title size="h3">nameOfUser</Title>
+            <Title size="h3">nameOfRole</Title>
             <Text italic size="lg">
-              Are you sure you want to delete this user?
+              Are you sure you want to delete this role?
             </Text>
             <SimpleGrid cols={2}>
               <Button
                 size="lg"
                 color="red"
                 onClick={() => {
-                  setDeleteUserModalOpened(false);
+                  setDeleteRoleModalOpened(false);
                 }}
               >
                 Confirm
               </Button>
-              <Button size="lg" onClick={() => setDeleteUserModalOpened(false)}>
+              <Button size="lg" onClick={() => setDeleteRoleModalOpened(false)}>
                 Cancel
               </Button>
             </SimpleGrid>
@@ -130,11 +115,9 @@ export default function UserTableScrollArea({
       sx={{ height: 300 }}
       onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
     >
-      <Table sx={{ minWidth: 500 }}>
+      <Table sx={{ minWidth: 300 }}>
         <thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <tr>
-            <th>Name</th>
-            <th>Phone</th>
             <th>Role</th>
             <th> </th>
           </tr>

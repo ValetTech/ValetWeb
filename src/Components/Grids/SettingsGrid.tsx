@@ -1,6 +1,6 @@
 import { Group, SimpleGrid } from '@mantine/core';
-import UserTableStickyHeader from '../Admin/UserTableStickyHeader';
 import AdminUserWidget from '../Admin/AdminUserWidget';
+import AdminRoleWidget from '../Admin/AdminRoleWidget';
 
 export default function SettingsGrid() {
   return (
@@ -15,6 +15,7 @@ export default function SettingsGrid() {
       ]}
     >
       <AdminUserWidget />
+      <AdminRoleWidget />
     </SimpleGrid>
   );
 }

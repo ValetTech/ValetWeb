@@ -10,7 +10,7 @@ import {
   SimpleGrid,
   Title,
 } from '@mantine/core';
-import UserTableStickyHeader from './UserTableStickyHeader';
+import RoleTableStickyHeader from './RoleTableStickyHeader';
 import CreateUserModal from '../Forms/CreateUserModal';
 // #endregion
 
@@ -23,27 +23,21 @@ import CreateUserModal from '../Forms/CreateUserModal';
 import {} from '../../Services/ApiServices';
 // #endregion
 
-export default function AdminUserWidget() {
-  const [createUserModalOpened, setCreateUserModalOpened] = useState(false);
+export default function AdminRoleWidget() {
+  const [createRoleModalOpened, setCreateRoleModalOpened] = useState(false);
 
-  const userData = [
+  const roleData = [
     {
       key: 1,
-      name: 'Paul Boaden',
-      role: 'Chef',
-      phone: '0212345678',
+      role: 'Bartender',
     },
     {
       key: 2,
-      name: 'Paul Boaden',
       role: 'Chef',
-      phone: '0212345678',
     },
     {
       key: 3,
-      name: 'Paul Boaden',
-      role: 'Chef',
-      phone: '0212345678',
+      role: 'Security',
     },
   ];
 
@@ -51,19 +45,19 @@ export default function AdminUserWidget() {
     <Container mt={6}>
       <Card withBorder radius="md">
         <Title size="h4" mb={10}>
-          Users
+          Roles
         </Title>
-        <UserTableStickyHeader data={userData} />
+        <RoleTableStickyHeader data={roleData} />
         <Group mt={20} position="left">
-          <Button size="lg" onClick={() => setCreateUserModalOpened(true)}>
+          <Button size="lg" onClick={() => setCreateRoleModalOpened(true)}>
             Create
           </Button>
         </Group>
       </Card>
-      <CreateUserModal
-        opened={createUserModalOpened}
-        onClose={() => setCreateUserModalOpened(false)}
-      />
+      {/* <CreateRoleModal
+        opened={createRoleModalOpened}
+        onClose={() => setCreateRoleModalOpened(false)}
+      /> */}
     </Container>
   );
 }
