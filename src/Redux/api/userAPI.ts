@@ -2,7 +2,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setUser } from '../userSlice';
 import { IUser } from './types';
 
-const BASE_URL = process.env.REACT_APP_SERVER_ENDPOINT as string;
+const BASE_URL =
+  (process.env.REACT_APP_SERVER_ENDPOINT as string) ??
+  'https://valetapi.azurewebsites.net';
 
 // eslint-disable-next-line import/prefer-default-export
 export const userApi = createApi({
@@ -25,7 +27,9 @@ export const userApi = createApi({
         try {
           const { data } = await queryFulfilled;
           dispatch(setUser(data));
-        } catch (error) {}
+        } catch (error) {
+          console.error(error);
+        }
       },
     }),
   }),
