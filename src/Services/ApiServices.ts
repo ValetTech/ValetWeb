@@ -246,3 +246,37 @@ export async function getSittingTypesAsync(date?: string) {
     throw new Error();
   }
 }
+
+// AUTH
+export async function UserRegisterAsync(
+  username: string,
+  email: string,
+  password: string
+) {
+  try {
+    const response = await axios.post(`/authenticate/register`, {
+      username,
+      email,
+      password,
+    });
+
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
+export async function UserLoginAsync(email: string, password: string) {
+  try {
+    const response = await axios.post(`/authenticate/login`, {
+      email,
+      password,
+    });
+
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    throw new Error();
+  }
+}
