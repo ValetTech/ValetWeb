@@ -1,19 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-// import { authApi } from './api/authApi';
-// import { userApi } from './api/userApi';
-import authReducer from './authSlice';
-import userReducer from './userSlice';
 
 // eslint-disable-next-line import/prefer-default-export
 export const store = configureStore({
-  reducer: {
-    // ? Add the authReducer to the reducer object
-    authUser: authReducer,
-    // [authApi.reducerPath]: authApi.reducer,
-    // [userApi.reducerPath]: userApi.reducer,
-    userState: userReducer,
-  },
+  reducer: {},
   devTools: process.env.NODE_ENV !== 'development',
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({}).concat([]),
 });
