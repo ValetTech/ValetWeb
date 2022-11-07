@@ -15,7 +15,7 @@ import {
 } from '@mantine/core';
 import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
 
-export default function AuthenticationForm(props: PaperProps) {
+export default function LoginForm(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register']);
   const form = useForm({
     initialValues: {
