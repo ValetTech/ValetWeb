@@ -5,7 +5,18 @@ import Reservation from '../Models/Reservation';
 import Sitting from '../Models/Sitting';
 // import { IApiService } from './IApiService';
 // const API_URL = 'https://localhost:7028/api';
-axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api';
+axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api/';
+// axios.defaults.headers.common = {
+//   'Content-Type': 'application/json',
+//   Accept: 'application/json',
+// };
+const JWTToken =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicC5iQGdtYWlsLmNvbSIsImp0aSI6IjU2MmFjMzQ0LTcxY2QtNGM4Yy05NGMzLWIxMGFmY2JkNWQ4OCIsImV4cCI6MTY2Nzg5MzQ4NiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDAwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo0MjAwIn0.4smjfXPO5q6zddIwerwpItJcYPdXkeCNWl_rEfN-naw';
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.headers.common.Authorization = `Bearer ${JWTToken}`;
+
+axios.defaults.headers.common['X-Version'] = '2.0';
+
 // axios.defaults.baseURL = 'https://localhost:7028/api';
 
 // axios.defaults.headers.post['Content-Type'] = 'application/json-patch+json';
@@ -13,7 +24,6 @@ axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api';
 // 'application/x-www-form-urlencoded';
 // axios.defaults.headers.get['Content-Type'] = 'application/json';
 // axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-
 // RESERVATION
 export default async function getReservationsAsync() {
   try {
