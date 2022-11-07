@@ -27,7 +27,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import LogoBlue from '../Assets/Images/Logo/H-Logo.png';
 import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
-import BurgerMenu from './BurgerMenu';
 // import UserButton from '../Components/User/UserButton';
 
 interface HeaderSimpleProps {
@@ -83,7 +82,7 @@ const useStyles = createStyles((theme) => ({
 
 export default function Header({ links }: HeaderSimpleProps) {
   const { classes, theme, cx } = useStyles();
-  const [burgerOpened, { toggle }] = useDisclosure(false);
+  const [opened, { toggle }] = useDisclosure(false);
   const { colorScheme } = useMantineColorScheme();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
 
@@ -115,9 +114,8 @@ export default function Header({ links }: HeaderSimpleProps) {
             )}
           </Anchor>
 
-          <BurgerMenu links={links} />
           <Burger
-            opened={burgerOpened}
+            opened={opened}
             onClick={toggle}
             className={classes.burger}
             size="sm"
