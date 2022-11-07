@@ -14,6 +14,7 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import AreasPage from '../Pages/AreasPage';
 import Calendar from '../Pages/Calendar';
 import Dashboard from '../Pages/Dashboard';
+import Login from '../Pages/Login';
 import NotFound from '../Pages/NotFound';
 import Orders from '../Pages/Orders';
 import Reservations from '../Pages/Reservations';
@@ -113,6 +114,7 @@ export default function RoutesController() {
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </SpotlightProvider>
   );

@@ -1,7 +1,6 @@
 import { Group, SimpleGrid } from '@mantine/core';
-import SittingScheduler from '../Scheduler/SittingScheduler';
-import AreaSettingsWidget from '../Settings/AreaSettingsWidget';
-import SittingSettingsWidget from '../Settings/SittingSettingsWidget';
+import AdminUserWidget from '../Admin/AdminUserWidget';
+import AdminRoleWidget from '../Admin/AdminRoleWidget';
 
 export default function SettingsGrid() {
   return (
@@ -15,11 +14,8 @@ export default function SettingsGrid() {
         { maxWidth: 'xl', cols: 2 },
       ]}
     >
-      <SittingScheduler />
-      <Group spacing="xs">
-        <SittingSettingsWidget />
-        <AreaSettingsWidget />
-      </Group>
+      <AdminUserWidget />
+      <AdminRoleWidget />
     </SimpleGrid>
   );
 }
