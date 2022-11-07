@@ -1,3 +1,4 @@
+import { useDispatch, isSelector } from 'react-redux';
 import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import {
@@ -13,11 +14,28 @@ import {
   Anchor,
   Stack,
 } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import registerUser from '../../Features/counter/User/userActions';
 import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
 import { UserLoginAsync, UserRegisterAsync } from '../../Services/ApiServices';
 
 export default function LoginForm(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register']);
+
+  const { loading, userInfo, error, success } = useSelector(
+    (state) => state.user
+  );
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // redirect user to login page if registration was successful
+    if (success) navigate('/login');
+    // redirect authenticated user to profile screen
+    if (userInfo) navigate('/user-profile');
+  }, [navigate, userInfo, success]);
+
   const form = useForm({
     initialValues: {
       email: '',
