@@ -14,6 +14,7 @@ import {
   Stack,
 } from '@mantine/core';
 import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
+import { UserLoginAsync, UserRegisterAsync } from '../../Services/ApiServices';
 
 export default function LoginForm(props: PaperProps) {
   const [type, toggle] = useToggle(['login', 'register']);
@@ -37,7 +38,7 @@ export default function LoginForm(props: PaperProps) {
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
       <Text size="lg" weight={500}>
-        Welcome to Mantine, {type} with
+        Welcome to Valet, {type} with
       </Text>
 
       <Group grow mb="md" mt="md">
@@ -47,7 +48,19 @@ export default function LoginForm(props: PaperProps) {
 
       <Divider label="Or continue with email" labelPosition="center" my="lg" />
 
-      <form onSubmit={form.onSubmit(() => {})}>
+      <form
+        onSubmit={form.onSubmit(() => {
+          if (type === 'register') {
+            UserRegisterAsync(
+              form.values.name,
+              form.values.email,
+              form.values.password
+            );
+          } else {
+            UserLoginAsync(form.values.email, form.values.password);
+          }
+        })}
+      >
         <Stack>
           {type === 'register' && (
             <TextInput
