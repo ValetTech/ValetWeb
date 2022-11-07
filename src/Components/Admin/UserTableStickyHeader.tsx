@@ -15,6 +15,7 @@ import {
 } from '@mantine/core';
 import { IconKey, IconPencil, IconUserX } from '@tabler/icons';
 import { useState } from 'react';
+import UpdateUserModal from '../Forms/UpdateUserModal';
 // #endregion
 
 // Services
@@ -62,6 +63,7 @@ export default function UserTableScrollArea({
   const { classes, cx } = useStyles();
   const [scrolled, setScrolled] = useState(false);
 
+  const [updateUserModalOpened, setUpdateUserModalOpened] = useState(false);
   const [deleteUserModalOpened, setDeleteUserModalOpened] = useState(false);
 
   const rows = data.map((row) => (
@@ -82,7 +84,15 @@ export default function UserTableScrollArea({
       <td>
         {/* Edit Button */}
         <UnstyledButton pl={20}>
-          <IconPencil size={20} stroke={1.5} />
+          <IconPencil
+            size={20}
+            stroke={1.5}
+            onClick={setUpdateUserModalOpened}
+          />
+          <UpdateUserModal
+            opened={updateUserModalOpened}
+            onClose={() => setUpdateUserModalOpened(false)}
+          />
         </UnstyledButton>
         {/* Delete Button */}
         <UnstyledButton pl={20}>

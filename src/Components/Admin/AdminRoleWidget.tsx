@@ -11,7 +11,7 @@ import {
   Title,
 } from '@mantine/core';
 import RoleTableStickyHeader from './RoleTableStickyHeader';
-import CreateUserModal from '../Forms/CreateUserModal';
+import CreateRoleModal from '../Forms/CreateRoleModal';
 // #endregion
 
 // Models
@@ -54,10 +54,10 @@ export default function AdminRoleWidget() {
           </Button>
         </Group>
       </Card>
-      {/* <CreateRoleModal
+      <CreateRoleModal
         opened={createRoleModalOpened}
         onClose={() => setCreateRoleModalOpened(false)}
-      /> */}
+      />
     </Container>
   );
 }
