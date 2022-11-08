@@ -39,7 +39,8 @@ const baseQuery = fetchBaseQuery({
 // };
 
 // ---------------------------------------------------
-// Endpoints specified in other extended api slices
+// Using extended API slices to build endpoints
+// Built endpoints can be found in authApiSlice.ts
 // This allows more flexibilitiy for complex applications
 export const apiSlice = createApi({
   baseQuery,
