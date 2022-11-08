@@ -11,6 +11,7 @@ import {
   IconSettings,
 } from '@tabler/icons';
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import LoginForm from '../Components/Login/LoginForm';
 import AreasPage from '../Pages/AreasPage';
 import Calendar from '../Pages/Calendar';
 import Dashboard from '../Pages/Dashboard';
