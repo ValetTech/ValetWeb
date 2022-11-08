@@ -16,7 +16,10 @@ import {
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { setCredentials } from '../../Features/Auth/authSlice';
+import {
+  selectCurrentUser,
+  setCredentials,
+} from '../../Features/Auth/authSlice';
 import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
 import { UserLoginAsync, UserRegisterAsync } from '../../Services/ApiServices';
 
@@ -69,7 +72,7 @@ export default function LoginForm(props: PaperProps) {
               const user = form.values.email;
               UserLoginAsync(form.values.email, form.values.password).then(
                 (response) => {
-                  dispatch(setCredentials({ ...response.data, user }));
+                  dispatch(setCredentials({ ...response.token, user }));
                   navigate('/dashboard');
                 }
               );

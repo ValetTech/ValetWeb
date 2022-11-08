@@ -274,7 +274,7 @@ export async function UserLoginAsync(email: string, password: string) {
       password,
     });
 
-    console.log(response.data);
+    // console.log(response);
     return response.data;
   } catch (error) {
     throw new Error();
