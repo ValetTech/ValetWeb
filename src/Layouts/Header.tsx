@@ -10,10 +10,12 @@ import {
   Text,
   UnstyledButton,
   useMantineColorScheme,
+  NavLink,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconChevronDown,
+  IconCircleDotted,
   IconHeart,
   IconLogout,
   IconMessage,
@@ -27,6 +29,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import LogoBlue from '../Assets/Images/Logo/H-Logo.png';
 import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
+import Nav from './NavBar';
 // import UserButton from '../Components/User/UserButton';
 
 interface HeaderSimpleProps {
@@ -114,12 +117,45 @@ export default function Header({ links }: HeaderSimpleProps) {
             )}
           </Anchor>
 
-          <Burger
-            opened={opened}
-            onClick={toggle}
-            className={classes.burger}
-            size="sm"
-          />
+          <Menu shadow="md" width={200}>
+            <Menu.Target>
+              <Burger
+                opened={opened}
+                onClick={toggle}
+                className={classes.burger}
+                size="sm"
+              />
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              <Menu.Label>Navigation</Menu.Label>
+              <Menu.Item icon={<IconCircleDotted size={14} />}>
+                <NavLink component="a" label="Dashboard" href="/" />
+              </Menu.Item>
+              <Menu.Item icon={<IconCircleDotted size={14} />}>
+                <NavLink
+                  component="a"
+                  label="Reservations"
+                  href="/reservations"
+                />
+              </Menu.Item>
+              <Menu.Item icon={<IconCircleDotted size={14} />}>
+                <NavLink component="a" label="Seating" href="/seating" />
+              </Menu.Item>
+              <Menu.Item icon={<IconCircleDotted size={14} />}>
+                <NavLink component="a" label="Orders" href="/orders" />
+              </Menu.Item>
+              <Menu.Item icon={<IconCircleDotted size={14} />}>
+                <NavLink component="a" label="Tables" href="/tables" />
+              </Menu.Item>
+              <Menu.Item icon={<IconCircleDotted size={14} />}>
+                <NavLink component="a" label="Calendar" href="/calendar" />
+              </Menu.Item>
+              <Menu.Item icon={<IconCircleDotted size={14} />}>
+                <NavLink component="a" label="Areas" href="/areas" />
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
           <Menu
             width={260}
             position="bottom-end"
