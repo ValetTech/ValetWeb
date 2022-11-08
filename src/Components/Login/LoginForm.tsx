@@ -13,12 +13,16 @@ import {
   Anchor,
   Stack,
 } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+import { setCredentials } from '../../Features/Auth/authSlice';
 import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
 import { UserLoginAsync, UserRegisterAsync } from '../../Services/ApiServices';
 
 export default function LoginForm(props: PaperProps) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [type, toggle] = useToggle(['login', 'register']);
 
   const form = useForm({
@@ -61,7 +65,17 @@ export default function LoginForm(props: PaperProps) {
             );
           }
           if (type === 'login') {
-            UserLoginAsync(form.values.email, form.values.password);
+            try {
+              const user = form.values.email;
+              UserLoginAsync(form.values.email, form.values.password).then(
+                (response) => {
+                  dispatch(setCredentials({ ...response.data, user }));
+                  navigate('/dashboard');
+                }
+              );
+            } catch {
+              console.log('Login failed');
+            }
           }
         })}
       >
