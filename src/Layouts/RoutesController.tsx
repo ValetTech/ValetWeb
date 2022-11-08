@@ -106,7 +106,8 @@ export default function RoutesController() {
       shortcut={['mod + P', 'mod + K', '/']}
     >
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reservations" element={<Reservations />} />
         <Route path="/seating" element={<Seating />} />
         <Route path="/orders" element={<Orders />} />
@@ -115,7 +116,6 @@ export default function RoutesController() {
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="/login" element={<Login />} />
       </Routes>
     </SpotlightProvider>
   );

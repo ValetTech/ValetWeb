@@ -89,7 +89,7 @@ function NavbarLink({
 }
 
 const data = [
-  { link: '/', icon: IconHome2, label: 'Dashboard' },
+  { link: '/dashboard', icon: IconHome2, label: 'Dashboard' },
   { link: '/reservations', icon: IconCalendarStats, label: 'Reservations' },
   { link: '/seating', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
   { link: '/orders', icon: IconGauge, label: 'Orders' },
