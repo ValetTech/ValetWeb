@@ -254,7 +254,7 @@ export async function UserRegisterAsync(
   password: string
 ) {
   try {
-    const response = await axios.post(`/authenticate/register`, {
+    const response = await axios.post(`/auth/register`, {
       username,
       email,
       password,
@@ -269,7 +269,7 @@ export async function UserRegisterAsync(
 
 export async function UserLoginAsync(email: string, password: string) {
   try {
-    const response = await axios.post(`/authenticate/login`, {
+    const response = await axios.post(`/auth/login`, {
       email,
       password,
     });

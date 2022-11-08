@@ -1,4 +1,3 @@
-import { useDispatch, isSelector } from 'react-redux';
 import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import {
@@ -25,7 +24,7 @@ export default function LoginForm(props: PaperProps) {
   const form = useForm({
     initialValues: {
       email: '',
-      name: '',
+      username: '',
       password: '',
       terms: true,
     },
@@ -56,11 +55,12 @@ export default function LoginForm(props: PaperProps) {
         onSubmit={form.onSubmit(() => {
           if (type === 'register') {
             UserRegisterAsync(
-              form.values.name,
+              form.values.username,
               form.values.email,
               form.values.password
             );
-          } else {
+          }
+          if (type === 'login') {
             UserLoginAsync(form.values.email, form.values.password);
           }
         })}
@@ -68,11 +68,12 @@ export default function LoginForm(props: PaperProps) {
         <Stack>
           {type === 'register' && (
             <TextInput
-              label="Name"
-              placeholder="Your name"
-              value={form.values.name}
+              required
+              placeholder="Your username"
+              label="Username"
+              value={form.values.username}
               onChange={(event) =>
-                form.setFieldValue('name', event.currentTarget.value)
+                form.setFieldValue('username', event.currentTarget.value)
               }
             />
           )}
