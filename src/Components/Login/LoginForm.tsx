@@ -55,7 +55,7 @@ export default function LoginForm(props: PaperProps) {
       size="lg"
       position="top"
       opened={drawerOpened}
-      onClose={() => setDrawerOpened(false)}
+      onClose={() => setDrawerOpened(true)}
     >
       <Paper radius="md" p="xl" {...props}>
         <Text size="lg" weight={500}>
