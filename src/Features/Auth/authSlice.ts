@@ -11,6 +11,7 @@ const authSlice = createSlice({
       const { user, accessToken } = action.payload
       state.user = user
       state.token = accessToken
+      console.log(accessToken)
     },
     logOut: (state, action) => {
       state.user = null

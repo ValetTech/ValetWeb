@@ -9,7 +9,7 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token; // <-- Access token will be sent with every request
     if (token) {
-      headers.set('authorization', `Bearer ${token}`);
+      headers.set('Authorization', `Bearer ${token}`);
     }
     return headers;
   },

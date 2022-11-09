@@ -19,6 +19,7 @@ import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import {
   selectCurrentUser,
+  selectCurrentToken,
   setCredentials,
 } from '../../Features/Auth/authSlice';
 import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
@@ -86,7 +87,8 @@ export default function LoginForm(props: PaperProps) {
                 const user = form.values.email;
                 UserLoginAsync(form.values.email, form.values.password).then(
                   (response) => {
-                    dispatch(setCredentials({ ...response.token, user }));
+                    const accessToken = response.token;
+                    dispatch(setCredentials({ accessToken, user }));
                     navigate('/dashboard');
                   }
                 );
