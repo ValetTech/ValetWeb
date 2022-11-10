@@ -81,12 +81,17 @@ export async function getReservationByDateAsync(date: string) {
 
 export function createReservationAsync(reservation: Reservation) {
   try {
-    const response = axios.post(`/reservations`, {
-      ...reservation,
-      headers: {
-        authorization: `Bearer ${getTokenFromState()}`,
+    const response = axios.post(
+      `/reservations`,
+      {
+        ...reservation,
       },
-    });
+      {
+        headers: {
+          authorization: `Bearer ${getTokenFromState()}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     throw new Error();
@@ -271,13 +276,15 @@ export function deleteSittingAsync(id: number) {
 // CUSTOMER
 export function createCustomerAsync(customer: Customer) {
   try {
-    console.log(getTokenFromState());
-    const response = axios.post(`/customers`, {
-      ...customer,
-      headers: {
-        authorization: `Bearer ${getTokenFromState()}`,
-      },
-    });
+    const response = axios.post(
+      `/customers`,
+      { ...customer },
+      {
+        headers: {
+          authorization: `Bearer ${getTokenFromState()}`,
+        },
+      }
+    );
     return response;
   } catch (error) {
     throw new Error();
