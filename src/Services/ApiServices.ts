@@ -1,4 +1,9 @@
+import { RootState } from '@reduxjs/toolkit/dist/query/core/apiState';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { store } from '../App/store';
+import authSlice, { selectCurrentToken } from '../Features/Auth/authSlice';
+
 import Area from '../Models/Area';
 import Customer from '../Models/Customer';
 import Reservation from '../Models/Reservation';
@@ -10,10 +15,14 @@ axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api/';
 //   'Content-Type': 'application/json',
 //   Accept: 'application/json',
 // };
-const JWTToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoicC5iQGdtYWlsLmNvbSIsImp0aSI6IjU2MmFjMzQ0LTcxY2QtNGM4Yy05NGMzLWIxMGFmY2JkNWQ4OCIsImV4cCI6MTY2Nzg5MzQ4NiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDAwIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo0MjAwIn0.4smjfXPO5q6zddIwerwpItJcYPdXkeCNWl_rEfN-naw';
+
+function getTokenFromState() {
+  const reduxStore = store.getState();
+  const { token } = reduxStore.auth;
+  return token;
+}
 axios.defaults.headers.common['Content-Type'] = 'application/json';
-axios.defaults.headers.common.Authorization = `Bearer ${JWTToken}`;
+// axios.defaults.headers.common.Authorization = `Bearer ${getTokenFromState()}`;
 
 axios.defaults.headers.common['X-Version'] = '2.0';
 
@@ -29,6 +38,9 @@ export default async function getReservationsAsync() {
   try {
     const response = await axios.get('/reservations', {
       // withCredentials: false,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
 
     return response.data.reservations;
@@ -41,6 +53,9 @@ export async function getReservationByIdAsync(id: number) {
   try {
     const response = await axios.get(`/reservations/${id}`, {
       // withCredentials: false,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
 
     return response.data;
@@ -53,6 +68,9 @@ export async function getReservationByDateAsync(date: string) {
   try {
     const response = await axios.get(`/reservations?Date=${date}`, {
       // withCredentials: false,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
 
     return response.data.reservations;
@@ -65,6 +83,9 @@ export function createReservationAsync(reservation: Reservation) {
   try {
     const response = axios.post(`/reservations`, {
       ...reservation,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
     return response;
   } catch (error) {
@@ -79,6 +100,9 @@ export async function updateReservationAsync(
   try {
     const response = await axios.put(`/reservations/${id}`, {
       ...reservation,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
     return response;
   } catch (error) {
@@ -88,7 +112,11 @@ export async function updateReservationAsync(
 
 export function deleteReservationAsync(id: number) {
   try {
-    const response = axios.delete(`/reservations/${id}`);
+    const response = axios.delete(`/reservations/${id}`, {
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
+    });
     return response;
   } catch (error) {
     throw new Error();
@@ -100,6 +128,9 @@ export async function getAreasAsync() {
   try {
     const response = await axios.get('/areas', {
       // withCredentials: false,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
 
     return response.data.areas;
@@ -112,6 +143,9 @@ export async function getAreaByIdAsync(id: number) {
   try {
     const response = await axios.get(`/areas/${id}`, {
       // withCredentials: false,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
 
     return response.data;
@@ -124,6 +158,9 @@ export async function createAreaAsync(area: Area) {
   try {
     const response = await axios.post('/areas', {
       ...area,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
 
     return response.data;
@@ -136,6 +173,9 @@ export async function updateAreaAsync(id: number, area: Area) {
   try {
     const response = await axios.put(`/areas/${id}`, {
       ...area,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
     return response;
   } catch (error) {
@@ -145,7 +185,11 @@ export async function updateAreaAsync(id: number, area: Area) {
 
 export function deleteAreaAsync(id: number) {
   try {
-    const response = axios.delete(`/areas/${id}`);
+    const response = axios.delete(`/areas/${id}`, {
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
+    });
     return response;
   } catch (error) {
     throw new Error();
@@ -157,6 +201,9 @@ export async function getSittingsAsync() {
   try {
     const response = await axios.get('/sittings', {
       // withCredentials: false,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
 
     return response.data.sittings;
@@ -169,6 +216,9 @@ export async function getSittingByIdAsync(id: number) {
   try {
     const response = await axios.get(`/sittings/${id}`, {
       // withCredentials: false,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
 
     return response.data;
@@ -181,6 +231,9 @@ export async function createSittingAsync(sitting: Sitting) {
   try {
     const response = await axios.post(`/sittings`, {
       ...sitting,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
     return response;
   } catch (error) {
@@ -192,6 +245,9 @@ export async function updateSittingAsync(id: number, sitting: Sitting) {
   try {
     const response = await axios.put(`/sittings/${id}`, {
       ...sitting,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
     return response;
   } catch (error) {
@@ -201,7 +257,11 @@ export async function updateSittingAsync(id: number, sitting: Sitting) {
 
 export function deleteSittingAsync(id: number) {
   try {
-    const response = axios.delete(`/sittings/${id}`);
+    const response = axios.delete(`/sittings/${id}`, {
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
+    });
     return response;
   } catch (error) {
     throw new Error();
@@ -211,8 +271,12 @@ export function deleteSittingAsync(id: number) {
 // CUSTOMER
 export function createCustomerAsync(customer: Customer) {
   try {
+    console.log(getTokenFromState());
     const response = axios.post(`/customers`, {
       ...customer,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
     return response;
   } catch (error) {
@@ -224,6 +288,9 @@ export async function updateCustomerAsync(id: number, customer: Customer) {
   try {
     const response = await axios.put(`/customers/${id}`, {
       ...customer,
+      headers: {
+        authorization: `Bearer ${getTokenFromState()}`,
+      },
     });
     return response;
   } catch (error) {
@@ -238,6 +305,9 @@ export async function getSittingTypesAsync(date?: string) {
       `/sittings/types${date ? `date=${date}` : ''}`,
       {
         // withCredentials: false,
+        headers: {
+          authorization: `Bearer ${getTokenFromState()}`,
+        },
       }
     );
 
