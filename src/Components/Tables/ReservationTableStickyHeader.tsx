@@ -15,6 +15,7 @@ import { getReservationByIdAsync } from '../../Services/ApiServices';
 // #region
 import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
+import Area from '../../Models/Area';
 // #endregion
 
 const useStyles = createStyles((theme) => ({
@@ -47,11 +48,13 @@ const useStyles = createStyles((theme) => ({
 interface TableScrollAreaProps {
   data: { key: number; name: string; phone: string; dateTime: string }[];
   sittingData: Sitting[];
+  areaData: Area[];
 }
 
 export default function ReservationTableScrollArea({
   data,
   sittingData,
+  areaData,
 }: TableScrollAreaProps) {
   const { classes, cx } = useStyles();
   const [scrolled, setScrolled] = useState(false);

@@ -4,6 +4,7 @@ export default interface Reservation {
   customer?: Customer;
   sittingId: number;
   sitting?: Sitting;
+  areaId?: number;
   dateTime: string;
   duration: number;
   noGuests: number;

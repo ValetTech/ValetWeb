@@ -21,6 +21,7 @@ import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
 import { useState } from 'react';
+import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
 // #endregion
 // #endregion
@@ -39,6 +40,7 @@ interface CreateReservationModalProps {
   opened: boolean;
   onClose(): void;
   sittingData: Sitting[];
+  areaData: Area[];
 }
 // #endregion
 
@@ -46,6 +48,7 @@ export default function CreateReservationModal({
   opened,
   onClose,
   sittingData,
+  areaData,
 }: CreateReservationModalProps) {
   const [datePickerValue, setDatePickerValue] = useState(new Date());
   const [timePickerValue, setTimePickerValue] = useState(new Date());
@@ -74,6 +77,7 @@ export default function CreateReservationModal({
       phone: '',
       email: '',
       sittingId: 0,
+      areaId: 0,
       time: new Date(),
       date: new Date(),
       duration: 90,
@@ -97,6 +101,11 @@ export default function CreateReservationModal({
     value: s.id,
   }));
 
+  const areas = areaData.map((a) => ({
+    label: a.name,
+    value: a.id,
+  }));
+
   return (
     <Modal
       centered
@@ -117,6 +126,7 @@ export default function CreateReservationModal({
             createReservationAsync({
               customerId: customerResponse.data.id,
               sittingId: values.sittingId,
+              areaId: values.areaId,
               dateTime: getDateTimeString(),
               duration: values.duration,
               noGuests: values.noGuests,
@@ -182,6 +192,14 @@ export default function CreateReservationModal({
                 icon={<IconPencil />}
                 withAsterisk
                 {...form.getInputProps('sittingId')}
+              />
+              <Select
+                data={areas}
+                label="Area"
+                mt={20}
+                icon={<IconPencil />}
+                withAsterisk
+                {...form.getInputProps('areaId')}
               />
               <TimeInput
                 value={timePickerValue}
