@@ -26,9 +26,15 @@ import {
   IconTrash,
 } from '@tabler/icons';
 import { useState } from 'react';
-import { Link, useLocation, Navigate, Outlet } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  Navigate,
+  Outlet,
+  useNavigate,
+} from 'react-router-dom';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import LogoBlue from '../Assets/Images/Logo/H-Logo.png';
 import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
 import Nav from './NavBar';
@@ -96,6 +102,8 @@ export default function Header({ links }: HeaderSimpleProps) {
   const [opened, { toggle }] = useDisclosure(false);
   const { colorScheme } = useMantineColorScheme();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const user = {
     name: useSelector(selectCurrentUser),
@@ -197,10 +205,15 @@ export default function Header({ links }: HeaderSimpleProps) {
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Label>User</Menu.Label>
-              <Menu.Item icon={<IconSettings size={14} stroke={1.5} />}>
-                Account
-              </Menu.Item>
-              <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>
+              <Menu.Item
+                onClick={() => {
+                  dispatch(logOut({}));
+                  /* Will navigate to dashboard then redirect to login screen. If redirect does not occur then logOut payload was unsuccessful */
+                  navigate('/dashboard');
+                  console.log('hello');
+                }}
+                icon={<IconLogout size={14} stroke={1.5} />}
+              >
                 Logout
               </Menu.Item>
             </Menu.Dropdown>
