@@ -26,10 +26,18 @@ import {
   IconTrash,
 } from '@tabler/icons';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, Navigate, Outlet } from 'react-router-dom';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { useSelector } from 'react-redux';
 import LogoBlue from '../Assets/Images/Logo/H-Logo.png';
 import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
 import Nav from './NavBar';
+import {
+  setCredentials,
+  logOut,
+  selectCurrentToken,
+  selectCurrentUser,
+} from '../Features/Auth/authSlice';
 // import UserButton from '../Components/User/UserButton';
 
 interface HeaderSimpleProps {
@@ -90,7 +98,7 @@ export default function Header({ links }: HeaderSimpleProps) {
   const [userMenuOpened, setUserMenuOpened] = useState(false);
 
   const user = {
-    name: 'John Doe',
+    name: useSelector(selectCurrentUser),
     image: 'https://avatars.githubusercontent.com/u/1443320?v=4',
   };
 
@@ -188,62 +196,12 @@ export default function Header({ links }: HeaderSimpleProps) {
               </UnstyledButton>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item
-                icon={
-                  <IconHeart
-                    size={14}
-                    color={theme.colors.red[6]}
-                    stroke={1.5}
-                  />
-                }
-              >
-                Liked posts
-              </Menu.Item>
-              <Menu.Item
-                icon={
-                  <IconStar
-                    size={14}
-                    color={theme.colors.yellow[6]}
-                    stroke={1.5}
-                  />
-                }
-              >
-                Saved posts
-              </Menu.Item>
-              <Menu.Item
-                icon={
-                  <IconMessage
-                    size={14}
-                    color={theme.colors.blue[6]}
-                    stroke={1.5}
-                  />
-                }
-              >
-                Your comments
-              </Menu.Item>
-
-              <Menu.Label>Settings</Menu.Label>
+              <Menu.Label>User</Menu.Label>
               <Menu.Item icon={<IconSettings size={14} stroke={1.5} />}>
-                Account settings
-              </Menu.Item>
-              <Menu.Item icon={<IconSwitchHorizontal size={14} stroke={1.5} />}>
-                Change account
+                Account
               </Menu.Item>
               <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>
                 Logout
-              </Menu.Item>
-
-              <Menu.Divider />
-
-              <Menu.Label>Danger zone</Menu.Label>
-              <Menu.Item icon={<IconPlayerPause size={14} stroke={1.5} />}>
-                Pause subscription
-              </Menu.Item>
-              <Menu.Item
-                color="red"
-                icon={<IconTrash size={14} stroke={1.5} />}
-              >
-                Delete account
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
