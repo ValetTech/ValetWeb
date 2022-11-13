@@ -16,7 +16,7 @@ import RoutesController from './RoutesController';
 // Navbar links are hardcoded into Nav component for now.
 
 const links = [
-  { link: '/', icon: IconHome2, label: 'Dashboard' },
+  { link: '/dashboard', icon: IconHome2, label: 'Dashboard' },
   { link: '/reservations', icon: IconCalendarStats, label: 'Reservations' },
   { link: '/seating', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
   { link: '/orders', icon: IconGauge, label: 'Orders' },
@@ -25,7 +25,7 @@ const links = [
   { link: '/areas', icon: IconBoxModel2, label: 'Area Designer' },
 ];
 
-export default function DefaultAppShell() {
+export default function DefaultAppShell(store: any) {
   return (
     <AppShell
       padding={0}

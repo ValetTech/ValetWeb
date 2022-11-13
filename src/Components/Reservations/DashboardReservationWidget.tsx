@@ -119,6 +119,7 @@ export default function DashboardReservationWidget() {
             Create
           </Button>
           <CreateReservationModal
+            areaData={areaData}
             sittingData={sittingData}
             opened={createModalOpened}
             onClose={() => onCloseCreateModal()}

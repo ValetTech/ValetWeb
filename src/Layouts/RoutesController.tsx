@@ -11,6 +11,8 @@ import {
   IconSettings,
 } from '@tabler/icons';
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import LoginForm from '../Components/Login/LoginForm';
+import RequireAuth from '../Features/Auth/RequireAuth';
 import AreasPage from '../Pages/AreasPage';
 import Calendar from '../Pages/Calendar';
 import Dashboard from '../Pages/Dashboard';
@@ -105,16 +107,21 @@ export default function RoutesController() {
       shortcut={['mod + P', 'mod + K', '/']}
     >
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/reservations" element={<Reservations />} />
-        <Route path="/seating" element={<Seating />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/tables" element={<TablesPage />} />
-        <Route path="/areas" element={<AreasPage />} />
-        <Route path="/calendar" element={<Calendar />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<NotFound />} />
-        <Route path="/login" element={<Login />} />
+        {/* Public routes */}
+        <Route path="/" element={<Login />} />
+
+        {/* Protected routes */}
+        <Route element={<RequireAuth />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/reservations" element={<Reservations />} />
+          <Route path="/seating" element={<Seating />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/tables" element={<TablesPage />} />
+          <Route path="/areas" element={<AreasPage />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Routes>
     </SpotlightProvider>
   );

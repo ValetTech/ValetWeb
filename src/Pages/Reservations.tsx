@@ -1,17 +1,21 @@
+import { computeSegStartResizable } from '@fullcalendar/react';
 import { Button, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import CreateReservationModal from '../Components/Forms/CreateReservation';
 import DetailsForm from '../Components/Forms/DetailsReservation';
 import TableSort from '../Components/Reservations/Table';
+import Area from '../Models/Area';
 import Reservation from '../Models/Reservation';
 import Sitting from '../Models/Sitting';
 import getReservationsAsync, {
+  getAreasAsync,
   getSittingsAsync,
 } from '../Services/ApiServices';
 
 export default function Reservations() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [sittings, setSittings] = useState<Sitting[]>([]);
+  const [areas, setAreas] = useState<Area[]>([]);
   const [modalOpened, setModalOpened] = useState(false);
   const [detailsModalOpened, setDetailsModalOpened] = useState(false);
   useEffect(() => {
@@ -26,6 +30,12 @@ export default function Reservations() {
       setSittings(res);
     }
     fetchSittings();
+
+    async function fetchAreas() {
+      const res: Area[] = await getAreasAsync();
+      setAreas(res);
+    }
+    fetchAreas();
   }, []);
 
   function onCloseModal() {
@@ -59,6 +69,7 @@ export default function Reservations() {
       </Button>
       <TableSort data={reservations} />
       <CreateReservationModal
+        areaData={areas}
         sittingData={sittings}
         opened={modalOpened}
         onClose={() => onCloseModal()}

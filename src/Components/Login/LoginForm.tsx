@@ -1,4 +1,3 @@
-import { useDispatch, isSelector } from 'react-redux';
 import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
 import {
@@ -13,33 +12,29 @@ import {
   Checkbox,
   Anchor,
   Stack,
+  Drawer,
 } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import registerUser from '../../Features/counter/User/userActions';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import {
+  selectCurrentUser,
+  selectCurrentToken,
+  setCredentials,
+} from '../../Features/Auth/authSlice';
 import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
 import { UserLoginAsync, UserRegisterAsync } from '../../Services/ApiServices';
 
 export default function LoginForm(props: PaperProps) {
-  const [type, toggle] = useToggle(['login', 'register']);
-
-  const { loading, userInfo, error, success } = useSelector(
-    (state) => state.user
-  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // redirect user to login page if registration was successful
-    if (success) navigate('/login');
-    // redirect authenticated user to profile screen
-    if (userInfo) navigate('/user-profile');
-  }, [navigate, userInfo, success]);
+  const [type, toggle] = useToggle(['login', 'register']);
+  const [drawerOpened, setDrawerOpened] = useState(true);
 
   const form = useForm({
     initialValues: {
       email: '',
-      name: '',
+      username: '',
       password: '',
       terms: true,
     },
@@ -54,94 +49,120 @@ export default function LoginForm(props: PaperProps) {
   });
 
   return (
-    <Paper radius="md" p="xl" withBorder {...props}>
-      <Text size="lg" weight={500}>
-        Welcome to Valet, {type} with
-      </Text>
+    <Drawer
+      styles={{ closeButton: { color: '#1a1b1f' } }}
+      closeButtonLabel=""
+      size="lg"
+      position="top"
+      opened={drawerOpened}
+      onClose={() => setDrawerOpened(true)}
+    >
+      <Paper radius="md" p="xl" {...props}>
+        <Text size="lg" weight={500}>
+          Welcome to Valet, {type} with
+        </Text>
 
-      <Group grow mb="md" mt="md">
-        <GoogleButton radius="xl">Google</GoogleButton>
-        <TwitterButton radius="xl">Twitter</TwitterButton>
-      </Group>
-
-      <Divider label="Or continue with email" labelPosition="center" my="lg" />
-
-      <form
-        onSubmit={form.onSubmit(() => {
-          if (type === 'register') {
-            UserRegisterAsync(
-              form.values.name,
-              form.values.email,
-              form.values.password
-            );
-          } else {
-            UserLoginAsync(form.values.email, form.values.password);
-          }
-        })}
-      >
-        <Stack>
-          {type === 'register' && (
-            <TextInput
-              label="Name"
-              placeholder="Your name"
-              value={form.values.name}
-              onChange={(event) =>
-                form.setFieldValue('name', event.currentTarget.value)
-              }
-            />
-          )}
-
-          <TextInput
-            required
-            label="Email"
-            placeholder="hello@mantine.dev"
-            value={form.values.email}
-            onChange={(event) =>
-              form.setFieldValue('email', event.currentTarget.value)
-            }
-            error={form.errors.email && 'Invalid email'}
-          />
-
-          <PasswordInput
-            required
-            label="Password"
-            placeholder="Your password"
-            value={form.values.password}
-            onChange={(event) =>
-              form.setFieldValue('password', event.currentTarget.value)
-            }
-            error={
-              form.errors.password &&
-              'Password should include at least 6 characters'
-            }
-          />
-
-          {type === 'register' && (
-            <Checkbox
-              label="I accept terms and conditions"
-              checked={form.values.terms}
-              onChange={(event) =>
-                form.setFieldValue('terms', event.currentTarget.checked)
-              }
-            />
-          )}
-        </Stack>
-
-        <Group position="apart" mt="xl">
-          <Anchor
-            component="button"
-            type="button"
-            color="dimmed"
-            onClick={() => toggle()}
-            size="xs"
-          >
-            {type === 'register'
-              ? 'Already have an account? Login'
-              : "Don't have an account? Register"}
-          </Anchor>
-          <Button type="submit">{upperFirst(type)}</Button>
+        <Group grow mb="md" mt="md">
+          <GoogleButton radius="xl">Google</GoogleButton>
+          <TwitterButton radius="xl">Twitter</TwitterButton>
         </Group>
-      </form>
-    </Paper>
+
+        <Divider
+          label="Or continue with email"
+          labelPosition="center"
+          my="lg"
+        />
+
+        <form
+          onSubmit={form.onSubmit(() => {
+            if (type === 'register') {
+              UserRegisterAsync(
+                form.values.username,
+                form.values.email,
+                form.values.password
+              );
+            }
+            if (type === 'login') {
+              try {
+                const user = form.values.email;
+                UserLoginAsync(form.values.email, form.values.password).then(
+                  (response) => {
+                    const accessToken = response.token;
+                    dispatch(setCredentials({ accessToken, user }));
+                    navigate('/dashboard');
+                  }
+                );
+              } catch {
+                console.log('Login failed');
+              }
+            }
+          })}
+        >
+          <Stack>
+            {type === 'register' && (
+              <TextInput
+                required
+                placeholder="Your username"
+                label="Username"
+                value={form.values.username}
+                onChange={(event) =>
+                  form.setFieldValue('username', event.currentTarget.value)
+                }
+              />
+            )}
+
+            <TextInput
+              required
+              label="Email"
+              placeholder="hello@mantine.dev"
+              value={form.values.email}
+              onChange={(event) =>
+                form.setFieldValue('email', event.currentTarget.value)
+              }
+              error={form.errors.email && 'Invalid email'}
+            />
+
+            <PasswordInput
+              required
+              label="Password"
+              placeholder="Your password"
+              value={form.values.password}
+              onChange={(event) =>
+                form.setFieldValue('password', event.currentTarget.value)
+              }
+              error={
+                form.errors.password &&
+                'Password should include at least 6 characters'
+              }
+            />
+
+            {type === 'register' && (
+              <Checkbox
+                label="I accept terms and conditions"
+                checked={form.values.terms}
+                onChange={(event) =>
+                  form.setFieldValue('terms', event.currentTarget.checked)
+                }
+              />
+            )}
+          </Stack>
+
+          <Group position="apart" mt="xl">
+            <Anchor
+              component="button"
+              type="button"
+              color="dimmed"
+              onClick={() => toggle()}
+              size="xs"
+            >
+              {type === 'register'
+                ? 'Already have an account? Login'
+                : "Don't have an account? Register"}
+            </Anchor>
+            <Button type="submit">{upperFirst(type)}</Button>
+          </Group>
+        </form>
+      </Paper>
+    </Drawer>
   );
 }

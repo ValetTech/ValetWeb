@@ -36,7 +36,7 @@ export enum StopCondition {
 }
 
 // USE UTC
-export default function CreateEventModal({
+export default function EditEventModal({
   show,
   handleClose,
   handleShow,
@@ -174,7 +174,7 @@ export default function CreateEventModal({
         centered
         radius="md"
         size="auto"
-        title="Create Sitting"
+        title="Edit Sitting"
       >
         <form
           onSubmit={form.onSubmit((values) => {
