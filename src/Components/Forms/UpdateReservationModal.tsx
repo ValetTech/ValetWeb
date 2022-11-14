@@ -36,12 +36,14 @@ import {
 import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
 import ErrorNotification from '../Notifications/NotifyError';
+import Area from '../../Models/Area';
 // #endregion
 
 interface UpdateReservationModalProps {
   opened: boolean;
   onClose(): void;
   sittingData: Sitting[];
+  areaData: Area[];
   reservationData: Reservation;
   //   reservation: Reservation;
 }
@@ -51,6 +53,7 @@ export default function UpdateReservationModal({
   onClose,
   sittingData,
   reservationData,
+  areaData,
 }: UpdateReservationModalProps) {
   const [datePickerValue, setDatePickerValue] = useState(new Date());
   const [timePickerValue, setTimePickerValue] = useState(new Date());
@@ -72,6 +75,7 @@ export default function UpdateReservationModal({
       lastName: '',
       email: '',
       phone: '',
+      isVip: '',
     },
     sittingId: 0,
     sitting: {
@@ -125,12 +129,13 @@ export default function UpdateReservationModal({
     }
     const { values } = form;
 
-    updateCustomerAsync(values.customer.id, {
-      id: values.customer.id,
+    updateCustomerAsync(reservationData.customerId, {
+      id: reservationData.customerId,
       firstName: values.customer.firstName,
       lastName: values.customer.lastName,
       email: values.customer.email,
       phone: values.customer.phone,
+      isVip: values.customer.isVip,
     }).then((res) => {
       if (!reservationData.id) return;
       console.log('update customer response', res);
@@ -138,6 +143,7 @@ export default function UpdateReservationModal({
         id: reservationData.id,
         customerId: values.customer.id,
         sittingId: values.sittingId,
+        areaId: values.areaId,
         dateTime: getDateTimeString(),
         duration: values.duration,
         noGuests: values.noGuests,
@@ -225,6 +231,13 @@ export default function UpdateReservationModal({
                 icon={<IconPencil />}
                 {...form.getInputProps('sittingId')}
               />
+              <Select
+                data={areaData}
+                label="Area"
+                mt={20}
+                icon={<IconPencil />}
+                {...form.getInputProps('areaId')}
+              />
               <TimeInput
                 value={timePickerValue}
                 onChange={timePickerValue}
@@ -267,6 +280,15 @@ export default function UpdateReservationModal({
                 mb={20}
                 icon={<IconPencil />}
                 {...form.getInputProps('notes')}
+              />
+              <Select
+                label="VIP"
+                data={[
+                  { value: 'false', label: 'False' },
+                  { value: 'true', label: 'True' },
+                ]}
+                icon={<IconPencil />}
+                {...form.getInputProps('isVip')}
               />
             </Card>
           </Group>

@@ -110,6 +110,7 @@ export default function ReservationTableScrollArea({
         </Table>
       </ScrollArea>
       <ReservationDetailsDrawer
+        areaData={areaData}
         sittingData={sittingData}
         reservationData={selectedReservation}
         opened={detailsDrawerOpened}

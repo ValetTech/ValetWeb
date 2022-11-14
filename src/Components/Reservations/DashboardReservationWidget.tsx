@@ -113,6 +113,7 @@ export default function DashboardReservationWidget() {
         <ReservationTableStickyHeader
           data={reservations}
           sittingData={sittingData}
+          areaData={areas}
         />
         <Group mt={20} position="left">
           <Button size="lg" onClick={() => setCreateModalOpened(true)}>

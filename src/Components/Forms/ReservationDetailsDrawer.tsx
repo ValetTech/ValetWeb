@@ -32,6 +32,7 @@ import { deleteReservationAsync } from '../../Services/ApiServices';
 // #region
 import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
+import Area from '../../Models/Area';
 // #endregion
 
 interface ReservationDetailsDrawerProps {
@@ -39,6 +40,7 @@ interface ReservationDetailsDrawerProps {
   onClose(): void;
   sittingData: Sitting[];
   reservationData: Reservation;
+  areaData: Area[];
 }
 
 export default function ReservationDetailsDrawer({
@@ -46,6 +48,7 @@ export default function ReservationDetailsDrawer({
   onClose,
   sittingData,
   reservationData,
+  areaData,
 }: ReservationDetailsDrawerProps) {
   const [updateReservationModalOpened, setUpdateReservationModalOpened] =
     useState(false);
@@ -181,6 +184,7 @@ export default function ReservationDetailsDrawer({
         opened={updateReservationModalOpened}
         onClose={() => setUpdateReservationModalOpened(false)}
         sittingData={sittingData}
+        areaData={areaData}
         reservationData={reservationData}
       />
     </>
