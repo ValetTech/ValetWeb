@@ -83,6 +83,7 @@ export default function CreateReservationModal({
       duration: 90,
       noGuests: 1,
       notes: '',
+      isVip: '',
     },
     validate: {
       lastName: (value) =>
@@ -121,6 +122,7 @@ export default function CreateReservationModal({
             lastName: values.lastName,
             email: values.email,
             phone: values.phone,
+            isVip: values.isVip,
           }).then((customerResponse) => {
             console.log(customerResponse.data);
             createReservationAsync({
@@ -247,6 +249,15 @@ export default function CreateReservationModal({
                 mb={20}
                 icon={<IconPencil />}
                 {...form.getInputProps('notes')}
+              />
+              <Select
+                label="VIP"
+                data={[
+                  { value: 'false', label: 'False' },
+                  { value: 'true', label: 'True' },
+                ]}
+                icon={<IconPencil />}
+                {...form.getInputProps('isVip')}
               />
             </Card>
           </Group>
