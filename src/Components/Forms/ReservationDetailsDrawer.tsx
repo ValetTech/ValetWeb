@@ -116,6 +116,12 @@ export default function ReservationDetailsDrawer({
               <Text italic ml={40} mb={20}>
                 {reservationData?.notes}
               </Text>
+              <List.Item>
+                <Title size="h4">VIP?</Title>
+              </List.Item>
+              <Text italic ml={40} mb={20}>
+                {reservationData?.customer.isVip.toString().toUpperCase()}
+              </Text>
             </List>
           </Group>
           <Group mt={20} position="center">
