@@ -6,4 +6,5 @@ export default interface Customer {
   phone?: string;
   reservations?: Reservation[];
   fullName?: string;
+  isVip?: string;
 }
