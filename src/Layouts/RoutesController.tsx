@@ -48,22 +48,6 @@ export default function RoutesController() {
       icon: <IconCalendarStats />,
     },
     {
-      title: 'Seating',
-      group: 'main',
-      onTrigger: NavigateTo,
-      keywords: '',
-      link: '/seating',
-      icon: <IconDeviceDesktopAnalytics />,
-    },
-    {
-      title: 'Orders',
-      group: 'search',
-      onTrigger: NavigateTo,
-      keywords: '',
-      link: '/orders',
-      icon: <IconGauge />,
-    },
-    {
       title: 'Tables',
       group: 'Admin',
       onTrigger: NavigateTo,
@@ -114,8 +98,6 @@ export default function RoutesController() {
         <Route element={<RequireAuth />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/reservations" element={<Reservations />} />
-          <Route path="/seating" element={<Seating />} />
-          <Route path="/orders" element={<Orders />} />
           <Route path="/tables" element={<TablesPage />} />
           <Route path="/areas" element={<AreasPage />} />
           <Route path="/calendar" element={<Calendar />} />

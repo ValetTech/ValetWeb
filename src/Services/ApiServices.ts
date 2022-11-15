@@ -109,6 +109,7 @@ export async function updateReservationAsync(
         authorization: `Bearer ${getTokenFromState()}`,
       },
     });
+    console.log(response);
     return response;
   } catch (error) {
     throw new Error();

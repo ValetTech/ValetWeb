@@ -18,8 +18,6 @@ import RoutesController from './RoutesController';
 const links = [
   { link: '/dashboard', icon: IconHome2, label: 'Dashboard' },
   { link: '/reservations', icon: IconCalendarStats, label: 'Reservations' },
-  { link: '/seating', icon: IconDeviceDesktopAnalytics, label: 'Seating' },
-  { link: '/orders', icon: IconGauge, label: 'Orders' },
   { link: '/tables', icon: IconBrandAirtable, label: 'Tables' },
   { link: '/calendar', icon: IconCalendarEvent, label: 'Calendar' },
   { link: '/areas', icon: IconBoxModel2, label: 'Area Designer' },
