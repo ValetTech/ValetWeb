@@ -146,29 +146,72 @@ export default function Header({ links }: HeaderSimpleProps) {
             <Menu.Dropdown>
               <Menu.Label>Navigation</Menu.Label>
               <Menu.Item icon={<IconCircleDotted size={14} />}>
-                <NavLink component="a" label="Dashboard" href="/" />
+                <NavLink
+                  component="a"
+                  label="Dashboard"
+                  onClick={() => {
+                    navigate('/dashboard');
+                    toggle();
+                  }}
+                />
               </Menu.Item>
               <Menu.Item icon={<IconCircleDotted size={14} />}>
                 <NavLink
                   component="a"
                   label="Reservations"
-                  href="/reservations"
+                  onClick={() => {
+                    navigate('/reservations');
+                    toggle();
+                  }}
                 />
               </Menu.Item>
-              <Menu.Item icon={<IconCircleDotted size={14} />}>
+              {/* <Menu.Item icon={<IconCircleDotted size={14} />}>
                 <NavLink component="a" label="Seating" href="/seating" />
               </Menu.Item>
               <Menu.Item icon={<IconCircleDotted size={14} />}>
                 <NavLink component="a" label="Orders" href="/orders" />
+              </Menu.Item> */}
+              <Menu.Item icon={<IconCircleDotted size={14} />}>
+                <NavLink
+                  component="a"
+                  label="Tables"
+                  onClick={() => {
+                    navigate('/tables');
+                    toggle();
+                  }}
+                />
               </Menu.Item>
               <Menu.Item icon={<IconCircleDotted size={14} />}>
-                <NavLink component="a" label="Tables" href="/tables" />
+                <NavLink
+                  component="a"
+                  label="Calendar"
+                  onClick={() => {
+                    navigate('/calendar');
+                    toggle();
+                  }}
+                />
               </Menu.Item>
               <Menu.Item icon={<IconCircleDotted size={14} />}>
-                <NavLink component="a" label="Calendar" href="/calendar" />
+                <NavLink
+                  component="a"
+                  label="Areas"
+                  onClick={() => {
+                    navigate('/areas');
+                    toggle();
+                  }}
+                />
               </Menu.Item>
-              <Menu.Item icon={<IconCircleDotted size={14} />}>
-                <NavLink component="a" label="Areas" href="/areas" />
+              <Menu.Item icon={<IconLogout size={14} />}>
+                <NavLink
+                  component="a"
+                  label="Logout"
+                  onClick={() => {
+                    dispatch(logOut({}));
+                    /* Will navigate to dashboard then redirect to login screen. If redirect does not occur then logOut payload was unsuccessful */
+                    navigate('/dashboard');
+                    toggle();
+                  }}
+                />
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
@@ -210,7 +253,6 @@ export default function Header({ links }: HeaderSimpleProps) {
                   dispatch(logOut({}));
                   /* Will navigate to dashboard then redirect to login screen. If redirect does not occur then logOut payload was unsuccessful */
                   navigate('/dashboard');
-                  console.log('hello');
                 }}
                 icon={<IconLogout size={14} stroke={1.5} />}
               >
