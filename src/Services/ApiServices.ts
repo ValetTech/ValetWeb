@@ -241,6 +241,7 @@ export async function createSittingAsync(sitting: Sitting) {
         authorization: `Bearer ${getTokenFromState()}`,
       },
     });
+    console.log('NEW SITTING', response);
     return response;
   } catch (error) {
     throw new Error();
