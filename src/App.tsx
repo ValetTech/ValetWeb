@@ -29,9 +29,24 @@ export default function App() {
         toggleColorScheme={toggleColorScheme}
       >
         <MantineProvider
-          theme={{ colorScheme }}
           withGlobalStyles
           withNormalizeCSS
+          theme={{ fontFamily: 'Overpass, sans-serif',
+          fontFamilyMonospace: 'Overpass, monospace',
+          headings: {
+            // properties for all headings
+            fontWeight: 700,
+            fontFamily: 'Overpass, sans-serif',
+  
+            // properties for individual headings
+            sizes: {
+              h1: { fontWeight: 700, fontSize: 32, lineHeight: 1.4 },
+              h2: { fontSize: 24, lineHeight: 1.5 },
+              // ...up to h6
+            }
+          },
+        
+        }}
         >
           <Router>
             <NotificationsProvider>
