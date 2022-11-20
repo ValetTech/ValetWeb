@@ -96,6 +96,27 @@ export function createReservationAsync(reservation: Reservation) {
   }
 }
 
+export function createReservationAndCustomerAsync(
+  reservationWithCustomer: any
+) {
+  try {
+    const response = axios.post(
+      `/reservations`,
+      {
+        ...reservationWithCustomer,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${getTokenFromState()}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 export async function updateReservationAsync(
   id: number,
   reservation: Reservation

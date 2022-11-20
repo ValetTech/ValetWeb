@@ -30,6 +30,7 @@ import Sitting from '../../Models/Sitting';
 // #region
 import {
   createCustomerAsync,
+  createReservationAndCustomerAsync,
   createReservationAsync,
 } from '../../Services/ApiServices';
 // #endregion
@@ -117,27 +118,45 @@ export default function CreateReservationModal({
     >
       <form
         onSubmit={form.onSubmit((values) => {
-          createCustomerAsync({
-            firstName: values.firstName,
-            lastName: values.lastName,
-            email: values.email,
-            phone: values.phone,
-            isVip: values.isVip,
-          }).then((customerResponse) => {
-            console.log(customerResponse.data);
-            createReservationAsync({
-              customerId: customerResponse.data.id,
-              sittingId: values.sittingId,
-              areaId: values.areaId,
-              dateTime: getDateTimeString(),
-              duration: values.duration,
-              noGuests: values.noGuests,
-              notes: values.notes,
-            }).then((reservationResponse) => {
-              console.log(reservationResponse.data);
-              onClose();
-            });
+          createReservationAndCustomerAsync({
+            customer: {
+              firstName: values.firstName,
+              lastName: values.lastName,
+              email: values.email,
+              phone: values.phone,
+              isVip: values.isVip,
+            },
+            sittingId: values.sittingId,
+            areaId: values.areaId,
+            dateTime: getDateTimeString(),
+            duration: values.duration,
+            noGuests: values.noGuests,
+            notes: values.notes,
+          }).then((response) => {
+            console.log(response);
           });
+
+          // createCustomerAsync({
+          //   firstName: values.firstName,
+          //   lastName: values.lastName,
+          //   email: values.email,
+          //   phone: values.phone,
+          //   isVip: values.isVip,
+          // }).then((customerResponse) => {
+          //   console.log(customerResponse.data);
+          //   createReservationAsync({
+          //     customerId: customerResponse.data.id,
+          //     sittingId: values.sittingId,
+          //     areaId: values.areaId,
+          //     dateTime: getDateTimeString(),
+          //     duration: values.duration,
+          //     noGuests: values.noGuests,
+          //     notes: values.notes,
+          //   }).then((reservationResponse) => {
+          //     console.log(reservationResponse.data);
+          //     onClose();
+          //   });
+          // });
         })}
       >
         <SimpleGrid cols={1}>
