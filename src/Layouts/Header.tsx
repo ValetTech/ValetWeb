@@ -96,7 +96,7 @@ export default function Header({ links }: HeaderSimpleProps) {
   const state = store.getState();
 
   useEffect(() => {
-    console.log('state', state);
+    setUser(state.auth.user);
   }, [state]);
 
   const handleLogout = () => {
