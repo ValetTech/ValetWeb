@@ -58,7 +58,7 @@ export default function LoginForm({
       .then((res) => {
         LoggedInNotification();
         const accessToken = res.data.token;
-        const user = res.data.email;
+        const user = email;
         dispatch(setCredentials({ accessToken, user }));
         setModalOpened(false);
         if (pathname === '/') navigate('/dashboard');

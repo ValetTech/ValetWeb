@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Anchor,
   Burger,
@@ -19,10 +20,11 @@ import {
   IconLogin,
   IconLogout,
 } from '@tabler/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { store } from '../App/store';
 import LogoBlue from '../Assets/Images/Logo/H-Logo.png';
 import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
 import LoginModal from '../Components/Login/LoginModal';
@@ -83,15 +85,19 @@ const useStyles = createStyles((theme) => ({
 export default function Header({ links }: HeaderSimpleProps) {
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
-  const [user, setUser] = useState({
-    name: useSelector(selectCurrentUser),
-    image: 'https://avatars.githubusercontent.com/u/1443320?v=4',
-  });
+  const selectedUser = useSelector(selectCurrentUser);
+  const [user, setUser] = useState(selectedUser);
   const { colorScheme } = useMantineColorScheme();
   const [loginModalOpened, setLoginModalOpened] = useState(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const state = store.getState();
+
+  useEffect(() => {
+    setUser(state.auth.user);
+  }, [state]);
 
   const handleLogout = () => {
     dispatch(logOut({}));
@@ -214,9 +220,9 @@ export default function Header({ links }: HeaderSimpleProps) {
                   )}
                 >
                   <Group spacing={7}>
-                    <Avatar name={user.name} round size="30" />
+                    <Avatar name={user} round size="30" />
                     <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-                      {user.name}
+                      {user}
                     </Text>
                     <IconChevronDown size={12} stroke={1.5} />
                   </Group>
@@ -224,7 +230,7 @@ export default function Header({ links }: HeaderSimpleProps) {
               </Menu.Target>
 
               <Menu.Dropdown className=" shadow-xl rounded-lg">
-                <Menu.Label>{user.name}</Menu.Label>
+                <Menu.Label>{user}</Menu.Label>
                 <Menu.Item
                   onClick={handleLogout}
                   icon={<IconLogout size={14} stroke={1.5} />}
