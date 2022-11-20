@@ -28,7 +28,7 @@ const useStyles = createStyles((theme) => ({
     }`,
     // theme.colorScheme === 'dark'
     //   ? theme.colors.dark[6]
-    //   : theme.colors.gray[0],
+    //   : theme.colors.gray[0]
   },
 
   link: {
@@ -42,27 +42,13 @@ const useStyles = createStyles((theme) => ({
     [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
       margin: '5px 0',
     },
-    color:
-      theme.colorScheme === 'dark'
-        ? theme.colors.dark[0]
-        : theme.colors.gray[7],
+    color: '#8B97A2',
+    // theme.colorScheme === 'dark'
+    //   ? theme.colors.dark[0]
+    //   : theme.colors.gray[7],
 
     '&:hover': {
-      backgroundColor:
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[5]
-          : theme.colors.gray[0],
-    },
-  },
-
-  active: {
-    '&, &:hover': {
-      backgroundColor: theme.fn.variant({
-        variant: 'light',
-        color: theme.primaryColor,
-      }).background,
-      color: theme.fn.variant({ variant: 'light', color: theme.primaryColor })
-        .color,
+      backgroundColor: theme.colorScheme === 'dark' ? '#163c5e' : '#163c5e',
     },
   },
 }));
@@ -83,15 +69,20 @@ function NavbarLink({
 }: // onClick = () => {},
 NavbarLinkProps) {
   const { classes, cx } = useStyles();
+  const { colorScheme } = useMantineColorScheme();
+  const color = colorScheme === 'dark' ? 'color-[#000]' : 'color-[#000]';
   return (
     <Tooltip label={label} position="right" transitionDuration={0}>
       <UnstyledButton
         component={Link}
         to={to}
         // onClick={onClick}
-        className={cx(classes.link, { [classes.active]: active })}
+        className={cx(
+          classes.link,
+          active ? `bg-[#FFB703] ` : 'color-[#8B97A2]'
+        )}
       >
-        <Icon stroke={1.5} />
+        <Icon stroke={1.5} color={active ? '#fff' : '#8B97A2'} />
       </UnstyledButton>
     </Tooltip>
   );
@@ -122,6 +113,11 @@ export default function Nav({ links }: NavbarProps) {
     />
   ));
 
+  // border: 0px none #000000;
+  // border-top-right-radius: 12px;
+  // border-bottom-right-radius: 12px;
+  // box-shadow: 6px 0px 6px 0px #00000024;
+
   return (
     <Container p={0} className={classes.NavBar}>
       <Navbar
@@ -129,11 +125,11 @@ export default function Nav({ links }: NavbarProps) {
         withBorder={false}
         width={{ base: 80 }}
         p="md"
-        className={cx('fixed top-0 left-0 z-50 h-full', classes.NavBar)}
+        className="fixed top-0 left-0 z-50 h-full bg-[#023047] border-none border-0 border-black rounded-r-xl shadow-[6_0px_6px_0px_#00000024]"
       >
         <Center>
           <Anchor component={Link} to="/">
-            {colorScheme === 'dark' ? (
+            {colorScheme !== 'lightt' ? (
               <Image
                 fit="contain"
                 height={40}

@@ -15,15 +15,10 @@ export default function ToggleColor() {
             theme.colorScheme === 'dark'
               ? theme.colors.dark[5]
               : theme.colors.gray[0],
-          color:
-            theme.colorScheme === 'dark'
-              ? theme.colors.yellow[4]
-              : theme.colors.blue[6],
+          color: theme.colorScheme === 'dark' ? '#FFB703' : '#FFB703',
           '&:hover': {
             backgroundColor:
-              theme.colorScheme === 'dark'
-                ? theme.colors.dark[5]
-                : theme.colors.gray[0],
+              theme.colorScheme === 'dark' ? '#163c5e' : '#163c5e',
           },
         })}
       >
