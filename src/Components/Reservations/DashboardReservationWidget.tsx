@@ -41,6 +41,7 @@ export default function DashboardReservationWidget() {
   >([]);
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [selectedArea, setSelectedArea] = useState(undefined);
+  const [selectedSitting, setSelectedSitting] = useState(undefined);
 
   function onCloseCreateModal() {
     setCreateModalOpened(false);
@@ -74,11 +75,34 @@ export default function DashboardReservationWidget() {
   }, [selectedDate]);
 
   useEffect(() => {
-    const filteredReservations = reservationData.filter((reservation) => {
-      return reservation.areaId === selectedArea;
-    });
-    setFilteredReservationData(filteredReservations);
-  }, [selectedArea]);
+    if (selectedArea !== undefined && selectedSitting !== undefined) {
+      const filteredReservations = reservationData.filter((reservation) => {
+        return (
+          reservation.areaId === selectedArea &&
+          reservation.sittingId === selectedSitting
+        );
+      });
+      setFilteredReservationData(filteredReservations);
+    } else if (selectedArea !== undefined && selectedSitting === undefined) {
+      const filteredReservations = reservationData.filter((reservation) => {
+        return reservation.areaId === selectedArea;
+      });
+      setFilteredReservationData(filteredReservations);
+    } else if (selectedArea === undefined && selectedSitting !== undefined) {
+      const filteredReservations = reservationData.filter((reservation) => {
+        return reservation.sittingId === selectedSitting;
+      });
+      setFilteredReservationData(filteredReservations);
+    }
+  }, [selectedArea, selectedSitting]);
+
+  // useEffect(() => {
+  //   console.log(selectedSitting);
+  //   const filteredReservations = reservationData.filter((reservation) => {
+  //     return reservation.sittingId === selectedSitting;
+  //   });
+  //   setFilteredReservationData(filteredReservations);
+  // }, [selectedSitting]);
 
   // Mapping the data so that it can be displayed in <Select> component.
   // Name of sitting will be displayed in select, but it will return the ID number.
@@ -93,7 +117,7 @@ export default function DashboardReservationWidget() {
   }));
   // Mapping reservation data for table
   function mapReservationData() {
-    if (selectedArea === undefined) {
+    if (selectedArea === undefined && selectedSitting === undefined) {
       const reservations = reservationData.map((r) => ({
         key: r.id,
         name: r.customer.fullName,
@@ -135,7 +159,12 @@ export default function DashboardReservationWidget() {
           </Title>
           <Title size="h4" mt={30} mb={10}>
             Filter by sitting
-            <Select data={sittings} />
+            <Select
+              data={sittings}
+              onChange={(value) => {
+                setSelectedSitting(value);
+              }}
+            />
           </Title>
         </SimpleGrid>
         <ReservationTableStickyHeader
