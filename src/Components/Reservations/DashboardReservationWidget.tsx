@@ -74,11 +74,9 @@ export default function DashboardReservationWidget() {
   }, [selectedDate]);
 
   useEffect(() => {
-    console.log(selectedArea);
     const filteredReservations = reservationData.filter((reservation) => {
       return reservation.areaId === selectedArea;
     });
-    console.log(filteredReservations);
     setFilteredReservationData(filteredReservations);
   }, [selectedArea]);
 
