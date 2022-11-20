@@ -17,6 +17,7 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import dayjs from 'dayjs';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
@@ -64,11 +65,17 @@ export default function CreateReservationModal({
   // }
 
   function getDateTimeString() {
-    // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
-    datePickerValue.setDate(datePickerValue.getDate() + 1);
-    return `${
-      datePickerValue.toISOString().split('T')[0]
-    }T${timePickerValue.toLocaleTimeString('it-IT')}`;
+    const dateTime = dayjs(
+      new Date(
+        datePickerValue.getFullYear(),
+        datePickerValue.getMonth(),
+        datePickerValue.getDate(),
+        timePickerValue.getHours(),
+        timePickerValue.getMinutes(),
+        timePickerValue.getSeconds()
+      )
+    );
+    console.log(dateTime);
   }
 
   const form = useForm({
@@ -79,8 +86,8 @@ export default function CreateReservationModal({
       email: '',
       sittingId: 0,
       areaId: 0,
-      time: new Date(),
-      date: new Date(),
+      time: '',
+      date: '',
       duration: 90,
       noGuests: 1,
       notes: '',
@@ -224,7 +231,9 @@ export default function CreateReservationModal({
               />
               <TimeInput
                 value={timePickerValue}
-                onChange={(value) => setTimePickerValue(value)}
+                onChange={(value) => {
+                  setTimePickerValue(new Date(value));
+                }}
                 format="12"
                 label="Time"
                 mt={20}
@@ -235,7 +244,7 @@ export default function CreateReservationModal({
               />
               <DatePicker
                 value={datePickerValue}
-                onChange={(value) => setDatePickerValue(value ?? new Date())}
+                onChange={setDatePickerValue}
                 label="Date"
                 dropdownType="modal"
                 mt={20}
