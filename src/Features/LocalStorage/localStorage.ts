@@ -6,6 +6,6 @@ export default function loadState() {
     }
     return JSON.parse(serializedState);
   } catch (err) {
-    return undefined;
+    return { user: null, token: null };
   }
 }

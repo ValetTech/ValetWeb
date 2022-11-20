@@ -4,14 +4,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import loadState from '../LocalStorage/localStorage';
 
-function saveState(state: any){
+function saveState(state: any) {
   try {
     const serializedState = JSON.stringify(state);
     localStorage.setItem('state', serializedState);
   } catch {
     // ignore write errors
   }
-};
+}
 
 const localUser = loadState();
 console.log(localUser);
@@ -21,17 +21,17 @@ const authSlice = createSlice({
   initialState: localUser,
   reducers: {
     setCredentials: (state, action) => {
-      const { user, accessToken } = action.payload
-      state.user = user
-      state.token = accessToken
+      const { user, accessToken } = action.payload;
+      state.user = user;
+      state.token = accessToken;
 
       saveState(state);
     },
     logOut: (state, action) => {
-      state.user = null
-      state.token = null
-      saveState({user: null, accessToken: null,});
-      console.log(state)
+      state.user = null;
+      state.token = null;
+      saveState({ user: null, accessToken: null });
+      console.log(state);
     },
   },
 });

@@ -19,6 +19,14 @@ export default function App() {
     getInitialValueInEffect: true,
   });
 
+  // const [value, setValue] = useLocalStorage({
+  //   key: 'user-auth',
+  //   defaultValue: {},
+  // });
+  // dispatch(setCredentials({ accessToken: value.accessToken, user: value.use }));
+
+  // const state = store.getState();
+
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
