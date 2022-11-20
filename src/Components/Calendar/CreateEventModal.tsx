@@ -18,7 +18,10 @@ import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { getSittingTypesAsync } from '../../Services/ApiServices';
+import {
+  createSittingAsync,
+  getSittingTypesAsync,
+} from '../../Services/ApiServices';
 import CustomRadioButton from '../Buttons/CustomRadioButton';
 
 export interface Rrule {
@@ -179,7 +182,8 @@ export default function CreateEventModal({
         <form
           onSubmit={form.onSubmit((values) => {
             form.reset();
-            console.log(values);
+            createSittingAsync(values.sitting);
+            // console.log(values.sitting);
           })}
           onReset={handleReset}
         >
