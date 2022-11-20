@@ -125,7 +125,7 @@ export default function Nav({ links }: NavbarProps) {
         withBorder={false}
         width={{ base: 80 }}
         p="md"
-        className="fixed top-0 left-0 z-50 h-full bg-[#023047] border-none border-0 border-black rounded-r-xl shadow-[6_0px_6px_0px_#00000024]"
+        className="fixed top-0 left-0 z-50 h-full bg-[#023047] border-none border-0 border-black rounded-r-xl shadow-[6px_0px_6px_0px_#00000024]"
       >
         <Center>
           <Anchor component={Link} to="/">
