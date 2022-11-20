@@ -8,9 +8,11 @@ import {
   Select,
   SimpleGrid,
   Title,
+  UnstyledButton,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { IconX } from '@tabler/icons';
 import CreateReservationModal from '../Forms/CreateReservation';
 import ReservationTableStickyHeader from '../Tables/ReservationTableStickyHeader';
 // #endregion
@@ -42,6 +44,20 @@ export default function DashboardReservationWidget() {
   const [createModalOpened, setCreateModalOpened] = useState(false);
   const [selectedArea, setSelectedArea] = useState(undefined);
   const [selectedSitting, setSelectedSitting] = useState(undefined);
+
+  const sittingDropdown = useRef<HTMLSelectElement>(null);
+  function resetSittingDropdown() {
+    sittingDropdown.current.value = null;
+  }
+
+  const areaDropdown = useRef<HTMLSelectElement>(null);
+  function resetAreaDropdown() {
+    areaDropdown.current.value = null;
+  }
+
+  // useEffect(() => {
+  //   resetSittingDropdown();
+  // }, [selectedSitting]);
 
   function onCloseCreateModal() {
     setCreateModalOpened(false);
@@ -75,6 +91,10 @@ export default function DashboardReservationWidget() {
   }, [selectedDate]);
 
   useEffect(() => {
+    if (selectedArea === undefined || selectedSitting === undefined) {
+      resetAreaDropdown();
+      resetSittingDropdown();
+    }
     if (selectedArea !== undefined && selectedSitting !== undefined) {
       const filteredReservations = reservationData.filter((reservation) => {
         return (
@@ -151,15 +171,29 @@ export default function DashboardReservationWidget() {
           <Title size="h4" mt={30} mb={10}>
             Filter by area
             <Select
+              ref={areaDropdown}
               data={areas}
               onChange={(value) => {
                 setSelectedArea(value);
               }}
             />
+            <Title size="h5">
+              <UnstyledButton
+                onClick={() => {
+                  setSelectedArea(undefined);
+                  setSelectedSitting(undefined);
+                }}
+              >
+                <Title mt={10} size="h6">
+                  Clear Filters
+                </Title>
+              </UnstyledButton>
+            </Title>
           </Title>
           <Title size="h4" mt={30} mb={10}>
             Filter by sitting
             <Select
+              ref={sittingDropdown}
               data={sittings}
               onChange={(value) => {
                 setSelectedSitting(value);
