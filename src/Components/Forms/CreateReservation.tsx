@@ -22,6 +22,8 @@ import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
 import { useState } from 'react';
+import { DateTimePicker } from '@material-ui/pickers';
+
 import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
 // #endregion
@@ -52,8 +54,9 @@ export default function CreateReservationModal({
   sittingData,
   areaData,
 }: CreateReservationModalProps) {
-  const [datePickerValue, setDatePickerValue] = useState(new Date());
-  const [timePickerValue, setTimePickerValue] = useState(new Date());
+  // const [datePickerValue, setDatePickerValue] = useState(new Date());
+  // const [timePickerValue, setTimePickerValue] = useState(new Date());
+  const [selectedDate, handleDateChange] = useState(new Date());
 
   // function getDateTime(date: Date, time: Date) {
   //   console.log(`${date.getFullYear()}-${date.getMonth()}-${date.getDay()}T`);
@@ -64,19 +67,19 @@ export default function CreateReservationModal({
   //   //   .substring(10, time.toString().length)}`;
   // }
 
-  function getDateTimeString() {
-    const dateTime = dayjs(
-      new Date(
-        datePickerValue.getFullYear(),
-        datePickerValue.getMonth(),
-        datePickerValue.getDate(),
-        timePickerValue.getHours(),
-        timePickerValue.getMinutes(),
-        timePickerValue.getSeconds()
-      )
-    );
-    console.log(dateTime);
-  }
+  // function getDateTimeString() {
+  //   const dateTime = dayjs(
+  //     new Date(
+  //       datePickerValue.getFullYear(),
+  //       datePickerValue.getMonth(),
+  //       datePickerValue.getDate(),
+  //       timePickerValue.getHours(),
+  //       timePickerValue.getMinutes(),
+  //       timePickerValue.getSeconds()
+  //     )
+  //   );
+  //   console.log(dateTime);
+  // }
 
   const form = useForm({
     initialValues: {
@@ -125,6 +128,7 @@ export default function CreateReservationModal({
     >
       <form
         onSubmit={form.onSubmit((values) => {
+          console.log(selectedDate);
           createReservationAndCustomerAsync({
             customer: {
               firstName: values.firstName,
@@ -135,7 +139,7 @@ export default function CreateReservationModal({
             },
             sittingId: values.sittingId,
             areaId: values.areaId,
-            dateTime: getDateTimeString(),
+            dateTime: selectedDate,
             duration: values.duration,
             noGuests: values.noGuests,
             notes: values.notes,
@@ -228,8 +232,15 @@ export default function CreateReservationModal({
                 icon={<IconPencil />}
                 withAsterisk
                 {...form.getInputProps('areaId')}
+                mb={30}
               />
-              <TimeInput
+              <DateTimePicker
+                label="DateTime"
+                inputVariant="outlined"
+                value={selectedDate}
+                onChange={handleDateChange}
+              />
+              {/* <TimeInput
                 value={timePickerValue}
                 onChange={(value) => {
                   setTimePickerValue(new Date(value));
@@ -251,7 +262,7 @@ export default function CreateReservationModal({
                 withAsterisk
                 required
                 {...form.getInputProps('date')}
-              />
+              /> */}
               <NumberInput
                 label="Duration"
                 mt={20}
