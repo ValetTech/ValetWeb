@@ -28,10 +28,10 @@ const authSlice = createSlice({
       saveState(state);
     },
     logOut: (state, action) => {
-      state.user = null
-      state.token = null
-      saveState({user: null, accessToken: null,});
-      console.log(state)
+      state.user = null;
+      state.token = null;
+      saveState({ user: null, accessToken: null });
+      console.log(state);
     },
   },
 });

@@ -6,14 +6,13 @@ import {
 } from '@mantine/core';
 import { useColorScheme, useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { store } from './App/store';
 import DefaultAppShell from './Layouts/AppShell';
 
 export default function App() {
   const preferredColorScheme = useColorScheme();
-  const dispatch = useDispatch();
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
     defaultValue: 'light',
