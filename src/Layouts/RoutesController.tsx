@@ -4,23 +4,17 @@ import {
   IconBrandAirtable,
   IconCalendarEvent,
   IconCalendarStats,
-  IconDeviceDesktopAnalytics,
-  IconGauge,
   IconHome2,
   IconSearch,
   IconSettings,
 } from '@tabler/icons';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import LoginForm from '../Components/Login/LoginForm';
-import RequireAuth from '../Features/Auth/RequireAuth';
 import AreasPage from '../Pages/AreasPage';
 import Calendar from '../Pages/Calendar';
 import Dashboard from '../Pages/Dashboard';
-import Login from '../Pages/Login';
+import Home from '../Pages/Home';
 import NotFound from '../Pages/NotFound';
-import Orders from '../Pages/Orders';
 import Reservations from '../Pages/Reservations';
-import Seating from '../Pages/Seating';
 import Settings from '../Pages/Settings';
 import TablesPage from '../Pages/TablesPage';
 
@@ -92,18 +86,18 @@ export default function RoutesController() {
     >
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Home />} />
 
         {/* Protected routes */}
-        <Route element={<RequireAuth />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/reservations" element={<Reservations />} />
-          <Route path="/tables" element={<TablesPage />} />
-          <Route path="/areas" element={<AreasPage />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
+        {/* <Route element={<RequireAuth />}> */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/reservations" element={<Reservations />} />
+        <Route path="/tables" element={<TablesPage />} />
+        <Route path="/areas" element={<AreasPage />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="*" element={<NotFound />} />
+        {/* </Route> */}
       </Routes>
     </SpotlightProvider>
   );

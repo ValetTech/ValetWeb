@@ -1,35 +1,38 @@
-import { useToggle, upperFirst } from '@mantine/hooks';
-import { useForm } from '@mantine/form';
 import {
-  TextInput,
-  PasswordInput,
-  Text,
-  Paper,
-  Group,
-  PaperProps,
-  Button,
-  Divider,
-  Checkbox,
   Anchor,
+  Button,
+  Checkbox,
+  Divider,
+  Group,
+  LoadingOverlay,
+  Paper,
+  PasswordInput,
   Stack,
-  Drawer,
+  Text,
+  TextInput,
 } from '@mantine/core';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useForm } from '@mantine/form';
+import { upperFirst, useToggle } from '@mantine/hooks';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useEffect, useState } from 'react';
-import {
-  selectCurrentUser,
-  selectCurrentToken,
-  setCredentials,
-} from '../../Features/Auth/authSlice';
-import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { setCredentials } from '../../Features/Auth/authSlice';
 import { UserLoginAsync, UserRegisterAsync } from '../../Services/ApiServices';
+import CreatedNotification from '../Notifications/NotifyCreate';
+import ErrorNotification from '../Notifications/NotifyError';
+import LoggedInNotification from '../Notifications/NotifyLoggedIn';
+import { GoogleButton, TwitterButton } from '../SocialButtons/SocialButtons';
 
-export default function LoginForm(props: PaperProps) {
+export default function LoginForm({
+  setModalOpened = () => {},
+}: {
+  setModalOpened: (value: boolean) => void;
+}) {
   const dispatch = useDispatch();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [type, toggle] = useToggle(['login', 'register']);
-  const [drawerOpened, setDrawerOpened] = useState(true);
 
   const form = useForm({
     initialValues: {
@@ -48,16 +51,78 @@ export default function LoginForm(props: PaperProps) {
     },
   });
 
+  function Login({ email, password }: { email: string; password: string }) {
+    setLoading(true);
+
+    UserLoginAsync(email, password)
+      .then((res) => {
+        LoggedInNotification();
+        const { token } = res.data;
+        dispatch(setCredentials({ token, email }));
+        setModalOpened(false);
+        if (pathname === '/') navigate('/dashboard');
+      })
+      .catch((err) => {
+        ErrorNotification('Invalid email or password');
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  function Register({
+    username,
+    email,
+    password,
+  }: {
+    username: string;
+    email: string;
+    password: string;
+  }) {
+    setLoading(true);
+
+    UserRegisterAsync(username, email, password)
+      .then((res) => {
+        CreatedNotification();
+        Login({ email, password });
+      })
+      .catch((err) => {
+        ErrorNotification(err.response.data.message);
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  function onSubmit() {
+    if (type === 'register') Register(form.values);
+    else Login(form.values);
+  }
+
   return (
-    <Drawer
-      styles={{ closeButton: { color: '#1a1b1f' } }}
-      closeButtonLabel=""
-      size="lg"
-      position="top"
-      opened={drawerOpened}
-      onClose={() => setDrawerOpened(true)}
-    >
-      <Paper radius="md" p="xl" {...props}>
+    <div>
+      {/* <Modal
+        centered
+        closeOnClickOutside={false}
+        closeOnEscape={false}
+        overlayBlur={1}
+        trapFocus
+        shadow="lg"
+        // size="lg"
+        opened={drawerOpened}
+        onClose={() => setDrawerOpened(false)}
+        withCloseButton={false}
+        className="cursor-default"
+      > */}
+      <Paper radius="md" p="xl">
+        <LoadingOverlay
+          visible={loading}
+          overlayBlur={2}
+          className="cursor-progress"
+        />
+
         <Text size="lg" weight={500}>
           Welcome to Valet, {type} with
         </Text>
@@ -73,31 +138,7 @@ export default function LoginForm(props: PaperProps) {
           my="lg"
         />
 
-        <form
-          onSubmit={form.onSubmit(() => {
-            if (type === 'register') {
-              UserRegisterAsync(
-                form.values.username,
-                form.values.email,
-                form.values.password
-              );
-            }
-            if (type === 'login') {
-              try {
-                const user = form.values.email;
-                UserLoginAsync(form.values.email, form.values.password).then(
-                  (response) => {
-                    const accessToken = response.token;
-                    dispatch(setCredentials({ accessToken, user }));
-                    navigate('/dashboard');
-                  }
-                );
-              } catch {
-                console.log('Login failed');
-              }
-            }
-          })}
-        >
+        <form onSubmit={form.onSubmit(onSubmit)}>
           <Stack>
             {type === 'register' && (
               <TextInput
@@ -138,7 +179,14 @@ export default function LoginForm(props: PaperProps) {
 
             {type === 'register' && (
               <Checkbox
-                label="I accept terms and conditions"
+                label={
+                  <>
+                    I agree to Valet&apos;s{' '}
+                    <Anchor size="sm" href="#" target="_blank">
+                      Terms of Service and Privacy Policy
+                    </Anchor>
+                  </>
+                }
                 checked={form.values.terms}
                 onChange={(event) =>
                   form.setFieldValue('terms', event.currentTarget.checked)
@@ -163,6 +211,7 @@ export default function LoginForm(props: PaperProps) {
           </Group>
         </form>
       </Paper>
-    </Drawer>
+      {/* </Modal> */}
+    </div>
   );
 }

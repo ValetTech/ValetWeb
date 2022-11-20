@@ -13,7 +13,6 @@ import {
 import { IconSettings, TablerIcon } from '@tabler/icons';
 import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import LogoBlack from '../Assets/Images/Logo/H-LogoBlack.png';
 import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
 import ToggleColor from '../Components/Buttons/ToggleColorScheme';
 
@@ -64,7 +63,7 @@ interface NavbarLinkProps {
 function NavbarLink({
   icon: Icon,
   label,
-  to = '/',
+  to = '/dashboard',
   active = false,
 }: // onClick = () => {},
 NavbarLinkProps) {
@@ -113,11 +112,6 @@ export default function Nav({ links }: NavbarProps) {
     />
   ));
 
-  // border: 0px none #000000;
-  // border-top-right-radius: 12px;
-  // border-bottom-right-radius: 12px;
-  // box-shadow: 6px 0px 6px 0px #00000024;
-
   return (
     <Container p={0} className={classes.NavBar}>
       <Navbar
@@ -128,22 +122,8 @@ export default function Nav({ links }: NavbarProps) {
         className="fixed top-0 left-0 z-50 h-full bg-[#023047] border-none border-0 border-black rounded-r-xl shadow-[6px_0px_6px_0px_#00000024]"
       >
         <Center>
-          <Anchor component={Link} to="/">
-            {colorScheme !== 'lightt' ? (
-              <Image
-                fit="contain"
-                height={40}
-                src={LogoWhite}
-                alt="Valet Logo"
-              />
-            ) : (
-              <Image
-                fit="contain"
-                height={40}
-                src={LogoBlack}
-                alt="Valet Logo"
-              />
-            )}
+          <Anchor component={Link} to="/dashboard">
+            <Image fit="contain" height={40} src={LogoWhite} alt="Valet Logo" />
           </Anchor>
         </Center>
         <Navbar.Section grow mt={50}>

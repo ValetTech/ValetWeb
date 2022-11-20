@@ -1,6 +1,7 @@
 import {
   Anchor,
   Burger,
+  Button,
   Container,
   createStyles,
   Group,
@@ -12,13 +13,19 @@ import {
   useMantineColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconChevronDown, IconCircleDotted, IconLogout } from '@tabler/icons';
+import {
+  IconChevronDown,
+  IconCircleDotted,
+  IconLogin,
+  IconLogout,
+} from '@tabler/icons';
 import { useState } from 'react';
 import Avatar from 'react-avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import LogoBlue from '../Assets/Images/Logo/H-Logo.png';
 import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
+import LoginModal from '../Components/Login/LoginModal';
 import { logOut, selectCurrentUser } from '../Features/Auth/authSlice';
 // import UserButton from '../Components/User/UserButton';
 
@@ -76,14 +83,20 @@ const useStyles = createStyles((theme) => ({
 export default function Header({ links }: HeaderSimpleProps) {
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
+  const [user, setUser] = useState({
+    name: useSelector(selectCurrentUser),
+    image: 'https://avatars.githubusercontent.com/u/1443320?v=4',
+  });
   const { colorScheme } = useMantineColorScheme();
+  const [loginModalOpened, setLoginModalOpened] = useState(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const user = {
-    name: useSelector(selectCurrentUser),
-    image: 'https://avatars.githubusercontent.com/u/1443320?v=4',
+  const handleLogout = () => {
+    dispatch(logOut({}));
+    navigate('/');
+    toggle();
   };
 
   return (
@@ -91,7 +104,7 @@ export default function Header({ links }: HeaderSimpleProps) {
       <Container className="py-2">
         {/* <Group position="right"> */}
         <Group className="justify-between xs:justify-end">
-          <Anchor className="xs:hidden" component={Link} to="/">
+          <Anchor className="xs:hidden" component={Link} to="/dashboard">
             {colorScheme === 'dark' ? (
               <Image
                 fit="contain"
@@ -178,61 +191,71 @@ export default function Header({ links }: HeaderSimpleProps) {
                 />
               </Menu.Item>
               <Menu.Item icon={<IconLogout size={14} />}>
-                <NavLink
-                  component="a"
-                  label="Logout"
-                  onClick={() => {
-                    dispatch(logOut({}));
-                    /* Will navigate to dashboard then redirect to login screen. If redirect does not occur then logOut payload was unsuccessful */
-                    navigate('/dashboard');
-                    toggle();
-                  }}
-                />
+                <NavLink component="a" label="Logout" onClick={handleLogout} />
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
-          <Menu
-            width={260}
-            position="bottom-end"
-            transition="pop-top-right"
-            onClose={() => setUserMenuOpened(false)}
-            onOpen={() => setUserMenuOpened(true)}
-          >
-            <Menu.Target>
-              <UnstyledButton
-                className={cx(
-                  classes.user,
-                  {
-                    [classes.userActive]: userMenuOpened,
-                  },
-                  'p-2'
-                )}
-              >
-                <Group spacing={7}>
-                  <Avatar name={user.name} round size="30" />
-                  <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-                    {user.name}
-                  </Text>
-                  <IconChevronDown size={12} stroke={1.5} />
-                </Group>
-              </UnstyledButton>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Label>User</Menu.Label>
-              <Menu.Item
-                onClick={() => {
-                  dispatch(logOut({}));
-                  /* Will navigate to dashboard then redirect to login screen. If redirect does not occur then logOut payload was unsuccessful */
-                  navigate('/dashboard');
-                }}
-                icon={<IconLogout size={14} stroke={1.5} />}
-              >
-                Logout
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          {user ? (
+            <Menu
+              width={260}
+              position="bottom-end"
+              transition="pop-top-right"
+              onClose={() => setUserMenuOpened(false)}
+              onOpen={() => setUserMenuOpened(true)}
+            >
+              <Menu.Target>
+                <UnstyledButton
+                  className={cx(
+                    classes.user,
+                    {
+                      [classes.userActive]: userMenuOpened,
+                    },
+                    'p-2 hover:bg-[#FFB703] rounded-lg'
+                  )}
+                >
+                  <Group spacing={7}>
+                    <Avatar name={user.name} round size="30" />
+                    <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+                      {user.name}
+                    </Text>
+                    <IconChevronDown size={12} stroke={1.5} />
+                  </Group>
+                </UnstyledButton>
+              </Menu.Target>
+
+              <Menu.Dropdown className=" shadow-xl rounded-lg">
+                <Menu.Label>{user.name}</Menu.Label>
+                <Menu.Item
+                  onClick={handleLogout}
+                  icon={<IconLogout size={14} stroke={1.5} />}
+                  className="hover:bg-[#FFB703] rounded-lg"
+                >
+                  Logout
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          ) : (
+            <Button
+              variant="outline"
+              leftIcon={<IconLogin size={20} />}
+              className={cx(
+                classes.user,
+                {
+                  [classes.userActive]: userMenuOpened,
+                },
+                'p-2 hover:bg-[#FFB703] rounded-lg'
+              )}
+              onClick={() => setLoginModalOpened(true)}
+            >
+              Sign in
+            </Button>
+          )}
         </Group>
       </Container>
+      <LoginModal
+        modalOpened={loginModalOpened}
+        setModalOpened={setLoginModalOpened}
+      />
     </div>
   );
 }

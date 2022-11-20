@@ -1,8 +1,5 @@
-import { RootState } from '@reduxjs/toolkit/dist/query/core/apiState';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 import { store } from '../App/store';
-import authSlice, { selectCurrentToken } from '../Features/Auth/authSlice';
 
 import Area from '../Models/Area';
 import Customer from '../Models/Customer';
@@ -331,30 +328,22 @@ export async function UserRegisterAsync(
   email: string,
   password: string
 ) {
-  try {
-    const response = await axios.post(`/auth/register`, {
-      username,
-      email,
-      password,
-    });
+  const response = await axios.post(`/auth/register`, {
+    username,
+    email,
+    password,
+  });
 
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    throw new Error();
-  }
+  console.log(response.data);
+  return response;
 }
 
 export async function UserLoginAsync(email: string, password: string) {
-  try {
-    const response = await axios.post(`/auth/login`, {
-      email,
-      password,
-    });
+  const response = await axios.post(`/auth/login`, {
+    email,
+    password,
+  });
 
-    // console.log(response);
-    return response.data;
-  } catch (error) {
-    throw new Error();
-  }
+  // console.log(response);
+  return response;
 }

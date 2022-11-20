@@ -67,7 +67,7 @@ export default function App() {
                     borderRadius: 12,
                     fontWeight: 700,
                     fontSize: 14,
-
+                    cursor: 'pointer',
                     border: 0,
                     backgroundColor: '#FFB703',
                     color: theme.colorScheme === 'dark' ? '#fff' : '#0F1113',

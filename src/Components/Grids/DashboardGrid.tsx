@@ -17,21 +17,11 @@ export default function DashboardGrid() {
         { maxWidth: 'lg', cols: 2 },
         { maxWidth: 'xl', cols: 2 },
       ]}
+      spacing={0}
+      className="pb-4"
     >
       {/* Left Column */}
-      <div>
-        {/* Radius property smooths the corners of the column border */}
-        <DashboardReservationWidget />
-        {/* <Skeleton
-          height={600}
-          mt={6}
-          width="100%"
-          radius="md"
-          animate={false}
-    /> */}
-      </div>
-      {/* Right Column */}
-      <div>
+      <div className=" px-4 sm:pr-0">
         <VacancyWidget />
         {/* <Skeleton
           height={130}
@@ -41,6 +31,7 @@ export default function DashboardGrid() {
           radius="md"
           animate={false}
         /> */}
+        {/* Vacancy rate */}
         <Skeleton
           height={130}
           mb={10}
@@ -58,6 +49,7 @@ export default function DashboardGrid() {
         <SimpleGrid cols={2}>
           {/* Sub-Left Column */}
           <div>
+            {/* Available tables */}
             <Skeleton
               height={170}
               mt={2}
@@ -69,6 +61,7 @@ export default function DashboardGrid() {
           </div>
           {/* Sub-Right Column */}
           <div>
+            {/* Unallocated reservations */}
             <Skeleton
               height={170}
               mt={2}
@@ -79,6 +72,19 @@ export default function DashboardGrid() {
             />
           </div>
         </SimpleGrid>
+      </div>
+
+      {/* Right Column */}
+      <div>
+        {/* Radius property smooths the corners of the column border */}
+        <DashboardReservationWidget />
+        {/* <Skeleton
+          height={600}
+          mt={6}
+          width="100%"
+          radius="md"
+          animate={false}
+    /> */}
       </div>
     </SimpleGrid>
   );

@@ -4,10 +4,9 @@ import {
   IconBrandAirtable,
   IconCalendarEvent,
   IconCalendarStats,
-  IconDeviceDesktopAnalytics,
-  IconGauge,
   IconHome2,
 } from '@tabler/icons';
+import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import Nav from './NavBar';
 import RoutesController from './RoutesController';
@@ -24,12 +23,13 @@ const links = [
 ];
 
 export default function DefaultAppShell(store: any) {
+  const { pathname } = useLocation();
   return (
     <AppShell
       padding={0}
       navbarOffsetBreakpoint="xs" // Removes side navbar and fills in space with page content when extra small resolution is reached
-      navbar={<Nav links={links} />}
-      header={<Header links={links} />}
+      navbar={pathname === '/' ? <div /> : <Nav links={links} />}
+      header={pathname === '/' ? <div /> : <Header links={links} />}
     >
       <RoutesController />
     </AppShell>
