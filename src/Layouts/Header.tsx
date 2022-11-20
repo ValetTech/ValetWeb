@@ -1,49 +1,25 @@
 import {
   Anchor,
-  Avatar,
   Burger,
   Container,
   createStyles,
   Group,
   Image,
   Menu,
+  NavLink,
   Text,
   UnstyledButton,
   useMantineColorScheme,
-  NavLink,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import {
-  IconChevronDown,
-  IconCircleDotted,
-  IconHeart,
-  IconLogout,
-  IconMessage,
-  IconPlayerPause,
-  IconSettings,
-  IconStar,
-  IconSwitchHorizontal,
-  IconTrash,
-} from '@tabler/icons';
+import { IconChevronDown, IconCircleDotted, IconLogout } from '@tabler/icons';
 import { useState } from 'react';
-import {
-  Link,
-  useLocation,
-  Navigate,
-  Outlet,
-  useNavigate,
-} from 'react-router-dom';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Avatar from 'react-avatar';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import LogoBlue from '../Assets/Images/Logo/H-Logo.png';
 import LogoWhite from '../Assets/Images/Logo/H-LogoWhite.png';
-import Nav from './NavBar';
-import {
-  setCredentials,
-  logOut,
-  selectCurrentToken,
-  selectCurrentUser,
-} from '../Features/Auth/authSlice';
+import { logOut, selectCurrentUser } from '../Features/Auth/authSlice';
 // import UserButton from '../Components/User/UserButton';
 
 interface HeaderSimpleProps {
@@ -233,12 +209,7 @@ export default function Header({ links }: HeaderSimpleProps) {
                 )}
               >
                 <Group spacing={7}>
-                  <Avatar
-                    src={user.image}
-                    alt={user.name}
-                    radius="xl"
-                    size={30}
-                  />
+                  <Avatar name={user.name} round size="30" />
                   <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
                     {user.name}
                   </Text>
