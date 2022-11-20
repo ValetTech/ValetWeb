@@ -163,6 +163,7 @@ export default function ReservationDetailsDrawer({
                         deleteReservationAsync(reservationData?.id);
                         setDeleteReservationModalOpened(false);
                         onClose();
+                        window.location.reload();
                       }}
                     >
                       Confirm

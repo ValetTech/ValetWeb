@@ -117,6 +117,27 @@ export function createReservationAndCustomerAsync(
   }
 }
 
+export function updateReservationAndCustomerAsync(
+  reservationWithCustomer: any
+) {
+  try {
+    const response = axios.put(
+      `/reservations`,
+      {
+        ...reservationWithCustomer,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${getTokenFromState()}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw new Error();
+  }
+}
+
 export async function updateReservationAsync(
   id: number,
   reservation: Reservation

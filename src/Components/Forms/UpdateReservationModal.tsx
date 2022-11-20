@@ -25,8 +25,10 @@ import { useEffect, useState } from 'react';
 
 // Services
 // #region
+import { DateTimePicker } from '@material-ui/pickers';
 import {
   updateCustomerAsync,
+  updateReservationAndCustomerAsync,
   updateReservationAsync,
 } from '../../Services/ApiServices';
 // #endregion
@@ -55,16 +57,17 @@ export default function UpdateReservationModal({
   reservationData,
   areaData,
 }: UpdateReservationModalProps) {
-  const [datePickerValue, setDatePickerValue] = useState(new Date());
-  const [timePickerValue, setTimePickerValue] = useState(new Date());
+  // const [datePickerValue, setDatePickerValue] = useState(new Date());
+  // const [timePickerValue, setTimePickerValue] = useState(new Date());
+  const [selectedDate, handleDateChange] = useState(new Date());
 
-  function getDateTimeString() {
-    // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
-    datePickerValue.setDate(datePickerValue.getDate() + 1);
-    return `${
-      datePickerValue.toISOString().split('T')[0]
-    }T${timePickerValue.toLocaleTimeString('it-IT')}`;
-  }
+  // function getDateTimeString() {
+  //   // Sometimes the day is off sometimes not, haven't been able to isolate why yet.
+  //   datePickerValue.setDate(datePickerValue.getDate() + 1);
+  //   return `${
+  //     datePickerValue.toISOString().split('T')[0]
+  //   }T${timePickerValue.toLocaleTimeString('it-IT')}`;
+  // }
 
   const initialValues: Reservation = {
     id: 0,
@@ -123,48 +126,65 @@ export default function UpdateReservationModal({
   });
 
   function onSubmit() {
-    if (!form.isDirty()) {
-      onClose();
-      return;
-    }
+    // if (!form.isDirty()) {
+    //   onClose();
+    //   return;
+    // }
     const { values } = form;
-
-    updateCustomerAsync(reservationData.customerId, {
-      id: reservationData.customerId,
-      firstName: values.customer.firstName,
-      lastName: values.customer.lastName,
-      email: values.customer.email,
-      phone: values.customer.phone,
-      isVip: values.customer.isVip,
-    }).then((res) => {
-      if (!reservationData.id) return;
-      console.log('update customer response', res);
-      updateReservationAsync(reservationData.id, {
-        id: reservationData.id,
-        customerId: values.customer.id,
-        sittingId: values.sittingId,
-        areaId: values.areaId,
-        dateTime: getDateTimeString(),
-        duration: values.duration,
-        noGuests: values.noGuests,
-        notes: values.notes,
-      })
-        .then((reservationResponse) => {
-          console.log(reservationResponse.data);
-          onClose();
-        })
-        .catch((error) => {
-          ErrorNotification(error.message);
-        });
+    updateReservationAndCustomerAsync({
+      customer: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        phone: values.phone,
+        isVip: values.isVip,
+      },
+      sittingId: values.sittingId,
+      areaId: values.areaId,
+      dateTime: selectedDate,
+      duration: values.duration,
+      noGuests: values.noGuests,
+      notes: values.notes,
+    }).then((response) => {
+      alert(response);
     });
+
+    // updateCustomerAsync(reservationData.customerId, {
+    //   id: reservationData.customerId,
+    //   firstName: values.customer.firstName,
+    //   lastName: values.customer.lastName,
+    //   email: values.customer.email,
+    //   phone: values.customer.phone,
+    //   isVip: values.customer.isVip,
+    // }).then((res) => {
+    //   if (!reservationData.id) return;
+    //   console.log('update customer response', res);
+    //   updateReservationAsync(reservationData.id, {
+    //     id: reservationData.id,
+    //     customerId: values.customer.id,
+    //     sittingId: values.sittingId,
+    //     areaId: values.areaId,
+    //     dateTime: getDateTimeString(),
+    //     duration: values.duration,
+    //     noGuests: values.noGuests,
+    //     notes: values.notes,
+    //   })
+    //     .then((reservationResponse) => {
+    //       console.log(reservationResponse.data);
+    //       onClose();
+    //     })
+    //     .catch((error) => {
+    //       ErrorNotification(error.message);
+    //     });
+    // });
   }
 
-  useEffect(() => {
-    if (reservationData) form.setValues(reservationData);
-    console.log('SomeFUCKINGdata:', reservationData);
+  // useEffect(() => {
+  //   if (reservationData) form.setValues(reservationData);
+  //   console.log('SomeFUCKINGdata:', reservationData);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reservationData]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [reservationData]);
 
   // Name of sitting will be displayed in select, but it will return the ID number.
   const sittings = sittingData.map((s) => ({
@@ -237,8 +257,15 @@ export default function UpdateReservationModal({
                 mt={20}
                 icon={<IconPencil />}
                 {...form.getInputProps('areaId')}
+                mb={30}
               />
-              <TimeInput
+              <DateTimePicker
+                label="DateTime"
+                inputVariant="outlined"
+                value={selectedDate}
+                onChange={handleDateChange}
+              />
+              {/* <TimeInput
                 value={timePickerValue}
                 onChange={timePickerValue}
                 format="12"
@@ -255,7 +282,7 @@ export default function UpdateReservationModal({
                 mt={20}
                 defaultValue={new Date()}
                 {...form.getInputProps('dateTime')}
-              />
+              /> */}
               <NumberInput
                 placeholder={reservationData?.duration}
                 label="Duration"
