@@ -18,7 +18,7 @@ console.log(localUser);
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: { user: localUser.user, token: localUser.token },
+  initialState: localUser,
   reducers: {
     setCredentials: (state, action) => {
       const { user, accessToken } = action.payload
@@ -30,6 +30,8 @@ const authSlice = createSlice({
     logOut: (state, action) => {
       state.user = null
       state.token = null
+      saveState({user: null, accessToken: null,});
+      console.log(state)
     },
   },
 });
