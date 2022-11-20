@@ -16,6 +16,7 @@ axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api/';
 function getTokenFromState() {
   const reduxStore = store.getState();
   const { token } = reduxStore.auth;
+
   return token;
 }
 axios.defaults.headers.common['Content-Type'] = 'application/json';

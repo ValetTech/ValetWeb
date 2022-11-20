@@ -57,8 +57,9 @@ export default function LoginForm({
     UserLoginAsync(email, password)
       .then((res) => {
         LoggedInNotification();
-        const { token } = res.data;
-        dispatch(setCredentials({ token, email }));
+        const accessToken = res.data.token;
+        const user = res.data.email;
+        dispatch(setCredentials({ accessToken, user }));
         setModalOpened(false);
         if (pathname === '/') navigate('/dashboard');
       })
