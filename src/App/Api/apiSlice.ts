@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable prefer-destructuring */
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { setCredentials, logOut } from '../../Features/Auth/authSlice';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: 'https://valetapi.azurewebsites.net/api/',
