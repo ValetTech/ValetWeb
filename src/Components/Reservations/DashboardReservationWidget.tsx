@@ -36,7 +36,11 @@ export default function DashboardReservationWidget() {
   const [areaData, setAreaData] = useState<Area[]>([]);
   const [sittingData, setSittingData] = useState<Sitting[]>([]);
   const [reservationData, setReservationData] = useState<Reservation[]>([]);
+  const [filteredReservationData, setFilteredReservationData] = useState<
+    Reservation[]
+  >([]);
   const [createModalOpened, setCreateModalOpened] = useState(false);
+  const [selectedArea, setSelectedArea] = useState(undefined);
 
   function onCloseCreateModal() {
     setCreateModalOpened(false);
@@ -69,6 +73,15 @@ export default function DashboardReservationWidget() {
     fetchReservations();
   }, [selectedDate]);
 
+  useEffect(() => {
+    console.log(selectedArea);
+    const filteredReservations = reservationData.filter((reservation) => {
+      return reservation.areaId === selectedArea;
+    });
+    console.log(filteredReservations);
+    setFilteredReservationData(filteredReservations);
+  }, [selectedArea]);
+
   // Mapping the data so that it can be displayed in <Select> component.
   // Name of sitting will be displayed in select, but it will return the ID number.
   const sittings = sittingData.map((s) => ({
@@ -81,12 +94,24 @@ export default function DashboardReservationWidget() {
     value: a.id,
   }));
   // Mapping reservation data for table
-  const reservations = reservationData.map((r) => ({
-    key: r.id,
-    name: r.customer.fullName,
-    phone: r.customer.phone,
-    dateTime: r.dateTime,
-  }));
+  function mapReservationData() {
+    if (selectedArea === undefined) {
+      const reservations = reservationData.map((r) => ({
+        key: r.id,
+        name: r.customer.fullName,
+        phone: r.customer.phone,
+        dateTime: r.dateTime,
+      }));
+      return reservations;
+    }
+    const reservations = filteredReservationData.map((r) => ({
+      key: r.id,
+      name: r.customer.fullName,
+      phone: r.customer.phone,
+      dateTime: r.dateTime,
+    }));
+    return reservations;
+  }
 
   return (
     <Container mt={6}>
@@ -103,7 +128,12 @@ export default function DashboardReservationWidget() {
         <SimpleGrid cols={2} mb={30}>
           <Title size="h4" mt={30} mb={10}>
             Filter by area
-            <Select data={areas} />
+            <Select
+              data={areas}
+              onChange={(value) => {
+                setSelectedArea(value);
+              }}
+            />
           </Title>
           <Title size="h4" mt={30} mb={10}>
             Filter by sitting
@@ -111,7 +141,7 @@ export default function DashboardReservationWidget() {
           </Title>
         </SimpleGrid>
         <ReservationTableStickyHeader
-          data={reservations}
+          data={mapReservationData()}
           sittingData={sittingData}
           areaData={areas}
         />
