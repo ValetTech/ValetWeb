@@ -17,12 +17,13 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import dayjs from 'dayjs';
-import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import TextField from '@mui/material/TextField';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { IconPencil } from '@tabler/icons';
+import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
-import { DateTimePicker } from '@material-ui/pickers';
 
 import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
@@ -31,11 +32,7 @@ import Sitting from '../../Models/Sitting';
 
 // Services
 // #region
-import {
-  createCustomerAsync,
-  createReservationAndCustomerAsync,
-  createReservationAsync,
-} from '../../Services/ApiServices';
+import { createReservationAndCustomerAsync } from '../../Services/ApiServices';
 // #endregion
 
 // Props
@@ -57,6 +54,7 @@ export default function CreateReservationModal({
   // const [datePickerValue, setDatePickerValue] = useState(new Date());
   // const [timePickerValue, setTimePickerValue] = useState(new Date());
   const [selectedDate, handleDateChange] = useState(new Date());
+  const [date, setDate] = useState<Dayjs | null>(dayjs('2022-04-07'));
 
   // function getDateTime(date: Date, time: Date) {
   //   console.log(`${date.getFullYear()}-${date.getMonth()}-${date.getDay()}T`);
@@ -119,128 +117,141 @@ export default function CreateReservationModal({
   }));
 
   return (
-    <Modal
-      centered
-      opened={opened}
-      onClose={onClose}
-      title="Create New Reservation"
-      size="xl"
-    >
-      <form
-        onSubmit={form.onSubmit((values) => {
-          console.log(selectedDate);
-          createReservationAndCustomerAsync({
-            customer: {
-              firstName: values.firstName,
-              lastName: values.lastName,
-              email: values.email,
-              phone: values.phone,
-              isVip: values.isVip,
-            },
-            sittingId: values.sittingId,
-            areaId: values.areaId,
-            dateTime: selectedDate,
-            duration: values.duration,
-            noGuests: values.noGuests,
-            notes: values.notes,
-          }).then((response) => {
-            console.log(response);
-          });
-
-          // createCustomerAsync({
-          //   firstName: values.firstName,
-          //   lastName: values.lastName,
-          //   email: values.email,
-          //   phone: values.phone,
-          //   isVip: values.isVip,
-          // }).then((customerResponse) => {
-          //   console.log(customerResponse.data);
-          //   createReservationAsync({
-          //     customerId: customerResponse.data.id,
-          //     sittingId: values.sittingId,
-          //     areaId: values.areaId,
-          //     dateTime: getDateTimeString(),
-          //     duration: values.duration,
-          //     noGuests: values.noGuests,
-          //     notes: values.notes,
-          //   }).then((reservationResponse) => {
-          //     console.log(reservationResponse.data);
-          //     onClose();
-          //   });
-          // });
-        })}
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Modal
+        centered
+        opened={opened}
+        onClose={onClose}
+        title="Create New Reservation"
+        size="xl"
       >
-        <SimpleGrid cols={1}>
-          <Group position="center">
-            <Card radius="md" p="xl">
-              <Title color="dimmed" italic size="h5" align="center">
-                CUSTOMER DETAILS
-              </Title>
-              <SimpleGrid cols={2}>
-                <>
-                  <TextInput
-                    label="First Name"
-                    mt={20}
-                    icon={<IconPencil />}
-                    {...form.getInputProps('firstName')}
-                  />
-                  <TextInput
-                    label="Last Name"
-                    mt={20}
-                    icon={<IconPencil />}
-                    withAsterisk
-                    required
-                    {...form.getInputProps('lastName')}
-                  />
-                </>
-                <>
-                  <TextInput
-                    label="Phone"
-                    mt={20}
-                    icon={<IconPencil />}
-                    withAsterisk
-                    required
-                    {...form.getInputProps('phone')}
-                  />
-                  <TextInput
-                    label="Email"
-                    mt={20}
-                    icon={<IconPencil />}
-                    {...form.getInputProps('email')}
-                  />
-                </>
-              </SimpleGrid>
-            </Card>
-          </Group>
-          <Group position="center">
-            <Card radius="md" px={150}>
-              <Title color="dimmed" italic size="h5" align="center">
-                RESERVATION DETAILS
-              </Title>
-              <Select
-                data={sittings}
-                label="Sitting Id"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                {...form.getInputProps('sittingId')}
-              />
-              <Select
-                data={areas}
-                label="Area"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                {...form.getInputProps('areaId')}
-                mb={30}
-              />
-              <DateTimePicker
-                label="DateTime"
-                inputVariant="outlined"
-                value={selectedDate}
-                onChange={handleDateChange}
-              />
-              {/* <TimeInput
+        <form
+          onSubmit={form.onSubmit((values) => {
+            console.log(selectedDate);
+            createReservationAndCustomerAsync({
+              customer: {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                email: values.email,
+                phone: values.phone,
+                isVip: values.isVip,
+              },
+              sittingId: values.sittingId,
+              areaId: values.areaId,
+              dateTime: selectedDate,
+              duration: values.duration,
+              noGuests: values.noGuests,
+              notes: values.notes,
+            }).then((response) => {
+              console.log(response);
+            });
+
+            // createCustomerAsync({
+            //   firstName: values.firstName,
+            //   lastName: values.lastName,
+            //   email: values.email,
+            //   phone: values.phone,
+            //   isVip: values.isVip,
+            // }).then((customerResponse) => {
+            //   console.log(customerResponse.data);
+            //   createReservationAsync({
+            //     customerId: customerResponse.data.id,
+            //     sittingId: values.sittingId,
+            //     areaId: values.areaId,
+            //     dateTime: getDateTimeString(),
+            //     duration: values.duration,
+            //     noGuests: values.noGuests,
+            //     notes: values.notes,
+            //   }).then((reservationResponse) => {
+            //     console.log(reservationResponse.data);
+            //     onClose();
+            //   });
+            // });
+          })}
+        >
+          <SimpleGrid cols={1}>
+            <Group position="center">
+              <Card radius="md" p="xl">
+                <Title color="dimmed" italic size="h5" align="center">
+                  CUSTOMER DETAILS
+                </Title>
+                <SimpleGrid cols={2}>
+                  <>
+                    <TextInput
+                      label="First Name"
+                      mt={20}
+                      icon={<IconPencil />}
+                      {...form.getInputProps('firstName')}
+                    />
+                    <TextInput
+                      label="Last Name"
+                      mt={20}
+                      icon={<IconPencil />}
+                      withAsterisk
+                      required
+                      {...form.getInputProps('lastName')}
+                    />
+                  </>
+                  <>
+                    <TextInput
+                      label="Phone"
+                      mt={20}
+                      icon={<IconPencil />}
+                      withAsterisk
+                      required
+                      {...form.getInputProps('phone')}
+                    />
+                    <TextInput
+                      label="Email"
+                      mt={20}
+                      icon={<IconPencil />}
+                      {...form.getInputProps('email')}
+                    />
+                  </>
+                </SimpleGrid>
+              </Card>
+            </Group>
+            <Group position="center">
+              <Card radius="md" px={150}>
+                <Title color="dimmed" italic size="h5" align="center">
+                  RESERVATION DETAILS
+                </Title>
+                <Select
+                  data={sittings}
+                  label="Sitting Id"
+                  mt={20}
+                  icon={<IconPencil />}
+                  withAsterisk
+                  {...form.getInputProps('sittingId')}
+                />
+                <Select
+                  data={areas}
+                  label="Area"
+                  mt={20}
+                  icon={<IconPencil />}
+                  withAsterisk
+                  {...form.getInputProps('areaId')}
+                  mb={30}
+                />
+                {/* <DateTimePicker
+                  label="DateTime"
+                  inputVariant="outlined"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                /> */}
+                <DateTimePicker
+                  renderInput={(props) => {
+                    console.log(props);
+
+                    return <TextField {...props} />;
+                  }}
+                  label="DateTimePicker"
+                  value={date}
+                  onChange={(newValue) => {
+                    setDate(newValue);
+                  }}
+                />
+                {/* <TimeInput
                 value={timePickerValue}
                 onChange={(value) => {
                   setTimePickerValue(new Date(value));
@@ -263,50 +274,51 @@ export default function CreateReservationModal({
                 required
                 {...form.getInputProps('date')}
               /> */}
-              <NumberInput
-                label="Duration"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                required
-                {...form.getInputProps('duration')}
-              />
-              <NumberInput
-                label="Number of Guests"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                required
-                {...form.getInputProps('noGuests')}
-              />
-              <Textarea
-                autosize
-                minRows={2}
-                maxRows={4}
-                label="Notes"
-                mt={20}
-                mb={20}
-                icon={<IconPencil />}
-                {...form.getInputProps('notes')}
-              />
-              <Select
-                label="VIP"
-                data={[
-                  { value: 'false', label: 'False' },
-                  { value: 'true', label: 'True' },
-                ]}
-                icon={<IconPencil />}
-                {...form.getInputProps('isVip')}
-              />
-            </Card>
+                <NumberInput
+                  label="Duration"
+                  mt={20}
+                  icon={<IconPencil />}
+                  withAsterisk
+                  required
+                  {...form.getInputProps('duration')}
+                />
+                <NumberInput
+                  label="Number of Guests"
+                  mt={20}
+                  icon={<IconPencil />}
+                  withAsterisk
+                  required
+                  {...form.getInputProps('noGuests')}
+                />
+                <Textarea
+                  autosize
+                  minRows={2}
+                  maxRows={4}
+                  label="Notes"
+                  mt={20}
+                  mb={20}
+                  icon={<IconPencil />}
+                  {...form.getInputProps('notes')}
+                />
+                <Select
+                  label="VIP"
+                  data={[
+                    { value: 'false', label: 'False' },
+                    { value: 'true', label: 'True' },
+                  ]}
+                  icon={<IconPencil />}
+                  {...form.getInputProps('isVip')}
+                />
+              </Card>
+            </Group>
+          </SimpleGrid>
+          <Group mt={20} position="center">
+            <Button type="submit" size="lg">
+              Create
+            </Button>
           </Group>
-        </SimpleGrid>
-        <Group mt={20} position="center">
-          <Button type="submit" size="lg">
-            Create
-          </Button>
-        </Group>
-      </form>
-    </Modal>
+        </form>
+      </Modal>
+    </LocalizationProvider>
   );
 }

@@ -40,7 +40,6 @@
     "@mantine/rte": "^5.2.6",
     "@mantine/spotlight": "^5.2.6",
     "@mantine/utils": "^5.2.7",
-    "@material-ui/pickers": "^3.3.10",
     "@microsoft/signalr": "^6.0.8",
     "@mui/base": "^5.0.0-alpha.103",
     "@mui/material": "^5.10.11",

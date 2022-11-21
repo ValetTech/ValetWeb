@@ -11,8 +11,7 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { useEffect, useState, useRef } from 'react';
-import { IconX } from '@tabler/icons';
+import { useEffect, useRef, useState } from 'react';
 import CreateReservationModal from '../Forms/CreateReservation';
 import ReservationTableStickyHeader from '../Tables/ReservationTableStickyHeader';
 // #endregion
@@ -154,7 +153,7 @@ export default function DashboardReservationWidget() {
     }));
     return reservations;
   }
-
+  // TODO FIX LAYOUT
   return (
     <Container mt={6}>
       <Card withBorder radius="md">
@@ -170,36 +169,35 @@ export default function DashboardReservationWidget() {
         <SimpleGrid cols={2} mb={30}>
           <Title size="h4" mt={30} mb={10}>
             Filter by area
-            <Select
-              ref={areaDropdown}
-              data={areas}
-              onChange={(value) => {
-                setSelectedArea(value);
-              }}
-            />
-            <Title size="h5">
-              <UnstyledButton
-                onClick={() => {
-                  setSelectedArea(undefined);
-                  setSelectedSitting(undefined);
-                }}
-              >
-                <Title mt={10} size="h6">
-                  Clear Filters
-                </Title>
-              </UnstyledButton>
-            </Title>
           </Title>
+          <Select
+            ref={areaDropdown}
+            data={areas}
+            onChange={(value) => {
+              setSelectedArea(value);
+            }}
+          />
+          <Title size="h5"></Title>
+          <UnstyledButton
+            onClick={() => {
+              setSelectedArea(undefined);
+              setSelectedSitting(undefined);
+            }}
+          >
+            <Title mt={10} size="h6">
+              Clear Filters
+            </Title>
+          </UnstyledButton>
           <Title size="h4" mt={30} mb={10}>
             Filter by sitting
-            <Select
-              ref={sittingDropdown}
-              data={sittings}
-              onChange={(value) => {
-                setSelectedSitting(value);
-              }}
-            />
           </Title>
+          <Select
+            ref={sittingDropdown}
+            data={sittings}
+            onChange={(value) => {
+              setSelectedSitting(value);
+            }}
+          />
         </SimpleGrid>
         <ReservationTableStickyHeader
           data={mapReservationData()}
