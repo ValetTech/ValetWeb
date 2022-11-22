@@ -1,15 +1,28 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/jsx-no-bind */
 
-import { DndContext, useDraggable } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragOverlay,
+  pointerWithin,
+  useDraggable,
+} from '@dnd-kit/core';
+import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Center, createStyles, Grid, Text } from '@mantine/core';
 import { useListState, useScrollLock, useViewportSize } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
+import ErrorNotification from '../Components/Notifications/NotifyError';
 import TableSideBar from '../Components/TableView/TableSideBar';
 import TableView from '../Components/TableView/TableView';
+import Area from '../Models/Area';
 import Reservation from '../Models/Reservation';
-import getReservationsAsync from '../Services/ApiServices';
+import Sitting from '../Models/Sitting';
+import Table from '../Models/Table';
+import getReservationsAsync, {
+  getSittingsAsync,
+  GetTablesAsync,
+} from '../Services/ApiServices';
 
 export const styles = createStyles((theme) => ({
   root: {
@@ -152,12 +165,80 @@ export interface BoxSpec {
 
 export default function TablesPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [selectedSitting, setSelectedSitting] = useState<Sitting | null>(null);
+  const [tables, setTables] = useState<Table[] | null>(null);
+
+  const [sittings, setSittings] = useState<Sitting[]>([]);
+  const [areas, setAreas] = useState<Area[]>([
+    {
+      id: 1,
+      name: 'Area 1',
+      venueId: 1,
+      width: 10,
+      height: 10,
+    },
+    {
+      id: 2,
+      name: 'Area 2',
+      venueId: 1,
+      width: 10,
+      height: 10,
+    },
+    {
+      id: 3,
+      name: 'Area 3',
+      venueId: 1,
+      width: 10,
+      height: 10,
+    },
+  ]);
   const { height, width } = useViewportSize();
   const [scrollLocked, setScrollLocked] = useScrollLock();
+  const [activeId, setActiveId] = useState(null);
+  const [activeReservation, setActiveReservation] =
+    useState<Reservation | null>(null);
 
   useEffect(() => {
+    // Add param for future only
+    getSittingsAsync()
+      .then((response: Sitting[]) => {
+        setSittings(response);
+        // setAreas(response.areas);
+        // setEvents(sittings.map((s) => s.toEvent()));
+      })
+      .catch((error) => {
+        // ErrorNotification('Could not get sittings');
+        ErrorNotification(error.message);
+      });
+
     setScrollLocked(true);
+    // getAreasAsync()
+    //   .then((res) => {
+    //     setAreas(res);
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //     ErrorNotification('Could not get areas');
+    //   });
   }, []);
+
+  useEffect(() => {
+    setActiveReservation(reservations.find((r) => r.id === activeId) ?? null);
+  }, [activeId]);
+
+  // const [tables, setTables] = useState<BoxSpec[]>([]);
+
+  const gridSize = 20;
+
+  function snapToGrid(args) {
+    const { transform } = args;
+
+    return {
+      ...transform,
+      x: Math.ceil(transform.x / gridSize) * gridSize,
+      y: Math.ceil(transform.y / gridSize) * gridSize,
+    };
+  }
 
   function loadReservations() {
     getReservationsAsync()
@@ -166,9 +247,11 @@ export default function TablesPage() {
       })
       .catch((error) => {
         console.error('Error:', error);
+        ErrorNotification(error.message);
       });
   }
   function handleDragEnd(event: any) {
+    setActiveId(null);
     const { active, over } = event;
     if (active.id !== over.id) {
       console.log('active', active);
@@ -180,8 +263,40 @@ export default function TablesPage() {
     loadReservations();
   }, []);
 
+  useEffect(() => {
+    GetTablesAsync(selectedSitting?.id)
+      .then((response) => {
+        setTables(response);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        ErrorNotification(error.message);
+      });
+  }, [selectedSitting]);
+
   return (
-    <DndContext onDragEnd={handleDragEnd} autoScroll={false}>
+    // <DndContext
+    //   collisionDetection={closestCenter}
+    //   autoScroll={false}
+    //   onDragEnd={({ active, over }) => {
+    //     if (active.id !== over?.id) {
+    //       setItems((items) => {
+    //         const oldIndex = items.findIndex((item) => item.id === active.id);
+    //         const newIndex = items.findIndex((item) => item.id === over?.id);
+    //         return moveItem(items, oldIndex, newIndex);
+    //       });
+    //     }
+    //   }}
+    // ></DndContext>
+    <DndContext
+      onDragEnd={handleDragEnd}
+      collisionDetection={pointerWithin}
+      modifiers={[restrictToWindowEdges, snapCenterToCursor]}
+      autoScroll={false}
+      onDragStart={(event) => {
+        setActiveId(event.active?.id ?? null);
+      }}
+    >
       <div className="h-full w-full xs:pl-0 my-5 mx-4">
         <Grid className="w-full">
           <Grid.Col span={12}>
@@ -199,18 +314,39 @@ export default function TablesPage() {
             <Grid gutter="xs">
               <Grid.Col span={4}>
                 {/* Side bar */}
-                <TableSideBar data={reservations} />
+                <div className="w-full h-full ">
+                  <TableSideBar
+                    data={reservations}
+                    sittings={sittings}
+                    selectedSitting={selectedSitting}
+                    selectSitting={setSelectedSitting}
+                  />
+                </div>
               </Grid.Col>
               <Grid.Col span={8}>
-                <Center className="h-full w-full">
+                <Center className="h-full w-full ">
                   {/* Table view */}
-                  <TableView />
+                  <TableView areas={areas} selectedSitting={selectedSitting} />
                 </Center>
               </Grid.Col>
             </Grid>
           </Grid.Col>
         </Grid>
       </div>
+      <DragOverlay className="w-32 h-32 ">
+        {activeId ? (
+          <div className="p-2 ">
+            <Text className="pr-2" size="sm">
+              {activeReservation?.customer?.fullName ?? ''}
+            </Text>
+            <Text size="sm">
+              {dayjs(activeReservation?.dateTime).format('h:mm A - D MMM YY') ??
+                ''}
+            </Text>
+            <Text size="sm">{activeReservation?.tables?.length} tables</Text>
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 }

@@ -1,6 +1,5 @@
 /* eslint-disable react/button-has-type */
-import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
-import { restrictToWindowEdges } from '@dnd-kit/modifiers';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import { useState } from 'react';
@@ -43,7 +42,7 @@ export default function Area() {
   const draggableMarkup = <Draggable id="draggable">Drag me</Draggable>;
 
   return (
-    <DndContext onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
+    <div>
       {/* {parent === null ? draggableMarkup : null} */}
       <Draggable id="draggable1">
         <Text className="pr-2">Full name</Text>
@@ -63,7 +62,7 @@ export default function Area() {
           {parent === id ? draggableMarkup : 'Drop here'}
         </Droppable>
       ))}
-    </DndContext>
+    </div>
   );
 
   function handleDragEnd(event) {

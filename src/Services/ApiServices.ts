@@ -326,3 +326,16 @@ export async function UserLoginAsync(email: string, password: string) {
   // console.log(response);
   return response;
 }
+
+export async function GetTablesAsync(sittingId: Number | null = null) {
+  const response = await axios.get(`/tables`, {
+    headers: {
+      Authorization: `Bearer ${getTokenFromState()}`,
+    },
+    params: {
+      sittingId,
+    },
+  });
+
+  return response.data.tables;
+}
