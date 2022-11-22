@@ -4,6 +4,7 @@ import type {} from '@mui/x-date-pickers/themeAugmentation';
 import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
+import Table from '../../Models/Table';
 
 // TODO - Nav | Area | Date | Sitting |
 // TODO - Area []
@@ -76,11 +77,16 @@ export function Droppable(props) {
 interface TableViewProps {
   areas: Area[];
   selectedSitting: Sitting | null;
+  tables: Table[];
   // selectedArea: Area;
   // selectArea: (area: Area) => void;
 }
 
-export default function TableView({ areas, selectedSitting }: TableViewProps) {
+export default function TableView({
+  areas,
+  selectedSitting,
+  tables,
+}: TableViewProps) {
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [sittingAreas, setSittingAreas] = useState<Area[]>(areas);
 
@@ -127,6 +133,14 @@ export default function TableView({ areas, selectedSitting }: TableViewProps) {
                   <Droppable key={`${x},${y}`} id={`${x},${y}`}>
                     <div key={y} className="h-10 w-full bg-[#FFB703] border">
                       {`${x},${y}`}
+                      {`${tables
+                        ?.filter(
+                          (table) =>
+                            table?.areaId === selectedArea?.id &&
+                            table?.xPosition === x &&
+                            table?.yPosition === y
+                        )
+                        .map((table) => table?.type)}`}
                     </div>
                   </Droppable>
                 ))}

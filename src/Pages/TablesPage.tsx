@@ -326,7 +326,11 @@ export default function TablesPage() {
               <Grid.Col span={8}>
                 <Center className="h-full w-full ">
                   {/* Table view */}
-                  <TableView areas={areas} selectedSitting={selectedSitting} />
+                  <TableView
+                    tables={tables}
+                    areas={areas}
+                    selectedSitting={selectedSitting}
+                  />
                 </Center>
               </Grid.Col>
             </Grid>
