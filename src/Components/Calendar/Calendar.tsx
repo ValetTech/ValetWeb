@@ -251,7 +251,9 @@ export default function SittingsCalendar() {
   };
 
   function handleEventClick(arg: EventClickArg) {
-    setSelectedEvent({ ...arg });
+    console.log('handleEventClick', arg);
+
+    setSelectedEvent({ ...selectedEvent, ...arg });
     setShow(true);
   }
 

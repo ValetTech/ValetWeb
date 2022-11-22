@@ -21,6 +21,7 @@ import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
+import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
 import {
   createSittingAsync,
@@ -85,8 +86,8 @@ export default function CreateEventModal({
         title: eventData?.title ?? '',
         capacity: eventData?.capacity ?? 1,
         type: eventData?.type ?? '',
-        startTime: eventData?.start ?? startDate.toDate(),
-        endTime: eventData?.end ?? endDate.toDate(),
+        startTime: eventData?.startTime ?? startDate.toDate(),
+        endTime: eventData?.endTime ?? endDate.toDate(),
         venueId: eventData?.venueId ?? 1,
         groupId: eventData?.groupId ?? null,
         areaIds: eventData?.areas ?? [event?.event?.resource?.id] ?? [],
@@ -115,32 +116,36 @@ export default function CreateEventModal({
     });
   }, []);
 
-  useEffect(() => {
-    // form.setFieldValue('sitting.id', event?.event?.id ?? 0);
-    // form.setFieldValue('sitting.title', event?.event?.title);
+  // useEffect(() => {
+  //   // form.setFieldValue('sitting.id', event?.event?.id ?? 0);
+  //   // form.setFieldValue('sitting.title', event?.event?.title);
 
-    form.setValues({
-      sitting: {
-        id: event?.event?.id ?? null,
-        title: event?.event?.title ?? '',
-        capacity: event?.event?.capacity ?? 1,
-        type: event?.event?.type ?? '',
-        startTime: event?.event?.startTime ?? dayjs().toDate(),
-        endTime: event?.event?.endTime ?? dayjs().add(1, 'hour').toDate(),
-        venueId: event?.event?.venueId ?? 1,
-        groupId: event?.event?.groupId ?? null,
-        areaIds: event?.event?.areas ?? [event?.event?.resource?.id] ?? [],
-      },
-      rrule: {
-        freq: rrule.freq ?? 'none',
-        interval: rrule.interval ?? 1,
-        byweekday: rrule.byweekday ?? [dayjs().day()],
-        until: rrule.until ?? dayjs().add(1, 'week').toDate(),
-        count: rrule.count ?? 1,
-      },
-    });
-    // console.log('Form values: ', form.values);
-  }, [event]);
+  //   form.setValues({
+  //     sitting: {
+  //       id: event?.event?.id ?? null,
+  //       title: event?.event?.title ?? '',
+  //       capacity: event?.event?.capacity ?? 1,
+  //       type: event?.event?.type ?? '',
+  //       startTime: event?.event?.startime ?? dayjs().toDate(),
+  //       endTime: event?.event?.endTime ?? dayjs().add(1, 'hour').toDate(),
+  //       venueId: event?.event?.venueId ?? 1,
+  //       groupId: event?.event?.groupId ?? null,
+  //       areaIds:
+  //         event?.event?.areas?.map((a: Area) => a.id?.toString()) ?? [
+  //           event?.event?.resource?.id,
+  //         ] ??
+  //         [],
+  //     },
+  //     rrule: {
+  //       freq: rrule.freq ?? 'none',
+  //       interval: rrule.interval ?? 1,
+  //       byweekday: rrule.byweekday ?? [dayjs().day()],
+  //       until: rrule.until ?? dayjs().add(1, 'week').toDate(),
+  //       count: rrule.count ?? 1,
+  //     },
+  //   });
+  //   // console.log('Form values: ', form.values);
+  // }, [event]);
 
   useEffect(() => {
     // form.setFieldValue('sitting.id', event?.event?.id ?? 0);
@@ -150,7 +155,30 @@ export default function CreateEventModal({
   }, [event]);
 
   useEffect(() => {
-    form.setValues(eventData);
+    form.setValues({
+      sitting: {
+        id: eventData?.id ?? null,
+        title: eventData?.title ?? eventData?.type ?? '',
+        capacity: eventData?.capacity ?? 1,
+        type: eventData?.type ?? '',
+        startTime: dayjs(eventData?.startTime).toDate() ?? dayjs().toDate(),
+        endTime:
+          dayjs(eventData?.endTime).toDate() ?? dayjs().add(1, 'hour').toDate(),
+        venueId: eventData?.venueId ?? 1,
+        groupId: eventData?.groupId ?? null,
+        areaIds: eventData?.areas.map((a: Area) => a.id?.toString()) ?? [],
+      },
+      rrule: {
+        freq: rrule.freq ?? 'none',
+        interval: rrule.interval ?? 1,
+        byweekday: rrule.byweekday ?? [dayjs().day()],
+        until: rrule.until ?? dayjs().add(1, 'week').toDate(),
+        count: rrule.count ?? 1,
+      },
+    });
+    setStartDate(dayjs(eventData?.startTime));
+    setEndDate(dayjs(eventData?.endTime));
+    setEventAreas(eventData?.areas?.map((a: Area) => a.id?.toString()));
     console.log('Form eventData: ', eventData);
   }, [eventData]);
 
