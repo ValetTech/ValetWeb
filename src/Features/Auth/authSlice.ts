@@ -24,13 +24,15 @@ const authSlice = createSlice({
       const { user, accessToken } = action.payload;
       state.user = user;
       state.token = accessToken;
+      state.accessToken = accessToken;
 
       saveState(state);
     },
     logOut: (state, action) => {
       state.user = null;
       state.token = null;
-      saveState({ user: null, accessToken: null });
+      state.accessToken = null;
+      saveState(state);
       console.log(state);
     },
   },
