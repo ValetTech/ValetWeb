@@ -3,9 +3,8 @@ import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconClock } from '@tabler/icons';
 import Customer from '../../Models/Customer';
-import Sitting from '../../Models/Sitting';
 import Reservation from '../../Models/Reservation';
-import { useEffect, useState } from 'react';
+import Sitting from '../../Models/Sitting';
 
 interface ReservationModalProps {
   opened: boolean;
@@ -130,7 +129,7 @@ export default function ReservationModal({
           // onChange={(notes) => form.setFieldValue('notes', notes)}
         />
         <Group position="right" mt="md">
-          <Button variant="filled" type="submit">
+          <Button className="bg-[#FFB703]" variant="filled" type="submit">
             Submit
           </Button>
         </Group>

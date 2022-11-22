@@ -94,7 +94,9 @@ function CreateAreaModal({ opened, onClose }: CreateAreaModalProps) {
               {...form.getInputProps('description')}
             />
             <Group position="center" mt="md">
-              <Button type="submit">Submit</Button>
+              <Button type="submit" color="#FFB703" className="bg-[#FFB703]">
+                Submit
+              </Button>
             </Group>
           </form>
         </Box>

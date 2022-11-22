@@ -205,7 +205,11 @@ export default function DashboardReservationWidget() {
           areaData={areas}
         />
         <Group mt={20} position="left">
-          <Button size="lg" onClick={() => setCreateModalOpened(true)}>
+          <Button
+            className="bg-[#FFB703]"
+            size="lg"
+            onClick={() => setCreateModalOpened(true)}
+          >
             Create
           </Button>
           <CreateReservationModal

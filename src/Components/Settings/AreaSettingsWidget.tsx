@@ -44,6 +44,7 @@ export default function AreaSettingsWidget() {
         <AreaTableStickyHeader data={areas} />
         <Group mt={20} position="left">
           <Button
+            className="bg-[#FFB703]"
             size="lg"
             onClick={() => {
               setCreateAreaModalOpened(true);

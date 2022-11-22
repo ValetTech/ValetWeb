@@ -17,8 +17,8 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { useState } from 'react';
 import { IconCircleDotted } from '@tabler/icons';
+import { useState } from 'react';
 import UpdateReservationModal from './UpdateReservationModal';
 // #endregion
 // #endregion
@@ -30,9 +30,9 @@ import { deleteReservationAsync } from '../../Services/ApiServices';
 
 // Models
 // #region
+import Area from '../../Models/Area';
 import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
-import Area from '../../Models/Area';
 // #endregion
 
 interface ReservationDetailsDrawerProps {
@@ -130,6 +130,7 @@ export default function ReservationDetailsDrawer({
           <Group mt={20} position="center">
             <SimpleGrid cols={2}>
               <Button
+                className="bg-[#FFB703]"
                 size="lg"
                 onClick={() => {
                   setUpdateReservationModalOpened(true);
@@ -139,6 +140,7 @@ export default function ReservationDetailsDrawer({
               </Button>
               <Button
                 color="red"
+                className="bg-[#FFB703]"
                 size="lg"
                 onClick={() => setDeleteReservationModalOpened(true)}
               >
@@ -159,6 +161,7 @@ export default function ReservationDetailsDrawer({
                     <Button
                       size="lg"
                       color="red"
+                      className="bg-[#FFB703]"
                       onClick={() => {
                         deleteReservationAsync(reservationData?.id);
                         setDeleteReservationModalOpened(false);
@@ -170,6 +173,7 @@ export default function ReservationDetailsDrawer({
                     </Button>
                     <Button
                       size="lg"
+                      className="bg-[#FFB703]"
                       onClick={() => setDeleteReservationModalOpened(false)}
                     >
                       Cancel

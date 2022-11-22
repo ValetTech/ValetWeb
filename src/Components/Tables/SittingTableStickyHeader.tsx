@@ -1,16 +1,16 @@
 // Components
 // #region
 import {
+  Button,
   createStyles,
   Group,
   Modal,
   ScrollArea,
+  SimpleGrid,
   Table,
+  Text,
   Title,
   UnstyledButton,
-  Text,
-  SimpleGrid,
-  Button,
 } from '@mantine/core';
 import { IconPencil, IconTrash } from '@tabler/icons';
 import { useState } from 'react';
@@ -20,8 +20,8 @@ import UpdateSittingModal from '../Forms/UpdateSittingModal';
 // Services
 // #region
 import {
-  getSittingByIdAsync,
   deleteSittingAsync,
+  getSittingByIdAsync,
 } from '../../Services/ApiServices';
 // #endregion
 
@@ -139,6 +139,7 @@ export default function SittingTableScrollArea({
               <Button
                 size="lg"
                 color="red"
+                className="bg-[#FFB703]"
                 onClick={() => {
                   deleteSittingAsync(selectedSitting?.id);
                   setDeleteSittingModalOpened(false);
@@ -148,6 +149,7 @@ export default function SittingTableScrollArea({
               </Button>
               <Button
                 size="lg"
+                className="bg-[#FFB703]"
                 onClick={() => setDeleteSittingModalOpened(false)}
               >
                 Cancel

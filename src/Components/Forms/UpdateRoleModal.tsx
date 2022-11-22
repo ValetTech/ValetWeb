@@ -6,28 +6,17 @@
 // Components
 // #region
 import {
-  TextInput,
-  Card,
-  Button,
-  Group,
   Box,
-  Textarea,
-  Title,
+  Button,
+  Card,
+  Checkbox,
+  Group,
   Modal,
   Select,
-  Checkbox,
+  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconPencil } from '@tabler/icons';
 // #endregion
-
-// Services
-// #region
-// #endregion
-
-// Models
-// #region
-import Area from '../../Models/Area';
 // #endregion
 
 interface CreateUserModalProps {
@@ -78,7 +67,7 @@ export default function CreateUserModal({
             />
             <Checkbox mt={60} label="Is Manager?" />
             <Group position="center" mt="md">
-              <Button mt={40} type="submit">
+              <Button className="bg-[#FFB703]" mt={40} type="submit">
                 Submit
               </Button>
             </Group>

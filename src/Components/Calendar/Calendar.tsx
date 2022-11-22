@@ -26,6 +26,7 @@ import {
   getSittingsAsync,
   updateSittingAsync,
 } from '../../Services/ApiServices';
+import ErrorNotification from '../Notifications/NotifyError';
 import CreateEventModal from './CreateEventModal';
 
 interface EventObject {
@@ -207,28 +208,36 @@ export default function SittingsCalendar() {
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    getSittingsAsync().then((sittings) => {
-      setSittingData(sittings);
-      // setEvents(sittings.map((s) => s.toEvent()));
-    });
+    getSittingsAsync()
+      .then((sittings) => {
+        setSittingData(sittings);
+        // setEvents(sittings.map((s) => s.toEvent()));
+      })
+      .catch(() => {
+        ErrorNotification('Could not get sittings');
+      });
     getAreasAsync()
       .then((res) => {
         setAreas(res);
       })
       .catch((err) => {
         console.error(err);
+        ErrorNotification('Could not get areas');
       });
   }, []);
 
   useEffect(() => {
+    console.log('sittingData', sittingData);
+
     function createEvents() {
-      const sittings = sittingData.map((s) => ({
-        id: s.id,
+      const sittings: EventSourceInput = sittingData.map((s) => ({
+        id: s.id?.toString(),
         title: s.type,
+        type: s.type,
         start: s.startTime,
         end: s.endTime,
-        resourceIds: s.areas?.map((a) => a.id),
-        groupId: s.groupId,
+        resourceIds: s.areas?.map((a) => a.id.toString()) ?? [],
+        groupId: s.groupId?.toString() ?? s.id?.toString(),
         data: s,
       }));
       setEvents(sittings);
@@ -309,10 +318,14 @@ export default function SittingsCalendar() {
   return (
     // eslint-disable-next-line react/jsx-no-bind
     // <DndContext onDragEnd={handleDragEnd}>
-    <div className="w-full h-full pb-2 px-1 ml-0">
+    <div className="w-full h-full pb-2 px-1 ml-0 ">
       {/* <Droppable key={1} id="calendar"> */}
       <FullCalendar
         schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
+        // viewClassNames={'bg-[#ffb703]'}
+        // eventClassNames={'bg-[#ffb703]'}
+        // dayCellClassNames={'bg-[#ffb703]'}
+        // nowIndicatorClassNames={'bg-[#ffb703]'}
         plugins={[
           rrulePlugin,
           dayGridPlugin,
@@ -334,6 +347,7 @@ export default function SittingsCalendar() {
             },
           },
         }}
+        eventColor="#023047"
         // footerToolbar={
         //   {
         //     // left: 'myCustomButton',

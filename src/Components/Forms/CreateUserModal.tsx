@@ -6,27 +6,18 @@
 // Components
 // #region
 import {
-  TextInput,
-  Card,
-  Button,
-  Group,
   Box,
-  Textarea,
-  Title,
+  Button,
+  Card,
+  Group,
   Modal,
   Select,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
 // #endregion
-
-// Services
-// #region
-// #endregion
-
-// Models
-// #region
-import Area from '../../Models/Area';
 // #endregion
 
 interface CreateUserModalProps {
@@ -107,7 +98,9 @@ export default function CreateUserModal({
               ]}
             />
             <Group position="center" mt="md">
-              <Button type="submit">Submit</Button>
+              <Button className="bg-[#FFB703]" type="submit">
+                Submit
+              </Button>
             </Group>
           </form>
         </Box>

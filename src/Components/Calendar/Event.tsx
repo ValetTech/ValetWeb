@@ -160,7 +160,9 @@ export default function NewEventModal({ isOpen, onClose }: any) {
                 <Recurrence />
               </Collapse>
               <Group position="center" my="md">
-                <Button type="submit">Submit</Button>
+                <Button className="bg-[#FFB703]" type="submit">
+                  Submit
+                </Button>
               </Group>
             </form>
           </Box>
@@ -168,7 +170,9 @@ export default function NewEventModal({ isOpen, onClose }: any) {
       </Modal>
 
       <Group position="center">
-        <Button onClick={() => setOpened(true)}>Open Modal</Button>
+        <Button lassName="bg-[#FFB703]" onClick={() => setOpened(true)}>
+          Open Modal
+        </Button>
       </Group>
     </>
   );

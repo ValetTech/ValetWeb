@@ -74,7 +74,13 @@ export default function NotFound() {
         address, or the page has been moved to another URL.
       </Text>
       <Group position="center">
-        <Button variant="subtle" size="md" component={Link} to="/">
+        <Button
+          className="bg-[#FFB703]"
+          variant="subtle"
+          size="md"
+          component={Link}
+          to="/"
+        >
           Take me back to home page
         </Button>
       </Group>

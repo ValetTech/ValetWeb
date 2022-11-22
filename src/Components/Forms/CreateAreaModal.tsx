@@ -6,14 +6,14 @@
 // Components
 // #region
 import {
-  TextInput,
-  Card,
-  Button,
-  Group,
   Box,
-  Textarea,
-  Title,
+  Button,
+  Card,
+  Group,
   Modal,
+  Textarea,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
@@ -93,7 +93,9 @@ export default function CreateAreaModal({
               {...form.getInputProps('description')}
             />
             <Group position="center" mt="md">
-              <Button type="submit">Submit</Button>
+              <Button className="bg-[#FFB703]" type="submit">
+                Submit
+              </Button>
             </Group>
           </form>
         </Box>

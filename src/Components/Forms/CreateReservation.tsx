@@ -305,7 +305,7 @@ export default function CreateReservationModal({
           </Group>
         </SimpleGrid>
         <Group mt={20} position="center">
-          <Button type="submit" size="lg">
+          <Button className="bg-[#FFB703]" type="submit" size="lg">
             Create
           </Button>
         </Group>

@@ -1,4 +1,3 @@
-import { computeSegStartResizable } from '@fullcalendar/react';
 import { Button, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import CreateReservationModal from '../Components/Forms/CreateReservation';
@@ -50,7 +49,7 @@ export default function Reservations() {
   return (
     <div className="px-4">
       <Button
-        className="my-2"
+        className="my-2 bg-[#FFB703]"
         // color="red"
         variant="outline"
         type="button"
@@ -59,7 +58,7 @@ export default function Reservations() {
         Create reservation
       </Button>
       <Button
-        className="m-2"
+        className="m-2 bg-[#FFB703]"
         // color="red"
         variant="outline"
         type="button"

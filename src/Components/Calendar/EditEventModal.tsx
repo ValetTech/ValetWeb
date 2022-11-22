@@ -415,10 +415,14 @@ export default function EditEventModal({
               </Group>
             </Collapse>
             <Group position="right" mt="md">
-              <Button variant="subtle" onClick={handleClose}>
+              <Button
+                className="bg-[#FFB703]"
+                variant="subtle"
+                onClick={handleClose}
+              >
                 Cancel
               </Button>
-              <Button type="submit" variant="filled">
+              <Button className="bg-[#FFB703]" type="submit" variant="filled">
                 Submit
               </Button>
             </Group>

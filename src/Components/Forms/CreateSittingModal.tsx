@@ -6,33 +6,30 @@
 // Components
 // #region
 import {
-  TextInput,
-  Select,
-  NumberInput,
-  Card,
-  Button,
-  Group,
   Box,
-  Textarea,
-  Title,
+  Button,
+  Card,
+  Group,
   Modal,
   MultiSelect,
+  NumberInput,
+  Select,
+  Title,
 } from '@mantine/core';
+import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
-import { TimeInput } from '@mantine/dates';
 // #endregion
 
 // Services
 // #region
 import { createSittingAsync } from '../../Services/ApiServices';
-import { getAreasAsync } from '../../Services/ApiServices';
 // #endregion
 
 // Models
 // #region
-import Sitting from '../../Models/Sitting';
 import Area from '../../Models/Area';
+import Sitting from '../../Models/Sitting';
 // #endregion
 
 interface CreateSittingModalProps {
@@ -146,7 +143,9 @@ export default function CreateSittingModal({
               {...form.getInputProps('areas')}
             />
             <Group position="center" mt="md">
-              <Button type="submit">Submit</Button>
+              <Button className="bg-[#FFB703]" type="submit">
+                Submit
+              </Button>
             </Group>
           </form>
         </Box>

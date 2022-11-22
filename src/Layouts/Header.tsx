@@ -249,7 +249,7 @@ export default function Header({ links }: HeaderSimpleProps) {
                 {
                   [classes.userActive]: userMenuOpened,
                 },
-                'p-2 hover:bg-[#FFB703] rounded-lg'
+                'p-2  hover:bg-[#FFB703] rounded-lg'
               )}
               onClick={() => setLoginModalOpened(true)}
             >

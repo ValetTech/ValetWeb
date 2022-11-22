@@ -1,16 +1,16 @@
 // Components
 // #region
 import {
+  Button,
   createStyles,
   Group,
   Modal,
   ScrollArea,
+  SimpleGrid,
   Table,
+  Text,
   Title,
   UnstyledButton,
-  Text,
-  SimpleGrid,
-  Button,
 } from '@mantine/core';
 import { IconPencil, IconTrash } from '@tabler/icons';
 import { useState } from 'react';
@@ -19,12 +19,8 @@ import UpdateAreaModal from '../Forms/UpdateAreaModal';
 
 // Services
 // #region
-import { getAreaByIdAsync, deleteAreaAsync } from '../../Services/ApiServices';
+import { deleteAreaAsync, getAreaByIdAsync } from '../../Services/ApiServices';
 // #endregion
-
-// Models
-// #region
-import Area from '../../Models/Area';
 // #endregion
 
 const useStyles = createStyles((theme) => ({
@@ -119,6 +115,7 @@ export default function AreaTableScrollArea({ data }: TableScrollAreaProps) {
               <Button
                 size="lg"
                 color="red"
+                className="bg-[#FFB703]"
                 onClick={() => {
                   deleteAreaAsync(selectedArea?.id);
                   setDeleteAreaModalOpened(false);
@@ -126,7 +123,11 @@ export default function AreaTableScrollArea({ data }: TableScrollAreaProps) {
               >
                 Confirm
               </Button>
-              <Button size="lg" onClick={() => setDeleteAreaModalOpened(false)}>
+              <Button
+                className="bg-[#FFB703]"
+                size="lg"
+                onClick={() => setDeleteAreaModalOpened(false)}
+              >
                 Cancel
               </Button>
             </SimpleGrid>

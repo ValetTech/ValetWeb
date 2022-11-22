@@ -16,8 +16,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { TextField } from '@mui/material';
-import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { IconPencil } from '@tabler/icons';
 import dayjs, { Dayjs } from 'dayjs';
@@ -319,7 +318,7 @@ export default function UpdateReservationModal({
             </Group>
           </SimpleGrid>
           <Group mt={20} position="center">
-            <Button type="submit" size="lg">
+            <Button className="bg-[#FFB703]" type="submit" size="lg">
               Update
             </Button>
           </Group>

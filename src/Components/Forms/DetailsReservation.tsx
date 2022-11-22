@@ -176,22 +176,36 @@ export default function DetailsForm({
       />
       <Group position="right" mt="md">
         {edit ? (
-          <Button variant="subtle" onClick={() => handleCancel()}>
+          <Button
+            className="bg-[#FFB703]"
+            variant="subtle"
+            onClick={() => handleCancel()}
+          >
             Cancel
           </Button>
         ) : (
-          <Button variant="filled" onClick={() => setEdit(true)}>
+          <Button
+            className="bg-[#FFB703]"
+            variant="filled"
+            onClick={() => setEdit(true)}
+          >
             Edit
           </Button>
         )}
         {edit ? (
-          <Button variant="filled" type="submit" onClick={() => handleSave()}>
+          <Button
+            className="bg-[#FFB703]"
+            variant="filled"
+            type="submit"
+            onClick={() => handleSave()}
+          >
             Save
           </Button>
         ) : (
           <Button
             variant="outline"
             color="red"
+            className="bg-[#FFB703]"
             type="submit"
             onClick={() => handleDelete()}
           >

@@ -6,6 +6,7 @@ import {
   Collapse,
   Group,
   Input,
+  LoadingOverlay,
   Modal,
   MultiSelect,
   NumberInput,
@@ -27,6 +28,8 @@ import {
 } from '../../Services/ApiServices';
 import CustomRadioButton from '../Buttons/CustomRadioButton';
 import { BasicDateTimePickerNew } from '../Forms/DateTimePicker';
+import CreatedNotification from '../Notifications/NotifyCreate';
+import ErrorNotification from '../Notifications/NotifyError';
 
 export interface Rrule {
   freq?: string;
@@ -73,19 +76,20 @@ export default function CreateEventModal({
   const [startDate, setStartDate] = useState<Dayjs>(dayjs());
   const [endDate, setEndDate] = useState<Dayjs>(dayjs().add(1, 'hour'));
   const [eventAreas, setEventAreas] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm({
     initialValues: {
       sitting: {
-        id: eventData?.id ?? 0,
+        id: eventData?.id ?? null,
         title: eventData?.title ?? '',
         capacity: eventData?.capacity ?? 1,
         type: eventData?.type ?? '',
         startTime: eventData?.start ?? startDate.toDate(),
         endTime: eventData?.end ?? endDate.toDate(),
         venueId: eventData?.venueId ?? 1,
-        groupId: eventData?.groupId ?? 0,
-        areas: eventData?.areas ?? [event?.event?.resource?.id] ?? [],
+        groupId: eventData?.groupId ?? null,
+        areaIds: eventData?.areas ?? [event?.event?.resource?.id] ?? [],
       },
       rrule: {
         freq: rrule.freq ?? 'none',
@@ -99,8 +103,8 @@ export default function CreateEventModal({
   useEffect(() => {
     setStartDate(dayjs(event?.start));
     setEndDate(dayjs(event?.end));
-    console.log('Areas Event', event);
-    console.log(event?.resource?.id);
+    console.log(event?.start);
+    console.log(event?.end);
     setEventAreas([event?.resource?.id.toString()]);
   }, [event]);
 
@@ -124,8 +128,8 @@ export default function CreateEventModal({
         startTime: event?.event?.startTime ?? dayjs().toDate(),
         endTime: event?.event?.endTime ?? dayjs().add(1, 'hour').toDate(),
         venueId: event?.event?.venueId ?? 1,
-        groupId: event?.event?.groupId ?? 0,
-        areas: event?.event?.areas ?? [event?.event?.resource?.id] ?? [],
+        groupId: event?.event?.groupId ?? null,
+        areaIds: event?.event?.areas ?? [event?.event?.resource?.id] ?? [],
       },
       rrule: {
         freq: rrule.freq ?? 'none',
@@ -181,18 +185,24 @@ export default function CreateEventModal({
       ...values.sitting,
       startDate: startDate.toDate(),
       endDate: endDate.toDate(),
-      areas: eventAreas,
+      areaIds: eventAreas,
+      groupId: values.sitting.groupId ?? null,
     };
     console.log(sitting);
-
+    setLoading(true);
     createSittingAsync(sitting)
       .then((data) => {
         console.log(data);
+        CreatedNotification();
         form.reset();
         handleClose();
       })
       .catch((err) => {
         console.log(err);
+        ErrorNotification(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
@@ -213,6 +223,7 @@ export default function CreateEventModal({
         size="auto"
         title="Create Sitting"
       >
+        <LoadingOverlay visible={loading} overlayBlur={2} />
         <form onSubmit={form.onSubmit(onSubmit)} onReset={handleReset}>
           <Stack spacing="sm">
             <div>
@@ -242,7 +253,7 @@ export default function CreateEventModal({
                   description: area.description,
                   group: area.tables?.length > 0 ? 'Tables' : 'Rooms',
                 }))}
-                {...form.getInputProps('sitting.areas')}
+                {...form.getInputProps('sitting.areaIds')}
                 onChange={setEventAreas}
                 value={eventAreas}
               />
@@ -262,6 +273,7 @@ export default function CreateEventModal({
                   creatable
                   getCreateLabel={(query) => `+ Create type: "${query}"`}
                   onCreate={handleCreateType}
+                  {...form.getInputProps('sitting.type')}
                 />
               </div>
               <div>
@@ -463,10 +475,14 @@ export default function CreateEventModal({
               </Group>
             </Collapse>
             <Group position="right" mt="md">
-              <Button variant="subtle" onClick={handleClose}>
+              <Button
+                className="bg-[#FFB703]"
+                variant="subtle"
+                onClick={handleClose}
+              >
                 Cancel
               </Button>
-              <Button type="submit" variant="filled">
+              <Button className="bg-[#FFB703]" type="submit" variant="filled">
                 Submit
               </Button>
             </Group>

@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Select component.
 export function Select({ values, onChange }) {
   return (

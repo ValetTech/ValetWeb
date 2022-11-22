@@ -1,17 +1,9 @@
 // Components
 // #region
+import { Button, Card, Container, Group, Title } from '@mantine/core';
 import { useState } from 'react';
-import {
-  Button,
-  Card,
-  Container,
-  Group,
-  Select,
-  SimpleGrid,
-  Title,
-} from '@mantine/core';
-import UserTableStickyHeader from './UserTableStickyHeader';
 import CreateUserModal from '../Forms/CreateUserModal';
+import UserTableStickyHeader from './UserTableStickyHeader';
 // #endregion
 
 // Models
@@ -55,7 +47,11 @@ export default function AdminUserWidget() {
         </Title>
         <UserTableStickyHeader data={userData} />
         <Group mt={20} position="left">
-          <Button size="lg" onClick={() => setCreateUserModalOpened(true)}>
+          <Button
+            className="bg-[#FFB703]"
+            size="lg"
+            onClick={() => setCreateUserModalOpened(true)}
+          >
             Create
           </Button>
         </Group>

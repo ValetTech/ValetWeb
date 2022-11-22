@@ -309,13 +309,16 @@ export default function AreaDesigner() {
             //   form.setFieldValue('tables', value);
             // }}
           />
-          <Button variant="outline" onClick={() => form.reset()}>
+          <Button
+            className="bg-[#FFB703]"
+            variant="outline"
+            onClick={() => form.reset()}
+          >
             Clear
           </Button>
           <Button
-            className="mt-2 ml-5"
+            className="mt-2 ml-5 bg-[#FFB703]"
             variant="outline"
-            color="blue"
             // onClick={handleSubmit}
             type="submit"
           >

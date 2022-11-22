@@ -68,6 +68,7 @@ export default function SittingSettingsWidget() {
         <SittingTableStickyHeader data={sittings} areaData={areas} />
         <Group mt={20} position="left">
           <Button
+            className="bg-[#FFB703]"
             size="lg"
             onClick={() => {
               setCreateSittingModalOpened(true);
