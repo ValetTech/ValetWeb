@@ -8,17 +8,18 @@ import {
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import dayjs from 'dayjs';
 
 const defaultTheme = createTheme();
 
-export default function BasicDateTimePicker({ value, onChange }: any) {
+export default function BasicDateTimePicker({ label, value, onChange }: any) {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={defaultTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
             renderInput={(props) => <TextField {...props} />}
-            label="DateTimePicker"
+            label={label}
             value={value}
             onChange={(newValue) => {
               onChange(newValue);
@@ -30,14 +31,26 @@ export default function BasicDateTimePicker({ value, onChange }: any) {
   );
 }
 
-export function BasicDateTimePickerNew({ value, onChange }: any) {
+export function BasicDateTimePickerNew({
+  label,
+  value,
+  onChange,
+  minDate = dayjs(),
+  maxDate,
+}: any) {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={defaultTheme}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DateTimePicker
-            renderInput={(props) => <TextField {...props} />}
-            label="DateTimePicker"
+            minDate={minDate}
+            maxDate={maxDate}
+            inputFormat="DD/MM/YYYY HH:mm a"
+            InputAdornmentProps={{ position: 'start' }}
+            renderInput={(props) => {
+              return <TextField {...props} fullWidth size="small" />;
+            }}
+            label={label}
             value={value}
             onChange={(newValue) => {
               onChange(newValue);

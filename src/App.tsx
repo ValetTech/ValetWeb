@@ -6,7 +6,6 @@ import {
 } from '@mantine/core';
 import { useColorScheme, useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
-import { StyledEngineProvider } from '@mui/material';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { store } from './App/store';
@@ -107,13 +106,11 @@ export default function App() {
         >
           <Router>
             <NotificationsProvider>
-              <StyledEngineProvider injectFirst>
-                <DefaultAppShell
-                  store={store}
-                  // colorScheme={colorScheme}
-                  // setColorScheme={setColorScheme}
-                />
-              </StyledEngineProvider>
+              <DefaultAppShell
+                store={store}
+                // colorScheme={colorScheme}
+                // setColorScheme={setColorScheme}
+              />
             </NotificationsProvider>
           </Router>
         </MantineProvider>

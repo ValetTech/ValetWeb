@@ -1,9 +1,11 @@
+/* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/jsx-props-no-spreading */
 import {
   Button,
   Checkbox,
   Collapse,
   Group,
+  Input,
   Modal,
   MultiSelect,
   NumberInput,
@@ -16,13 +18,15 @@ import {
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
+import Sitting from '../../Models/Sitting';
 import {
   createSittingAsync,
   getSittingTypesAsync,
 } from '../../Services/ApiServices';
 import CustomRadioButton from '../Buttons/CustomRadioButton';
+import { BasicDateTimePickerNew } from '../Forms/DateTimePicker';
 
 export interface Rrule {
   freq?: string;
@@ -66,6 +70,9 @@ export default function CreateEventModal({
   const [eventData, setEventData] = useState<any>(
     event?.event?.extendedProps?.data
   );
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs());
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs().add(1, 'hour'));
+  const [eventAreas, setEventAreas] = useState<string[]>([]);
 
   const form = useForm({
     initialValues: {
@@ -74,8 +81,8 @@ export default function CreateEventModal({
         title: eventData?.title ?? '',
         capacity: eventData?.capacity ?? 1,
         type: eventData?.type ?? '',
-        startTime: eventData?.start ?? dayjs().toDate(),
-        endTime: eventData?.end ?? dayjs().add(1, 'hour').toDate(),
+        startTime: eventData?.start ?? startDate.toDate(),
+        endTime: eventData?.end ?? endDate.toDate(),
         venueId: eventData?.venueId ?? 1,
         groupId: eventData?.groupId ?? 0,
         areas: eventData?.areas ?? [event?.event?.resource?.id] ?? [],
@@ -89,6 +96,13 @@ export default function CreateEventModal({
       },
     },
   });
+  useEffect(() => {
+    setStartDate(dayjs(event?.start));
+    setEndDate(dayjs(event?.end));
+    console.log('Areas Event', event);
+    console.log(event?.resource?.id);
+    setEventAreas([event?.resource?.id.toString()]);
+  }, [event]);
 
   // const getTypes = useMemo(async () => await getSittingTypesAsync(), [types]);
   useEffect(() => {
@@ -103,7 +117,7 @@ export default function CreateEventModal({
 
     form.setValues({
       sitting: {
-        id: event?.event?.id ?? 0,
+        id: event?.event?.id ?? null,
         title: event?.event?.title ?? '',
         capacity: event?.event?.capacity ?? 1,
         type: event?.event?.type ?? '',
@@ -162,6 +176,26 @@ export default function CreateEventModal({
     return query;
   }
 
+  function onSubmit(values) {
+    const sitting: Sitting = {
+      ...values.sitting,
+      startDate: startDate.toDate(),
+      endDate: endDate.toDate(),
+      areas: eventAreas,
+    };
+    console.log(sitting);
+
+    createSittingAsync(sitting)
+      .then((data) => {
+        console.log(data);
+        form.reset();
+        handleClose();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   function handleReset() {
     form.reset();
     handleClose();
@@ -179,14 +213,7 @@ export default function CreateEventModal({
         size="auto"
         title="Create Sitting"
       >
-        <form
-          onSubmit={form.onSubmit((values) => {
-            form.reset();
-            createSittingAsync(values.sitting);
-            // console.log(values.sitting);
-          })}
-          onReset={handleReset}
-        >
+        <form onSubmit={form.onSubmit(onSubmit)} onReset={handleReset}>
           <Stack spacing="sm">
             <div>
               <Text color="dimmed" className="mb-0 cursor-default">
@@ -208,15 +235,16 @@ export default function CreateEventModal({
                 className="mt-0 cursor-text"
                 placeholder="Areas"
                 // itemComponent={SelectItem}
-                // defaultValue={event?.resource?.id}
+                defaultValue={event?.resource?.id.toString()}
                 data={areas.map((area: any) => ({
-                  value: area.id,
+                  value: area.id.toString(),
                   label: area.name,
                   description: area.description,
                   group: area.tables?.length > 0 ? 'Tables' : 'Rooms',
                 }))}
                 {...form.getInputProps('sitting.areas')}
-                // defaultValue={['1', '2', '3']}
+                onChange={setEventAreas}
+                value={eventAreas}
               />
             </div>
 
@@ -253,19 +281,35 @@ export default function CreateEventModal({
                 <Text size="sm" color="dimmed" className="mt-1">
                   Start
                 </Text>
-                <DatePicker
+                <Input.Wrapper label="" required>
+                  <Input
+                    component={BasicDateTimePickerNew}
+                    value={startDate}
+                    onChange={setStartDate}
+                    // {...form.getInputProps('sitting.startTime')}
+                  />
+                </Input.Wrapper>
+                {/* <DatePicker
                   className="mt-0"
                   {...form.getInputProps('sitting.startTime')}
-                />
+                /> */}
               </div>
               <div className="flex flex-col">
                 <Text size="sm" color="dimmed" className="mt-1">
                   End
                 </Text>
-                <DatePicker
+                <Input.Wrapper label="" required>
+                  <Input
+                    component={BasicDateTimePickerNew}
+                    value={endDate}
+                    onChange={setEndDate}
+                    // {...form.getInputProps('sitting.endTime')}
+                  />
+                </Input.Wrapper>
+                {/* <DatePicker
                   className="mt-0"
                   {...form.getInputProps('sitting.endTime')}
-                />
+                /> */}
               </div>
             </Group>
 
