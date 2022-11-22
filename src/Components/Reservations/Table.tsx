@@ -15,6 +15,7 @@ import {
   IconSearch,
   IconSelector,
 } from '@tabler/icons';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import Reservation from '../../Models/Reservation';
 
@@ -107,7 +108,7 @@ function sortData(
   );
 }
 
-export default function TableSort({ data }: TableSortProps) {
+export default function ReservationsTable({ data }: TableSortProps) {
   const [search, setSearch] = useState('');
   const [sortedData, setSortedData] = useState(data);
   const [sortBy, setSortBy] = useState<keyof Reservation | null>(null);
@@ -135,19 +136,21 @@ export default function TableSort({ data }: TableSortProps) {
   const rows = sortedData.map((row) => (
     <tr key={row.id}>
       <td>
-        <Center>{row.customerId}</Center>
+        <Center>{row.customer.fullName}</Center>
       </td>
       <td>
-        <Center>{row.sittingId}</Center>
+        <Center>{`${row.sitting.type} (${dayjs(row.sitting.startTime).format(
+          'ddd hh:mma'
+        )} - ${dayjs(row.sitting.endTime).format('hh:mma')}) `}</Center>
       </td>
       {/* <td>
         <Center>{row.venueId}</Center>
       </td> */}
       <td>
-        <Center>{new Date(row.dateTime).toLocaleString()}</Center>
+        <Center>{dayjs(row.dateTime).format('hh:mma ddd DD MMM YY')}</Center>
       </td>
       <td>
-        <Center>{row.duration}</Center>
+        <Center>{row.duration} mins</Center>
       </td>
       <td>
         <Center>{row.noGuests}</Center>
@@ -220,7 +223,7 @@ export default function TableSort({ data }: TableSortProps) {
               reversed={reverseSortDirection}
               onSort={() => setSorting('noGuests')}
             >
-              Number of Guests
+              No. of Guests
             </Th>
             <Th
               sorted={sortBy === 'source'}

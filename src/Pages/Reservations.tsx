@@ -1,8 +1,9 @@
 import { Button, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import CreateReservationModal from '../Components/Forms/CreateReservation';
 import DetailsForm from '../Components/Forms/DetailsReservation';
-import TableSort from '../Components/Reservations/Table';
+import ReservationsTable from '../Components/Reservations/Table';
 import Area from '../Models/Area';
 import Reservation from '../Models/Reservation';
 import Sitting from '../Models/Sitting';
@@ -62,11 +63,12 @@ export default function Reservations() {
         // color="red"
         variant="outline"
         type="button"
-        onClick={() => openDetailsModal()}
+        component={Link}
+        to="/calendar"
       >
-        Reservation details
+        Create Sitting
       </Button>
-      <TableSort data={reservations} />
+      <ReservationsTable data={reservations} />
       <CreateReservationModal
         areaData={areas}
         sittingData={sittings}
