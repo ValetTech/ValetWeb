@@ -19,6 +19,7 @@ import {
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import ErrorNotification from '../Components/Notifications/NotifyError';
+import UpdatedNotification from '../Components/Notifications/NotifyUpdate';
 import TableSideBar from '../Components/TableView/TableSideBar';
 import TableView from '../Components/TableView/TableView';
 import Area from '../Models/Area';
@@ -30,6 +31,7 @@ import getReservationsAsync, {
   getAreasAsync,
   getSittingsAsync,
   GetTablesAsync,
+  updateSittingAsync,
   UpdateTableAsync,
 } from '../Services/ApiServices';
 
@@ -173,7 +175,7 @@ export interface BoxSpec {
 }
 
 export default function TablesPage() {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [reservationsData, setReservations] = useState<Reservation[]>([]);
   const [selectedSitting, setSelectedSitting] = useState<Sitting | null>(null);
   const [tables, setTables] = useState<Table[] | null>(null);
   const forceUpdate = useForceUpdate();
@@ -191,7 +193,7 @@ export default function TablesPage() {
   const [activeTable, setActiveTable] = useState<Table | null>(null);
 
   function UpdateTable(table: Table) {
-    const { reservation, area, ...newTable } = table;
+    const { reservations, area, ...newTable } = table;
     const newTables = tables?.map((t) => {
       if (t.id === table.id) {
         return newTable;
@@ -248,7 +250,9 @@ export default function TablesPage() {
     const [type, id] = activeId?.split('-', 2) || [null, null];
     // setActiveItem(reservations.find((r) => r.id === activeId) ?? null);
     if (type === 'reservation') {
-      setActiveItem(reservations.find((r) => r.id?.toString() === id) ?? null);
+      setActiveItem(
+        reservationsData.find((r) => r.id?.toString() === id) ?? null
+      );
     } else if (type === 'table') {
       setActiveItem(tables?.find((t) => t.id?.toString() === id) ?? null);
     }
@@ -312,7 +316,9 @@ export default function TablesPage() {
       console.log('type', active?.id?.split('-', 2));
 
       if (type === 'reservation') {
-        const reservation = reservations.find((r) => r.id?.toString() === id);
+        const reservation = reservationsData.find(
+          (r) => r.id?.toString() === id
+        );
         const [_, tableId] = over?.id?.split('-', 2) || [null, null];
         console.log('tableId', tableId);
 
@@ -341,6 +347,29 @@ export default function TablesPage() {
         }
       }
     }
+  }
+
+  function UpdateSitting(sitting: Sitting) {
+    const { reservations, ...newSitting } = sitting;
+    const newSittings = sittings.map((s) => {
+      if (s.id === sitting.id) {
+        return newSitting;
+      }
+      return s;
+    });
+    setSittings(newSittings);
+    console.log('update sitting', sitting);
+
+    updateSittingAsync(sitting.id ?? 0, newSitting)
+      .then((response) => {
+        console.log(response);
+        UpdatedNotification();
+      })
+      .catch((err) => {
+        console.log(err);
+        ErrorNotification(err.message);
+      });
+    forceUpdate();
   }
 
   return (
@@ -378,7 +407,7 @@ export default function TablesPage() {
                 {/* Side bar */}
                 <div className="w-full h-full ">
                   <TableSideBar
-                    data={reservations}
+                    data={reservationsData}
                     sittings={sittings}
                     selectedSitting={selectedSitting}
                     selectSitting={setSelectedSitting}
@@ -392,6 +421,7 @@ export default function TablesPage() {
                     tables={tables}
                     areas={areas}
                     selectedSitting={selectedSitting}
+                    updateSitting={UpdateSitting}
                   />
                 </Center>
               </Grid.Col>

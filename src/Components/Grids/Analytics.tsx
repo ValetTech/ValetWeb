@@ -38,7 +38,7 @@ export default function Analytics({ reservations }: AnalyticsProps) {
       reservations.filter(
         (r) =>
           r.tables?.length !== 0 &&
-          r.noGuests >=
+          r.noGuests <
             r.tables?.map((table) => table.capacity).reduce((a, b) => a + b, 0)
       )
     );
@@ -47,7 +47,7 @@ export default function Analytics({ reservations }: AnalyticsProps) {
       reservations.filter(
         (r) =>
           r.tables?.length !== 0 &&
-          r.noGuests <
+          r.noGuests >
             r.tables?.map((table) => table.capacity).reduce((a, b) => a + b, 0)
       )
     );

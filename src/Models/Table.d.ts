@@ -3,6 +3,8 @@ export default interface Table {
   type: string;
   capacity: number;
   areaId?: number;
+  area?: Area;
+  reservations?: Reservation[];
   xPosition?: number;
   yPosition?: number;
   position?: TablePosition;

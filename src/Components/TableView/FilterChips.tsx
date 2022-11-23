@@ -1,21 +1,10 @@
-import { Chip, createStyles } from '@mantine/core';
+/* eslint-disable react/jsx-no-bind */
+import { Chip } from '@mantine/core';
 import { useEventListener } from '@mantine/hooks';
 
-const styles = createStyles((theme) => ({
-  chips: {
-    padding: theme.spacing.xs,
-    paddingLeft: 0,
-    paddingBottom: 0,
-    // hide input
-    '& input': {
-      display: 'none',
-    },
-  },
-}));
-
 interface Props {
-  filters: string[];
-  onChange: (filters: string[]) => void;
+  filters: boolean[];
+  onChange: (filters: boolean[]) => void;
 }
 
 export default function FilterChips({ filters, onChange }: Props) {
@@ -31,28 +20,42 @@ export default function FilterChips({ filters, onChange }: Props) {
 
   const ref = useEventListener('wheel', onWheel);
 
-  const { classes } = styles();
-
   return (
     <div
       ref={ref}
-      className="w-full overflow-x-auto no-scrollbar no-scrollbar::-webkit-scrollbar"
+      className={
+        ' overflow-x-auto no-scrollbar no-scrollbar::-webkit-scrollbar ' +
+        'flex flex-row flex-grow justify-between space-x-1 pt-2 [&_input]:hidden w-full'
+      }
     >
-      <Chip.Group
-        multiple
-        position="left"
-        spacing={5}
-        noWrap
-        align="flex-start"
-        className={`${classes.chips} w-0 pb-2 pt-2`}
-        value={filters}
-        onChange={onChange}
+      <Chip
+        size="xs"
+        checked={filters.every((v) => !v)}
+        onChange={() => onChange([false, false, false])}
       >
-        <Chip value="All">All</Chip>
-        <Chip value="Available">Available</Chip>
-        <Chip value="Occupied">Occupied</Chip>
-        <Chip value="Reserved">Reserved</Chip>
-      </Chip.Group>
+        All
+      </Chip>
+      <Chip
+        size="xs"
+        checked={filters[0]}
+        onChange={() => onChange([!filters[0], filters[1], filters[2]])}
+      >
+        Seated
+      </Chip>
+      <Chip
+        size="xs"
+        checked={filters[1]}
+        onChange={() => onChange([filters[0], !filters[1], filters[2]])}
+      >
+        Partially Seated
+      </Chip>
+      <Chip
+        size="xs"
+        checked={filters[2]}
+        onChange={() => onChange([filters[0], filters[1], !filters[2]])}
+      >
+        Not Seated
+      </Chip>
     </div>
   );
 }

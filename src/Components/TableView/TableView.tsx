@@ -2,8 +2,10 @@ import { useDroppable } from '@dnd-kit/core';
 import {
   Button,
   Grid,
+  MultiSelect,
   SegmentedControl,
   SegmentedControlItem,
+  Tooltip,
 } from '@mantine/core';
 import type {} from '@mui/x-date-pickers/themeAugmentation';
 import { useEffect, useState } from 'react';
@@ -201,6 +203,7 @@ interface TableViewProps {
   areas: Area[];
   selectedSitting: Sitting | null;
   tables: Table[] | null;
+  updateSitting: (sitting: Sitting) => void;
   // selectedArea: Area;
   // selectArea: (area: Area) => void;
 }
@@ -209,9 +212,13 @@ export default function TableView({
   areas,
   selectedSitting,
   tables,
+  updateSitting,
 }: TableViewProps) {
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [sittingAreas, setSittingAreas] = useState<Area[]>(areas);
+  const [addAreas, setAddAreas] = useState<string[]>(
+    selectedSitting?.areas?.map((area) => area?.id.toString()) ?? []
+  );
 
   useEffect(() => {
     // const newAreas = areas?.map((area) => {
@@ -228,7 +235,9 @@ export default function TableView({
     //   return newArea;
     // });
     // setSittingAreas(newAreas);
-
+    setAddAreas(
+      selectedSitting?.areas?.map((area) => area?.id.toString()) ?? []
+    );
     setSittingAreas(selectedSitting?.areas ?? areas);
   }, [areas, selectedSitting]);
 
@@ -256,7 +265,53 @@ export default function TableView({
           )}
         </div>
       ) : (
-        <AreaDesigner />
+        <div className="flex flex-col">
+          <div className="p-4">
+            <h1>Add Exiting Areas</h1>
+            <MultiSelect
+              placeholder="Select Area"
+              clearable
+              searchable
+              nothingFound="No Areas"
+              data={areas.map((a) => ({
+                label: a.name,
+                value: a.id?.toString() ?? '',
+              }))}
+              onChange={(values) => {
+                const newAreas = values?.map((value) => {
+                  const area = areas.find((a) => a.id?.toString() === value);
+                  return area;
+                });
+                setSittingAreas(newAreas);
+                setAddAreas(values);
+              }}
+              value={addAreas}
+            />
+            <Tooltip
+              position="right"
+              label={
+                selectedSitting ? 'Update Sitting Areas' : 'Select A Sitting'
+              }
+            >
+              <Button
+                className="mt-2 bg-[#FFB703]"
+                variant="outline"
+                type="submit"
+                disabled={!selectedSitting}
+                onClick={() => {
+                  if (!selectedSitting) return;
+                  updateSitting({
+                    ...selectedSitting,
+                    areaIds: sittingAreas.map((area) => area.id),
+                  });
+                }}
+              >
+                Set Areas
+              </Button>
+            </Tooltip>
+          </div>
+          <AreaDesigner />
+        </div>
       )}
 
       {/* <Skeleton className="h-full w-full" radius="md" animate={false} /> */}

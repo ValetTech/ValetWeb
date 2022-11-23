@@ -132,7 +132,11 @@ export default function TableSideBar({
   selectSitting,
 }: TableSideBarProps) {
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState(['All']);
+  const [filters, setFilters] = useState<[boolean, boolean, boolean]>([
+    false,
+    false,
+    false,
+  ]);
   const [filteredData, setFilteredData] = useState(data);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -162,7 +166,34 @@ export default function TableSideBar({
   useEffect(() => {}, [data]);
 
   useEffect(() => {
-    setFilteredData(data);
+    let filteredReservations = data;
+    filteredReservations = filters[2]
+      ? filteredReservations
+      : filteredReservations.filter(
+          (reservation) => reservation.tables?.length === 0
+        );
+    filteredReservations = filters[1]
+      ? filteredReservations
+      : filteredReservations?.filter(
+          (reservation) =>
+            reservation?.tables &&
+            reservation.noGuests >
+              reservation.tables
+                ?.map((table) => table.capacity)
+                .reduce((a, b) => a + b, 0)
+        );
+    filteredReservations = filters[0]
+      ? filteredReservations
+      : filteredReservations.filter(
+          (reservation) =>
+            reservation?.tables &&
+            reservation.noGuests <
+              reservation.tables
+                ?.map((table) => table.capacity)
+                .reduce((a, b) => a + b, 0)
+        );
+
+    setFilteredData(filteredReservations);
   }, [data, search, filters]);
 
   const { height, width } = useViewportSize();
@@ -210,7 +241,7 @@ export default function TableSideBar({
           >
             {/* <TableSort data={rowData} /> */}
             {Array.isArray(data) && data.length ? (
-              <ReservationsList data={data} />
+              <ReservationsList data={filteredData} />
             ) : (
               <Center>
                 <Text size="xl">No Reservations</Text>
