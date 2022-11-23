@@ -31,6 +31,7 @@ import Sitting from '../../Models/Sitting';
 // Services
 // #region
 import { createReservationAndCustomerAsync } from '../../Services/ApiServices';
+import ErrorNotification from '../Notifications/NotifyError';
 import { BasicDateTimePickerNew } from './DateTimePicker';
 // #endregion
 
@@ -116,9 +117,14 @@ export default function CreateReservationModal({
             duration: values.duration,
             noGuests: values.noGuests,
             notes: values.notes,
-          }).then((response) => {
-            console.log(response);
-          });
+          })
+            .catch((e) => {
+              console.log(e);
+              ErrorNotification(e.message);
+            })
+            .then((response) => {
+              // console.log(response);
+            });
 
           // createCustomerAsync({
           //   firstName: values.firstName,
@@ -220,29 +226,6 @@ export default function CreateReservationModal({
                   onChange={setSelectedDate}
                 />
               </Input.Wrapper>
-              {/* <TimeInput
-                value={timePickerValue}
-                onChange={(value) => {
-                  setTimePickerValue(new Date(value));
-                }}
-                format="12"
-                label="Time"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                required
-                {...form.getInputProps('time')}
-              />
-              <DatePicker
-                value={datePickerValue}
-                onChange={setDatePickerValue}
-                label="Date"
-                dropdownType="modal"
-                mt={20}
-                withAsterisk
-                required
-                {...form.getInputProps('date')}
-              /> */}
               <NumberInput
                 label="Duration"
                 mt={20}

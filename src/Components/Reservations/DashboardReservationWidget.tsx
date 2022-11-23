@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
   Card,
@@ -12,7 +13,6 @@ import { DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
-import Reservation from '../../Models/Reservation';
 import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
 import CreateReservationModal from '../Forms/CreateReservation';
@@ -26,19 +26,19 @@ enum State {
   Completed,
 }
 interface DashboardWidgetProps {
-  reservations: Reservation[];
+  // reservations: Reservation[];
   areas: Area[];
   sittings: Sitting[];
-  params: ReservationParams;
+  // params: ReservationParams;
   setParams: (params: ReservationParams) => void;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export default function DashboardReservationWidget({
-  reservations,
+  // reservations,
   areas,
   sittings,
-  params,
+  // params,
   setParams,
   children,
 }: DashboardWidgetProps) {
@@ -49,14 +49,8 @@ export default function DashboardReservationWidget({
   ]);
   const [selectedAreas, setSelectedAreas] = useState<string[] | null>([]);
   const [selectedSittings, setSelectedSittings] = useState<string[] | null>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string[] | null>([]);
-  const [states, setStates] = useState<string[]>(
-    Object.keys(State).filter((key) => Number.isNaN(Number(key)))
-  );
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
-  const [areaData, setAreaData] = useState<Area[]>([]);
-
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [createModalOpened, setCreateModalOpened] = useState(false);
 
   // useEffect(() => {
@@ -66,22 +60,6 @@ export default function DashboardReservationWidget({
   function onCloseCreateModal() {
     setCreateModalOpened(false);
   }
-
-  // useEffect(() => {
-  //   console.log(selectedSitting);
-  //   const filteredReservations = reservationData.filter((reservation) => {
-  //     return reservation.sittingId === selectedSitting;
-  //   });
-  //   setFilteredReservationData(filteredReservations);
-  // }, [selectedSitting]);
-
-  // Mapping the data so that it can be displayed in <Select> component.
-  // Name of sitting will be displayed in select, but it will return the ID number.
-
-  // Name of area will be displayed in select, but it will return the ID number.
-  // Mapping reservation data for table
-
-  // TODO FIX LAYOUT
 
   // FILTER RESERVATIONS
   useEffect(() => {
@@ -131,7 +109,9 @@ export default function DashboardReservationWidget({
               clearable
               placeholder="Select Status"
               // data={Object.values(State)}
-              data={states}
+              data={Object.keys(State).filter((key) =>
+                Number.isNaN(Number(key))
+              )}
               onChange={(values) => {
                 setSelectedStatus(values ?? null);
               }}

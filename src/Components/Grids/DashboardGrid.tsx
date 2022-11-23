@@ -1,8 +1,5 @@
 /* eslint-disable react/jsx-no-bind */
-// Components
-// #region
 import { SegmentedControl, Skeleton } from '@mantine/core';
-import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import Reservation from '../../Models/Reservation';
@@ -18,10 +15,9 @@ import UpdatedNotification from '../Notifications/NotifyUpdate';
 import ReservationFilters from '../Reservations/DashboardReservationWidget';
 import Analytics from './Analytics';
 import ReservationTable from './ReservationTable';
-// #endregion
 
 export default function DashboardGrid() {
-  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
+  // const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
   const [value, setValue] = useState('reservations');
 
   const [params, setParams] = useState<ReservationParams>({});
@@ -37,24 +33,20 @@ export default function DashboardGrid() {
   // useState for average party size
   // useState for average duration
 
-  // get reseravtions from api and set state
   useEffect(() => {
     getReservationsAsync()
       .then((res) => setReservations(res))
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       });
     getAreasAsync()
       .then((res) => setAreas(res))
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       });
     getSittingsAsync()
       .then((res) => setSittings(res))
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       });
   }, []);
@@ -63,25 +55,21 @@ export default function DashboardGrid() {
     getReservationsAsync(params)
       .then((res) => setReservations(res))
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       });
   }, [params]);
 
   function UpdateReservation(reservation: Reservation) {
     updateReservationAsync(reservation?.id ?? 0, reservation)
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         UpdatedNotification();
       })
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       });
   }
 
   return (
-    // Breakpoints prop handles responsivity.
     // <SimpleGrid
     //   cols={2}
     //   breakpoints={[
@@ -96,10 +84,10 @@ export default function DashboardGrid() {
     // />
     <div className="h-full">
       <ReservationFilters
-        reservations={reservations}
+        // reservations={reservations}
         areas={areas}
         sittings={sittings}
-        params={params}
+        // params={params}
         setParams={setParams}
       >
         <SegmentedControl

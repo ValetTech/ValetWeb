@@ -1,16 +1,17 @@
+/* eslint-disable react/jsx-no-bind */
 import {
   Button,
   Chip,
-  Pagination,
+  Modal,
   ScrollArea,
   Select,
   Table,
   Tooltip,
 } from '@mantine/core';
-import { usePagination } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import Reservation from '../../Models/Reservation';
+import DetailsForm from '../Forms/DetailsReservation';
 
 enum State {
   Pending,
@@ -29,13 +30,18 @@ export default function ReservationTable({
   reservations,
   UpdateReservation,
 }: ReservationTableProps) {
+  const [selectedReservation, setSelectedReservation] = useState<Reservation>();
+  const [openDetailsModal, setOpenDetailsModal] = useState(false);
   const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
-  const [page, onChange] = useState(1);
-  const pagination = usePagination({ total: 20, initialPage: 1 });
-  const [activePage, setPage] = useState(1);
 
   const rows = reservations.map((reservation) => (
-    <tr key={reservation.id}>
+    <tr
+      key={reservation.id}
+      onClick={() => {
+        setSelectedReservation(reservation);
+        setOpenDetailsModal(true);
+      }}
+    >
       <td>{reservation.customer.fullName}</td>
       <td>
         <Tooltip label={`Call ${reservation.customer.firstName}`}>
@@ -90,6 +96,10 @@ export default function ReservationTable({
     </tr>
   ));
 
+  function onClose() {
+    setOpenDetailsModal(false);
+  }
+
   return (
     <div className="w-full">
       <ScrollArea style={{ minHeight: 200 }} className="mt-4 w-full h-full">
@@ -106,16 +116,15 @@ export default function ReservationTable({
           <tbody>{rows}</tbody>
         </Table>
       </ScrollArea>
-      <Pagination
-        className="w-full"
-        grow
-        withEdges
-        page={activePage}
-        onChange={setPage}
-        siblings={1}
-        total={20}
-        boundaries={1}
-      />
+      <Modal
+        opened={openDetailsModal}
+        onClose={() => setOpenDetailsModal(false)}
+      >
+        <DetailsForm
+          reservationId={selectedReservation?.id ?? 0}
+          onClose={onClose}
+        />
+      </Modal>
     </div>
   );
 }

@@ -1,5 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { Button, Group, NumberInput, Textarea, TextInput } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Input,
+  NumberInput,
+  Textarea,
+  TextInput,
+} from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconCalendar, IconClock } from '@tabler/icons';
@@ -13,6 +20,7 @@ import {
 import DeletedNotification from '../Notifications/NotifyDelete';
 import ErrorNotification from '../Notifications/NotifyError';
 import UpdatedNotification from '../Notifications/NotifyUpdate';
+import { BasicDateTimePickerNew } from './DateTimePicker';
 
 const initialValues: Reservation = {
   id: 0,
@@ -41,13 +49,11 @@ const initialValues: Reservation = {
 };
 
 interface ReservationModalProps {
-  opened: boolean;
-  onClose(): void;
+  onClose: () => void;
   reservationId: number;
 }
 
 export default function DetailsForm({
-  opened,
   onClose,
   reservationId,
 }: ReservationModalProps) {
@@ -57,10 +63,9 @@ export default function DetailsForm({
 
   useEffect(() => {
     getReservationByIdAsync(reservationId)
-      .then(({ data }: { data: Reservation }) => {
-        const res = { ...data, dateTime: new Date(data.dateTime) };
-        setValues(res);
-        form.setValues(res);
+      .then((response: Reservation) => {
+        setValues(response);
+        form.setValues(response);
       })
       .catch((error) => {
         onClose();
@@ -117,7 +122,7 @@ export default function DetailsForm({
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={form.onSubmit(onSubmit)}>
       <NumberInput
         label="Customer ID"
         hideControls
@@ -140,6 +145,16 @@ export default function DetailsForm({
         disabled
         {...form.getInputProps('sitting.type')}
       />
+      <Input.Wrapper label="Reservation date" required>
+        <Input
+          component={BasicDateTimePickerNew}
+          // value={startDate}
+          // onChange={setStartDate}
+          disabled={!edit}
+          {...form.getInputProps('dateTime')}
+          // {...form.getInputProps('sitting.startTime')}
+        />
+      </Input.Wrapper>
       <DatePicker
         label="Reservation date"
         icon={<IconCalendar size={16} />}
@@ -185,11 +200,12 @@ export default function DetailsForm({
           </Button>
         ) : (
           <Button
-            className="bg-[#FFB703]"
-            variant="filled"
-            onClick={() => setEdit(true)}
+            variant="outline"
+            className="bg-warning-100 text-warning-700"
+            type="submit"
+            onClick={() => handleDelete()}
           >
-            Edit
+            Delete
           </Button>
         )}
         {edit ? (
@@ -203,13 +219,11 @@ export default function DetailsForm({
           </Button>
         ) : (
           <Button
-            variant="outline"
-            color="red"
             className="bg-[#FFB703]"
-            type="submit"
-            onClick={() => handleDelete()}
+            variant="filled"
+            onClick={() => setEdit(true)}
           >
-            Delete
+            Edit
           </Button>
         )}
       </Group>

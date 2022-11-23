@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable react/jsx-no-bind */
 import '@fullcalendar/react/dist/vdom';
 
 import FullCalendar, {
@@ -9,7 +7,6 @@ import FullCalendar, {
   EventSourceInput,
 } from '@fullcalendar/react';
 
-import { DragEndEvent } from '@dnd-kit/core';
 import allLocales from '@fullcalendar/core/locales-all';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -29,45 +26,6 @@ import {
 import ErrorNotification from '../Notifications/NotifyError';
 import CreateEventModal from './CreateEventModal';
 
-interface EventObject {
-  repeat: string;
-  repeatEvery: number;
-  repeatOn: string;
-  repeatUntil: Date;
-  repeatXTimes: number;
-}
-interface RecurringEvent {
-  title: string; // name of event
-  type: string;
-  capacity: number;
-
-  allDay: boolean;
-  startTime: Date;
-  endTime: Date;
-
-  // Repeat
-  repeat: string; // [none, daily, weekly, monthly]
-  repeatEvery: number; // Every X [days, weeks, months, years]
-  // Daily
-  // Weekly
-  repeatOn: number[]; // [days of week]
-
-  // Monthly
-  repeatOnDay: number; // [day of month]
-
-  // Ends
-  repeatUntil: Date; // Repeat until [date]
-  repeatXTimes: number; // Repeat X times
-
-  // Delete Sitting
-
-  startRecur: Date;
-  endRecur: Date;
-
-  daysOfWeek: number[];
-
-  groupId: number; // UUID
-}
 /* CALENDAR
 New event
 - Title
@@ -89,115 +47,30 @@ Recurrence
 
 */
 
-// function CustomRadioButton({
-//   checked,
-//   defaultChecked,
-//   onChange,
-//   title,
-//   description,
-//   className,
-//   ...others
-// }: any) {
-//   const [value, handleChange] = useUncontrolled({
-//     value: checked,
-//     defaultValue: defaultChecked,
-//     finalValue: false,
-//     onChange,
-//   });
-//   return (
-//     <UnstyledButton
-//       {...others}
-//       onClick={() => handleChange(!value)}
-//       className={className}
-//     >
-//       <Radio
-//         checked={value}
-//         onChange={() => {}}
-//         tabIndex={-1}
-//         size="md"
-//         mr="xl"
-//         styles={{ input: { cursor: 'pointer' } }}
-//       />
-
-//       <div>
-//         <Text weight={500} mb={7} sx={{ lineHeight: 1 }}>
-//           {title}
-//         </Text>
-//         <Text size="sm" color="dimmed">
-//           {description}
-//         </Text>
-//       </div>
-//     </UnstyledButton>
-//   );
-// }
-// function Calendar() {
-//   const [events, setEvents] = useState<EventSourceInput[]>([]);
-//   const [sittings, setSittings] = useState<Sitting[]>([]);
-//   const [selectedEvent, setSelectedEvent] = useState<RecurringEvent>();
-//   const [showModal, setShowModal] = useState(false);
-
-//   useEffect(() => {
-//     getSittingsAsync().then((sittings) => {
-//       setSittings(sittings);
-//       setEvents(sittings.map((s) => s.toEvent()));
-//     });
-//   }, []);
-
-//   const handleEventClick = (event: any) => {
-//     const sitting = sittings.find((s) => s.id === event.event.id);
-//     if (sitting) {
-//       setSelectedEvent(sitting.toRecurringEvent());
-//       setShowModal(true);
-//     }
-//   };
-
-//   const handleEventDrop = (event: DragEndEvent) => {
-//     const sitting = sittings.find((s) => s.id === event.active.id);
-//     if (sitting) {
-//       const newSitting = sitting.clone();
-//       newSitting.start = event.active.data.date;
-//       newSitting.end = event.active.data.date;
-//       newSitting.save();
-//     }
-//   };
-
-//   const handleEventResize = (event: DragEndEvent) => {
-//     const sitting = sittings.find((s) => s.id === event.active.id);
-//     if (sitting) {
-//       const newSitting = sitting.clone();
-//       newSitting.end = event.active.data.date;
-//       newSitting.save();
-//     }
-//   };
-
-//   const handleEventAdd = (event: any) => {
-//     const
-// }
-
 export default function SittingsCalendar() {
   const [sittingData, setSittingData] = useState<Sitting[]>([]);
   const [events, setEvents] = useState<EventSourceInput>();
-  const [selectedEvent, setSelectedEvent] = useState<any>();
+  const [selectedEvent, setSelectedEvent] = useState<Event>();
   const [show, setShow] = useState(false);
 
   const [areas, setAreas] = useState<Area[]>([
     {
       id: 1,
-      name: 'Area 1',
+      name: 'Main',
       venueId: 1,
       width: 10,
       height: 10,
     },
     {
       id: 2,
-      name: 'Area 2',
+      name: 'Outside',
       venueId: 1,
       width: 10,
       height: 10,
     },
     {
       id: 3,
-      name: 'Area 3',
+      name: 'Balcony',
       venueId: 1,
       width: 10,
       height: 10,
@@ -221,14 +94,11 @@ export default function SittingsCalendar() {
         setAreas(res);
       })
       .catch((err) => {
-        console.error(err);
-        ErrorNotification('Could not get areas');
+        ErrorNotification(err.message);
       });
   }, []);
 
   useEffect(() => {
-    console.log('sittingData', sittingData);
-
     function createEvents() {
       const sittings: EventSourceInput = sittingData.map((s) => ({
         id: s.id?.toString(),
@@ -251,47 +121,11 @@ export default function SittingsCalendar() {
   };
 
   function handleEventClick(arg: EventClickArg) {
-    console.log('handleEventClick', arg);
-
     setSelectedEvent({ ...selectedEvent, ...arg });
     setShow(true);
   }
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { over } = event;
-    console.log('event', event);
-
-    console.log('over', over);
-
-    if (over?.id) {
-      // eslint-disable-next-line no-new
-      // new ThirdPartyDraggable(undefined, {
-      //   itemSelector: '.draggable1',
-      //   eventData: () => {
-      //     console.log('SSSSSSSSSSSSSSSS');
-      //     return {
-      //       title: event.active?.data.current?.title ?? 'No title',
-      //       duration: event.active?.data.current?.duration ?? '1:00',
-      //     };
-      //   },
-      // });
-    }
-
-    // If the item is dropped over a container, set it as the parent
-    // otherwise reset the parent to `null`
-  }
-  // function handleDragEnd(event: DragEndEvent) {
-  //   const { active, over } = event;
-  //   console.log('event', event);
-  //   if (
-  //     over &&
-  //     over.data?.current?.accepts.includes(active.data?.current?.type)
-  //   ) {
-  //     // do stuff
-  //   }
-  // }
-
-  const handleDrop = (info: any) => {
+  const handleDrop = (info) => {
     getSittingByIdAsync(info.event.id).then((response) => {
       updateSittingAsync(response.id, {
         id: info.event.id,
@@ -304,7 +138,7 @@ export default function SittingsCalendar() {
     });
   };
 
-  const handleResize = (info: any) => {
+  const handleResize = (info) => {
     getSittingByIdAsync(info.event.id).then((response) => {
       updateSittingAsync(response.id, {
         id: info.event.id,
@@ -318,16 +152,9 @@ export default function SittingsCalendar() {
   };
 
   return (
-    // eslint-disable-next-line react/jsx-no-bind
-    // <DndContext onDragEnd={handleDragEnd}>
     <div className="w-full h-full pb-2 px-1 ml-0 ">
-      {/* <Droppable key={1} id="calendar"> */}
       <FullCalendar
         schedulerLicenseKey="CC-Attribution-NonCommercial-NoDerivatives"
-        // viewClassNames={'bg-[#ffb703]'}
-        // eventClassNames={'bg-[#ffb703]'}
-        // dayCellClassNames={'bg-[#ffb703]'}
-        // nowIndicatorClassNames={'bg-[#ffb703]'}
         plugins={[
           rrulePlugin,
           dayGridPlugin,
@@ -341,20 +168,7 @@ export default function SittingsCalendar() {
           center: 'prev,today,next',
           right: 'dayGridMonth,timeGridWeek,resourceTimeGridDay',
         }}
-        customButtons={{
-          myCustomButton: {
-            text: 'custom!',
-            click: () => {
-              alert('clicked the custom button!');
-            },
-          },
-        }}
         eventColor="#023047"
-        // footerToolbar={
-        //   {
-        //     // left: 'myCustomButton',
-        //   }
-        // }
         locales={allLocales}
         locale="en-au"
         droppable
@@ -369,35 +183,16 @@ export default function SittingsCalendar() {
         firstDay={1}
         allDaySlot={false}
         dropAccept=".sitting"
-        drop={() => {
-          alert('dropped!');
-        }}
-        // is the "remove after drop" checkbox checked?
-        // if (checkbox.checked) {
-        //   // if so, remove the element from the "Draggable Events" list
-        //   info.draggedEl.parentNode.removeChild(info.draggedEl);
-        // }
         resources={areas.map((area) => ({
           id: area?.id?.toString(),
           title: area?.name,
         }))}
-        events={events} // Add events
-        //   eventContent={renderEventContent} // custom render function
-        //   eventClick={this.handleEventClick}
-        //   eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-        /* you can update a remote database when these fire:
-            eventChange={function(){}}
-            eventRemove={function(){}}
-            */
+        events={events}
         select={handleSelect}
         eventClick={handleEventClick}
-        // select={handleSelect}
         eventDrop={handleDrop}
-        // eventResizeStop={eventResizeStop}
         eventResize={handleResize}
-        // eventAdd={<CreateEventModal />}
       />
-      {/* <NewEventModal /> */}
       <CreateEventModal
         show={show}
         handleShow={handleShow}
@@ -406,19 +201,6 @@ export default function SittingsCalendar() {
         setEvent={setSelectedEvent}
         areas={areas}
       />
-      {/* </Droppable> */}
-      {/* <DefaultSittings /> */}
-      {/* <NewEventModal /> */}
-      {/* <div className="flex flex-row flex-wrap">
-          {sampleEvents.map((event) => (
-            <Draggable key={event.id} id={event.id}>
-              <div className="sitting bg-blue-500 text-white p-2 m-1 rounded">
-                {event.title}
-              </div>
-            </Draggable>
-          ))}
-        </div> */}
-      {/* </DndContext> */}
     </div>
   );
 }
@@ -433,9 +215,7 @@ export default function SittingsCalendar() {
     "endTime": "2022-11-02T01:13:28.943Z",
     "venueId": 0,
     "areas": [
-      
     ],
-    
   }
 ]
 */

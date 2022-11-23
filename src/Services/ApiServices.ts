@@ -55,7 +55,7 @@ export async function getReservationByIdAsync(id: number) {
     },
   });
 
-  return response.data;
+  return response.data.reservations;
 }
 
 export async function getReservationByDateAsync(date: string) {

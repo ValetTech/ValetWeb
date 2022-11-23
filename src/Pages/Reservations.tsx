@@ -71,8 +71,8 @@ export default function Reservations() {
       </Button>
       <ReservationsTable data={reservations} />
       <CreateReservationModal
-        areaData={areas}
-        sittingData={sittings}
+        areasData={areas}
+        sittingsData={sittings}
         opened={modalOpened}
         onClose={() => onCloseModal()}
       />
