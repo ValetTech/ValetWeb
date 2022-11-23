@@ -1,11 +1,9 @@
 import { useDroppable } from '@dnd-kit/core';
 import {
   Button,
-  Center,
   Grid,
   SegmentedControl,
   SegmentedControlItem,
-  Tooltip,
 } from '@mantine/core';
 import type {} from '@mui/x-date-pickers/themeAugmentation';
 import { useEffect, useState } from 'react';
@@ -24,34 +22,6 @@ interface ViewHeaderProps {
   selectedArea: Area | null;
   selectedSitting: Sitting | null;
   selectArea: (area: Area | null) => void;
-}
-
-function CreateSegement({
-  id,
-  name,
-  description,
-}: {
-  id: number | undefined;
-  name: string;
-  description: string | undefined;
-}) {
-  return {
-    label: (
-      // <div className="">
-      <Center>
-        <Tooltip
-          withArrow
-          label={description ?? 'Add an area to Sitting'}
-          position="top"
-        >
-          {/* <IconEye size={16} /> */}
-          <Button ml={10}>{name}</Button>
-        </Tooltip>
-      </Center>
-      // </div>
-    ),
-    value: id?.toString() ?? '',
-  };
 }
 
 function ViewHeader({
@@ -160,73 +130,6 @@ export function Droppable({
   );
 }
 
-interface TableViewProps {
-  areas: Area[];
-  selectedSitting: Sitting | null;
-  tables: Table[] | null;
-  // selectedArea: Area;
-  // selectArea: (area: Area) => void;
-}
-
-export default function TableView({
-  areas,
-  selectedSitting,
-  tables,
-}: TableViewProps) {
-  const [selectedArea, setSelectedArea] = useState<Area | null>(null);
-  const [sittingAreas, setSittingAreas] = useState<Area[]>(areas);
-
-  useEffect(() => {
-    // const newAreas = areas?.map((area) => {
-    //   const newArea = { ...area };
-    //   newArea?.tables?.forEach((table) => {
-    //     table?.sittings?.forEach((sitting) => {
-    //       sitting?.reservations?.forEach((reservation) => {
-    //         reservation?.guests?.forEach((guest) => {
-    //           guest?.name = 'Guest';
-    //         });
-    //       });
-    //     });
-    //   });
-    //   return newArea;
-    // });
-    // setSittingAreas(newAreas);
-
-    setSittingAreas(selectedSitting?.areas ?? areas);
-  }, [areas, selectedSitting]);
-
-  return (
-    <div className="h-full w-full">
-      <ViewHeader
-        areas={sittingAreas ?? areas}
-        selectedArea={selectedArea}
-        selectArea={setSelectedArea}
-        selectedSitting={selectedSitting}
-      />
-      {selectedArea?.id ? (
-        <div>
-          <CreateGrid area={selectedArea} tables={tables} />
-          {tables?.length ? (
-            tables
-              ?.filter(
-                (table) =>
-                  table?.areaId === selectedArea?.id &&
-                  (table?.xPosition === -1 || table?.yPosition === 1)
-              )
-              ?.map((table) => <TableDnD key={table.id} table={table} />)
-          ) : (
-            <Button>Add Table</Button>
-          )}
-        </div>
-      ) : (
-        <AreaDesigner />
-      )}
-
-      {/* <Skeleton className="h-full w-full" radius="md" animate={false} /> */}
-    </div>
-  );
-}
-
 function TableDnD({ table }: { table: Table }) {
   return (
     <Draggable
@@ -291,5 +194,72 @@ function CreateGrid({ area, tables }: { area: Area; tables: Table[] | null }) {
           </Grid.Col>
         ))}
     </Grid>
+  );
+}
+
+interface TableViewProps {
+  areas: Area[];
+  selectedSitting: Sitting | null;
+  tables: Table[] | null;
+  // selectedArea: Area;
+  // selectArea: (area: Area) => void;
+}
+
+export default function TableView({
+  areas,
+  selectedSitting,
+  tables,
+}: TableViewProps) {
+  const [selectedArea, setSelectedArea] = useState<Area | null>(null);
+  const [sittingAreas, setSittingAreas] = useState<Area[]>(areas);
+
+  useEffect(() => {
+    // const newAreas = areas?.map((area) => {
+    //   const newArea = { ...area };
+    //   newArea?.tables?.forEach((table) => {
+    //     table?.sittings?.forEach((sitting) => {
+    //       sitting?.reservations?.forEach((reservation) => {
+    //         reservation?.guests?.forEach((guest) => {
+    //           guest?.name = 'Guest';
+    //         });
+    //       });
+    //     });
+    //   });
+    //   return newArea;
+    // });
+    // setSittingAreas(newAreas);
+
+    setSittingAreas(selectedSitting?.areas ?? areas);
+  }, [areas, selectedSitting]);
+
+  return (
+    <div className="h-full w-full mr-2">
+      <ViewHeader
+        areas={sittingAreas ?? areas}
+        selectedArea={selectedArea}
+        selectArea={setSelectedArea}
+        selectedSitting={selectedSitting}
+      />
+      {selectedArea?.id ? (
+        <div>
+          <CreateGrid area={selectedArea} tables={tables} />
+          {tables?.length ? (
+            tables
+              ?.filter(
+                (table) =>
+                  table?.areaId === selectedArea?.id &&
+                  (table?.xPosition === -1 || table?.yPosition === 1)
+              )
+              ?.map((table) => <TableDnD key={table.id} table={table} />)
+          ) : (
+            <Button>Add Table</Button>
+          )}
+        </div>
+      ) : (
+        <AreaDesigner />
+      )}
+
+      {/* <Skeleton className="h-full w-full" radius="md" animate={false} /> */}
+    </div>
   );
 }

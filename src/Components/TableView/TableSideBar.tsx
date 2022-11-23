@@ -9,12 +9,14 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useListState, useScrollLock, useViewportSize } from '@mantine/hooks';
-import { keys } from '@mantine/utils';
 import { IconCalendarEvent, IconSearch } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { ChangeEvent, useEffect, useState } from 'react';
 import Reservation from '../../Models/Reservation';
+import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
+import getReservationsAsync from '../../Services/ApiServices';
+import ErrorNotification from '../Notifications/NotifyError';
 import FilterChips from './FilterChips';
 
 interface TableSideBarProps {
@@ -22,13 +24,6 @@ interface TableSideBarProps {
   sittings: Sitting[];
   selectedSitting: Sitting | null;
   selectSitting: (sitting: Sitting | null) => void;
-}
-
-function filterData(data: Reservation[], search: string, filters: string[]) {
-  const query = search.toLowerCase().trim();
-  return data.filter((item) =>
-    keys(data[0]).some((key) => item[key].toLowerCase().includes(query))
-  );
 }
 
 interface SearchBarProps {
@@ -85,16 +80,15 @@ export function Draggable({ id, type, children }: any) {
     : undefined;
 
   return (
-    <button
-      className="active:opacity-0"
-      type="button"
+    <div
+      className="active:opacity-0 p-0 m-0"
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
     >
       {children}
-    </button>
+    </div>
   );
 }
 
@@ -111,7 +105,7 @@ export function ReservationsList({ data }: any) {
           type="reservation"
         >
           <div className="p-2 z-50 focus:hidden">
-            <Text className="pr-2" size="sm">
+            <Text className="" size="sm">
               {item.customer?.fullName ?? 'Unnamed Customer'}
             </Text>
             <Text size="sm">
@@ -139,6 +133,7 @@ export default function TableSideBar({
 }: TableSideBarProps) {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState(['All']);
+  const [filteredData, setFilteredData] = useState(data);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
@@ -148,7 +143,27 @@ export default function TableSideBar({
     // );
   };
 
-  function handleFilterChange(value: any) {}
+  function handleFilterChange() {
+    const params: ReservationParams = {
+      MinDate: dayjs().toISOString(),
+      // hasTables: true,
+      SortBy: 'DateTime',
+    };
+
+    getReservationsAsync(params)
+      .then((reservations) => {
+        setFilteredData(reservations);
+      })
+      .catch((error) => {
+        ErrorNotification(error.message);
+      });
+  }
+
+  useEffect(() => {}, [data]);
+
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data, search, filters]);
 
   const { height, width } = useViewportSize();
   const [scrollLocked, setScrollLocked] = useScrollLock();
@@ -165,15 +180,17 @@ export default function TableSideBar({
           className="mb-2"
           placeholder="Select a sitting"
           icon={<IconCalendarEvent size={20} stroke={1.5} />}
-          data={sittings.map((sitting) => ({
-            label: `${sitting.title ?? sitting.type}, ${dayjs(
-              sitting.startTime
-            ).format('ddd, D MMMM, YYYY')} ${
-              sitting.areas?.length ? ' *' : ''
-            }`,
-            value: sitting.id?.toString() ?? '',
-            group: sitting.type,
-          }))}
+          data={sittings
+            .filter((sitting) => dayjs(sitting.endTime) >= dayjs())
+            .map((sitting) => ({
+              label: `${sitting.title ?? sitting.type}, ${dayjs(
+                sitting.startTime
+              ).format('ddd, D MMMM, YYYY')} ${
+                sitting.areas?.length ? ' *' : ''
+              }`,
+              value: sitting.id?.toString() ?? '',
+              group: sitting.type,
+            }))}
           value={selectedSitting?.id?.toString() ?? undefined}
           onChange={(value) => {
             selectSitting(
