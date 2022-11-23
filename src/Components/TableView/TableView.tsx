@@ -255,48 +255,6 @@ function TableDnD({ table }: { table: Table }) {
 }
 
 function CreateGrid({ area, tables }: { area: Area; tables: Table[] | null }) {
-  const [grid, setGrid] = useState<Table[][]>([]);
-  const [gridSize, setGridSize] = useState<number>(12);
-  const [gridWidth, setGridWidth] = useState<number>(12);
-  const [gridHeight, setGridHeight] = useState<number>(12);
-
-  useEffect(() => {
-    const newGrid = [];
-    const newGridSize = Math.max(area?.width ?? 12, area?.height ?? 12);
-    const newGridWidth = area?.width ?? 12;
-    const newGridHeight = area?.height ?? 12;
-
-    for (let i = 0; i < newGridSize; i++) {
-      newGrid.push([]);
-      for (let j = 0; j < newGridSize; j++) {
-        newGrid[i].push({
-          xPosition: i,
-          yPosition: j,
-          areaId: area?.id,
-          type: 'table',
-          table: {},
-        });
-      }
-    }
-    console.log('newGrid', newGrid);
-    console.log('newGridSize', newGridSize);
-    console.log('newGridWidth', newGridWidth);
-    console.log('newGridHeight', newGridHeight);
-
-    setGrid(newGrid);
-    setGridSize(newGridSize);
-    setGridWidth(newGridWidth);
-    setGridHeight(newGridHeight);
-  }, [area]);
-
-  useEffect(() => {
-    console.log('tables', tables);
-    console.log('area', area);
-    console.log('x,y', area?.width, area?.height);
-    console.log('newGrid', newGrid);
-    setGrid(newGrid);
-  }, [tables]);
-
   return (
     <Grid
       gutter={0}
