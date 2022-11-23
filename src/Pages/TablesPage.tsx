@@ -21,6 +21,7 @@ import Reservation from '../Models/Reservation';
 import Sitting from '../Models/Sitting';
 import Table from '../Models/Table';
 import getReservationsAsync, {
+  AddTableToReservationAsync,
   getAreasAsync,
   getSittingsAsync,
   GetTablesAsync,
@@ -304,9 +305,18 @@ export default function TablesPage() {
 
       if (type === 'reservation') {
         const reservation = reservations.find((r) => r.id?.toString() === id);
-        if (reservation) {
-          setActiveReservation(reservation);
-        }
+        const [_, tableId] = over?.id?.split('-', 2) || [null, null];
+        console.log('tableId', tableId);
+
+        AddTableToReservationAsync(reservation?.id ?? 0, tableId)
+          .then((res) => {
+            console.log(res);
+            loadReservations();
+          })
+          .catch((err) => {
+            console.log(err);
+            ErrorNotification(err.message);
+          });
       }
       if (type === 'table') {
         const table = tables?.find((t) => t.id?.toString() === id);

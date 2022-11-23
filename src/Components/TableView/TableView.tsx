@@ -270,8 +270,8 @@ function TableDnD({ table }: { table: Table }) {
       type="table"
     >
       <Droppable
-        key={`table${table.id}`}
-        id={`table${table.id}`}
+        key={`table-${table.id}`}
+        id={`table-${table.id}`}
         accepts={['reservation']}
       >
         <Button>

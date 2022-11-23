@@ -48,7 +48,7 @@ export default async function getReservationsAsync(params?: ReservationParams) {
 }
 
 export async function getReservationByIdAsync(id: number) {
-  const response = await axios.get(`/reservations/${id}`, {
+  const response = await axios.get(`/reservations?id=${id}`, {
     // withCredentials: false,
     headers: {
       Authorization: `Bearer ${getTokenFromState()}`,
@@ -353,5 +353,21 @@ export async function UpdateTableAsync(id: number, table: Table) {
       },
     }
   );
+  return response;
+}
+
+export async function AddTableToReservationAsync(
+  id: number,
+  tableId?: number,
+  table?: Table
+) {
+  const response = await axios.post(`/reservations/${id}/table`, null, {
+    headers: {
+      Authorization: `Bearer ${getTokenFromState()}`,
+    },
+    params: {
+      tableId: tableId ?? table?.id,
+    },
+  });
   return response;
 }
