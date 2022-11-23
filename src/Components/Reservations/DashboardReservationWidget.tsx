@@ -15,7 +15,6 @@ import Area from '../../Models/Area';
 import Reservation from '../../Models/Reservation';
 import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
-import { getReservationByDateAsync } from '../../Services/ApiServices';
 import CreateReservationModal from '../Forms/CreateReservation';
 
 enum State {
@@ -58,9 +57,6 @@ export default function DashboardReservationWidget({
   const [areaData, setAreaData] = useState<Area[]>([]);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [filteredReservationData, setFilteredReservationData] = useState<
-    Reservation[]
-  >([]);
   const [createModalOpened, setCreateModalOpened] = useState(false);
 
   // useEffect(() => {
@@ -70,20 +66,6 @@ export default function DashboardReservationWidget({
   function onCloseCreateModal() {
     setCreateModalOpened(false);
   }
-
-  useEffect(() => {
-    // Formatting date for url query. For some reason getMonth returns an incorrect number (e.g. october is 9) so have to do + 1.
-    const formattedDate = `${selectedDate.getFullYear()}-${
-      // eslint-disable-next-line prettier/prettier
-      selectedDate.getMonth() + 1
-    }-${selectedDate.getDate()}`;
-
-    async function fetchReservations() {
-      const res: Reservation[] = await getReservationByDateAsync(formattedDate);
-      setReservationData(res);
-    }
-    fetchReservations();
-  }, [selectedDate]);
 
   // useEffect(() => {
   //   console.log(selectedSitting);
