@@ -13,6 +13,7 @@ import {
 import { useScrollLock } from '@mantine/hooks';
 import { IconHelp, IconLogin } from '@tabler/icons';
 import { useEffect, useState } from 'react';
+import ToggleColor from '../Components/Buttons/ToggleColorScheme';
 import LoginModal from '../Components/Login/LoginModal';
 import '../index.css';
 
@@ -103,6 +104,9 @@ export default function Home() {
 
   return (
     <div className={classes.wrapper}>
+      <div className="p-5 flex flex-end">
+        <ToggleColor />
+      </div>
       <Container size={700} className={classes.inner}>
         <h1 className={classes.title}>
           A{' '}

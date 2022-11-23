@@ -4,7 +4,9 @@ import { store } from '../App/store';
 import Area from '../Models/Area';
 import Customer from '../Models/Customer';
 import Reservation from '../Models/Reservation';
+import ReservationParams from '../Models/ReservationParams';
 import Sitting from '../Models/Sitting';
+import Table from '../Models/Table';
 // import { IApiService } from './IApiService';
 // const API_URL = 'https://localhost:7028/api';
 axios.defaults.baseURL = 'https://valetapi.azurewebsites.net/api/';
@@ -23,20 +25,22 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 // axios.defaults.headers.common.Authorization = `Bearer ${getTokenFromState()}`;
 
 axios.defaults.headers.common['X-Version'] = '2.0';
-
 // axios.defaults.baseURL = 'https://localhost:7028/api';
-
 // axios.defaults.headers.post['Content-Type'] = 'application/json-patch+json';
 // axios.defaults.headers.post['Content-Type'] =
 // 'application/x-www-form-urlencoded';
 // axios.defaults.headers.get['Content-Type'] = 'application/json';
 // axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 // RESERVATION
-export default async function getReservationsAsync() {
+
+export default async function getReservationsAsync(params?: ReservationParams) {
   const response = await axios.get('/reservations', {
     // withCredentials: false,
     headers: {
       Authorization: `Bearer ${getTokenFromState()}`,
+    },
+    params: {
+      ...params,
     },
   });
 
@@ -129,7 +133,6 @@ export async function updateReservationAsync(
       },
     }
   );
-  console.log(response);
   return response;
 }
 
@@ -338,4 +341,17 @@ export async function GetTablesAsync(sittingId: number | null = null) {
   });
 
   return response.data.tables;
+}
+
+export async function UpdateTableAsync(id: number, table: Table) {
+  const response = await axios.put(
+    `/tables/${id}`,
+    { ...table },
+    {
+      headers: {
+        Authorization: `Bearer ${getTokenFromState()}`,
+      },
+    }
+  );
+  return response;
 }

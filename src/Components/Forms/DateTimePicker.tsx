@@ -1,12 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import {
+  Box,
   createTheme,
   StyledEngineProvider,
   TextField,
   ThemeProvider,
 } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 
@@ -25,6 +26,32 @@ export default function BasicDateTimePicker({ label, value, onChange }: any) {
               onChange(newValue);
             }}
           />
+        </LocalizationProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
+  );
+}
+
+export function BasicDateRangePicker({ label, value, onChange }: any) {
+  return (
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={defaultTheme}>
+        <LocalizationProvider
+          dateAdapter={AdapterDayjs}
+          localeText={{ start: 'From', end: 'To' }}
+        >
+          {/* <DateRangePicker
+            label={label}
+            value={value}
+            onChange={onChange}
+            renderInput={(startProps, endProps) => (
+              <>
+                <TextField {...startProps} />
+                <Box sx={{ mx: 2 }}> to </Box>
+                <TextField {...endProps} />
+              </>
+            )}
+          /> */}
         </LocalizationProvider>
       </ThemeProvider>
     </StyledEngineProvider>

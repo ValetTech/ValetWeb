@@ -85,7 +85,7 @@ function App() {
 
     setActiveId(null);
   }
-}
+} 
 
 export default function AreaDesigner() {
   const form = useForm<Area>({

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/jsx-no-bind */
 
@@ -8,7 +9,7 @@ import {
   useDraggable,
 } from '@dnd-kit/core';
 import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers';
-import { Center, createStyles, Grid, Text } from '@mantine/core';
+import { Button, Center, createStyles, Grid, Text } from '@mantine/core';
 import { useListState, useScrollLock, useViewportSize } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -23,6 +24,7 @@ import getReservationsAsync, {
   getAreasAsync,
   getSittingsAsync,
   GetTablesAsync,
+  UpdateTableAsync,
 } from '../Services/ApiServices';
 
 export const styles = createStyles((theme) => ({
@@ -170,34 +172,36 @@ export default function TablesPage() {
   const [tables, setTables] = useState<Table[] | null>(null);
 
   const [sittings, setSittings] = useState<Sitting[]>([]);
-  const [areas, setAreas] = useState<Area[]>([
-    {
-      id: 1,
-      name: 'Area 1',
-      venueId: 1,
-      width: 10,
-      height: 10,
-    },
-    {
-      id: 2,
-      name: 'Area 2',
-      venueId: 1,
-      width: 10,
-      height: 10,
-    },
-    {
-      id: 3,
-      name: 'Area 3',
-      venueId: 1,
-      width: 10,
-      height: 10,
-    },
-  ]);
+  const [areas, setAreas] = useState<Area[]>([]);
   const { height, width } = useViewportSize();
   const [scrollLocked, setScrollLocked] = useScrollLock();
-  const [activeId, setActiveId] = useState(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeItem, setActiveItem] = useState<Reservation | Table | null>(
+    null
+  );
   const [activeReservation, setActiveReservation] =
     useState<Reservation | null>(null);
+  const [activeTable, setActiveTable] = useState<Table | null>(null);
+
+  function UpdateTable(table: Table) {
+    const newTables = tables?.map((t) => {
+      if (t.id === table.id) {
+        return table;
+      }
+      return t;
+    });
+    setTables(newTables ?? null);
+    console.log('update table', table);
+
+    UpdateTableAsync(table.id ?? 0, table)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+        ErrorNotification(err.message);
+      });
+  }
 
   useEffect(() => {
     // Add param for future only
@@ -232,7 +236,13 @@ export default function TablesPage() {
   }, []);
 
   useEffect(() => {
-    setActiveReservation(reservations.find((r) => r.id === activeId) ?? null);
+    const [type, id] = activeId?.split('-', 2) || [null, null];
+    // setActiveItem(reservations.find((r) => r.id === activeId) ?? null);
+    if (type === 'reservation') {
+      setActiveItem(reservations.find((r) => r.id?.toString() === id) ?? null);
+    } else if (type === 'table') {
+      setActiveItem(tables?.find((t) => t.id?.toString() === id) ?? null);
+    }
   }, [activeId]);
 
   // const [tables, setTables] = useState<BoxSpec[]>([]);
@@ -259,14 +269,6 @@ export default function TablesPage() {
         ErrorNotification(error.message);
       });
   }
-  function handleDragEnd(event: any) {
-    setActiveId(null);
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      console.log('active', active);
-      console.log('over', over);
-    }
-  }
 
   useEffect(() => {
     loadReservations();
@@ -282,6 +284,45 @@ export default function TablesPage() {
         ErrorNotification(error.message);
       });
   }, [selectedSitting]);
+
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    setActiveId(null);
+    if (active.id !== over.id) {
+      console.log('active', active);
+      console.log('over', over);
+    }
+    console.log(
+      'event',
+      over && over.data.current.accepts.includes(active.data.current.type)
+    );
+
+    if (over && over.data.current.accepts.includes(active.data.current.type)) {
+      const [type, id] = active?.id?.split('-', 2) || [null, null];
+      console.log('type', active?.id?.split('-', 2));
+
+      if (type === 'reservation') {
+        const reservation = reservations.find((r) => r.id?.toString() === id);
+        if (reservation) {
+          setActiveReservation(reservation);
+        }
+      }
+      if (type === 'table') {
+        const table = tables?.find((t) => t.id?.toString() === id);
+        console.log('table', table);
+
+        const [x, y] = over?.id?.split(',', 2) || [null, null];
+        console.log('x,y', x, y);
+
+        if (table && x && y) {
+          table.xPosition = x;
+          table.yPosition = y;
+          UpdateTable(table);
+        }
+      }
+    }
+  }
 
   return (
     // <DndContext
@@ -314,9 +355,6 @@ export default function TablesPage() {
               <Text size="xl" weight={500} className="pr-8">
                 Tables View
               </Text>
-              <Draggable key={1} index={1} id={1} draggableId={1} data={1}>
-                Something
-              </Draggable>
             </Center>
           </Grid.Col>
           <Grid.Col span={12}>
@@ -348,16 +386,15 @@ export default function TablesPage() {
       </div>
       <DragOverlay className="w-32 h-32 ">
         {activeId ? (
-          <div className="p-2 ">
-            <Text className="pr-2" size="sm">
-              {activeReservation?.customer?.fullName ?? ''}
-            </Text>
-            <Text size="sm">
-              {dayjs(activeReservation?.dateTime).format('h:mm A - D MMM YY') ??
-                ''}
-            </Text>
-            <Text size="sm">{activeReservation?.tables?.length} tables</Text>
-          </div>
+          <Button>
+            <div className="flex flex-col justify-between">
+              <div>{activeItem?.type ?? activeItem?.customer?.fullName}</div>
+              <div>
+                {activeItem?.capacity ??
+                  dayjs(activeItem?.dateTime).format('h:mm A - D MMM YY')}
+              </div>
+            </div>
+          </Button>
         ) : null}
       </DragOverlay>
     </DndContext>

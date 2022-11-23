@@ -12,6 +12,8 @@ import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
 import Table from '../../Models/Table';
+import AreaDesigner from '../Area/AreaDesigner';
+import { Draggable } from './TableSideBar';
 
 // TODO - Nav | Area | Date | Sitting |
 // TODO - Area []
@@ -20,6 +22,7 @@ import Table from '../../Models/Table';
 interface ViewHeaderProps {
   areas: Area[];
   selectedArea: Area | null;
+  selectedSitting: Sitting | null;
   selectArea: (area: Area | null) => void;
 }
 
@@ -51,39 +54,53 @@ function CreateSegement({
   };
 }
 
-function ViewHeader({ areas, selectedArea, selectArea }: ViewHeaderProps) {
-  const addAreaSegement = { label: 'Add Area', value: '0' };
+function ViewHeader({
+  areas,
+  selectedSitting,
+  selectedArea,
+  selectArea,
+}: ViewHeaderProps) {
+  const addAreaSegment = { label: 'Add Area', value: '0' };
   const [data, setData] = useState<SegmentedControlItem[] | string[]>([
-    // { label: 'No Areas', value: '-1' },
     { label: 'Add Area', value: '0' },
   ]);
 
   useEffect(() => {
-    console.log('Data', data);
-  }, [data]);
+    const activeAreas =
+      areas.filter((area) =>
+        selectedSitting?.areas
+          ?.map((a) => a.id.toString())
+          .includes(area?.id?.toString())
+      ) ?? [];
 
-  useEffect(() => {
-    console.log('Areas: ', areas);
-    if (areas.length > 1) {
-      setData(
-        areas
-          .map(({ id, name }) => ({ label: name, value: id?.toString() ?? '' }))
-          .concat({ label: 'Add Area', value: '0' })
-      );
+    if (!activeAreas || !activeAreas?.length) {
+      selectArea(null);
+      setData([addAreaSegment]);
+      return;
     }
+    setData(
+      activeAreas
+        .map(({ id, name }) => ({
+          label: name,
+          value: id?.toString() ?? '',
+        }))
+        .concat({ label: 'Add Area', value: '0' })
+    );
+  }, [selectedSitting, areas]);
 
-    // setData(
-    //   (areas.length ? areas : [{ name: 'No Areas', id: -1 }])
-    //     ?.map((area) => ({
-    //       label: area?.name,
-    //       value: area?.id?.toString() ?? '',
-    //     }))
-    //     .concat([{ label: 'Add Area', value: '0' }])
-    // );
-  }, [areas]);
-  useEffect(() => {
-    console.log('SelectedArea: ', selectedArea);
-  }, [selectedArea]);
+  // useEffect(() => {
+  //   console.log('Areas: ', areas);
+  //   if (areas.length > 1) {
+  //     setData(
+  //       areas
+  //         .map(({ id, name }) => ({ label: name, value: id?.toString() ?? '' }))
+  //         .concat({ label: 'Add Area', value: '0' })
+  //     );
+  //   }
+  // }, [areas]);
+  // useEffect(() => {
+  //   console.log('SelectedArea: ', selectedArea);
+  // }, [selectedArea]);
 
   return (
     <div className="flex flex-row justify-between z-50">
@@ -91,7 +108,7 @@ function ViewHeader({ areas, selectedArea, selectArea }: ViewHeaderProps) {
         transitionDuration={500}
         transitionTimingFunction="linear"
         data={data}
-        value={selectedArea?.id?.toString() ?? undefined}
+        value={selectedArea?.id?.toString() ?? '0'}
         onChange={(value) =>
           +value > 0
             ? selectArea(areas?.find((a) => a.id?.toString() === value) ?? null)
@@ -103,18 +120,42 @@ function ViewHeader({ areas, selectedArea, selectArea }: ViewHeaderProps) {
   );
 }
 
-export function Droppable(props) {
-  const { isOver, setNodeRef } = useDroppable({
-    id: props.id,
+export function Droppable({
+  id,
+  accepts,
+  children,
+}: {
+  id: string;
+  accepts: string[];
+  children: any;
+}) {
+  const { isOver, setNodeRef, over, active } = useDroppable({
+    id,
+    data: { accepts },
   });
   const style = {
-    color: isOver ? 'green' : undefined,
-    background: isOver ? 'green' : undefined,
+    color:
+      isOver &&
+      over?.data?.current?.accepts?.includes(active?.data?.current?.type)
+        ? 'green'
+        : undefined,
+    background:
+      isOver &&
+      over?.data?.current?.accepts?.includes(active?.data?.current?.type)
+        ? 'green'
+        : undefined,
+    backgroundColor:
+      isOver &&
+      over?.data?.current?.accepts?.includes(active?.data?.current?.type)
+        ? 'green'
+        : undefined,
   };
+  // if (over && over.data.current.accepts.includes(active.data.current.type)) {
+  // }
 
   return (
     <div ref={setNodeRef} style={style}>
-      {props.children}
+      {children}
     </div>
   );
 }
@@ -160,57 +201,89 @@ export default function TableView({
         areas={sittingAreas ?? areas}
         selectedArea={selectedArea}
         selectArea={setSelectedArea}
+        selectedSitting={selectedSitting}
       />
+      {selectedArea?.id ? (
+        <div>
+          <Grid
+            gutter={0}
+            className="w-full border  z-0"
+            grow
+            columns={selectedArea?.width ?? 12}
+          >
+            {Array(selectedArea?.width ?? 12)
+              .fill(0)
+              .map((_, x) => (
+                <Grid.Col key={x} span={1}>
+                  {Array(selectedArea?.height ?? 12)
+                    .fill(0)
+                    .map((_, y) => (
+                      <Droppable
+                        key={`${x},${y}`}
+                        id={`${x},${y}`}
+                        accepts={['table']}
+                      >
+                        <div key={y} className="h-10 w-full  border  z-0">
+                          {tables
+                            ?.filter(
+                              (table) =>
+                                table?.areaId === selectedArea?.id &&
+                                table?.xPosition === x &&
+                                table?.yPosition === y
+                            )
+                            ?.map((table) => (
+                              <TableDnD key={table.id} table={table} />
+                            ))}
+                        </div>
+                      </Droppable>
+                    ))}
+                </Grid.Col>
+              ))}
+          </Grid>
+          {tables?.length ? (
+            tables
+              ?.filter(
+                (table) =>
+                  table?.areaId === selectedArea?.id &&
+                  (table?.xPosition === -1 || table?.yPosition === 1)
+              )
+              ?.map((table) => <TableDnD key={table.id} table={table} />)
+          ) : (
+            <Button>Add Table</Button>
+          )}
+        </div>
+      ) : (
+        <AreaDesigner />
+      )}
 
-      <Grid
-        gutter={0}
-        className="w-full border  z-0"
-        grow
-        columns={selectedArea?.width ?? 12}
-      >
-        {Array(selectedArea?.width ?? 12)
-          .fill(0)
-          .map((_, x) => (
-            <Grid.Col key={x} span={1} className=" z-0">
-              {Array(selectedArea?.height ?? 12)
-                .fill(0)
-                .map((_, y) => (
-                  <Droppable
-                    key={`${x},${y}`}
-                    id={`${x},${y}`}
-                    zIndex={0}
-                    className=""
-                  >
-                    <div
-                      key={y}
-                      className="h-10 w-full bg-[#FFB703] border  z-0"
-                    >
-                      {/* {`${x},${y}`} */}
-                      {`${tables
-                        ?.filter(
-                          (table) =>
-                            table?.areaId === selectedArea?.id &&
-                            table?.xPosition === x &&
-                            table?.yPosition === y
-                        )
-                        .map((table) => table?.type)}`}
-                    </div>
-                  </Droppable>
-                ))}
-            </Grid.Col>
-          ))}
-      </Grid>
-
-      {/* <Area /> */}
-      {selectedArea?.tables?.map((table) => (
-        // We updated the Droppable component so it would accept an `id`
-        // prop and pass it to `useDroppable`
-        <Droppable key={table.id} id={table.id}>
-          {/* {parent === id ? draggableMarkup : 'Drop here'} */}
-          drop here
-        </Droppable>
-      ))}
       {/* <Skeleton className="h-full w-full" radius="md" animate={false} /> */}
     </div>
+  );
+}
+
+function TableDnD({ table }: { table: Table }) {
+  return (
+    <Draggable
+      key={`table-${table.id}`}
+      id={`table-${table.id}`}
+      // data={table}
+      type="table"
+    >
+      <Droppable
+        key={`table${table.id}`}
+        id={`table${table.id}`}
+        accepts={['reservation']}
+      >
+        <Button>
+          <div className="flex flex-col justify-between">
+            <div>{table?.type}</div>
+            <div>
+              {table?.xPosition},{table?.yPosition}
+            </div>
+            <div>{table?.capacity} Seats</div>
+          </div>
+        </Button>
+      </Droppable>
+    </Draggable>
   );
 }

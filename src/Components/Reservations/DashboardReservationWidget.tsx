@@ -1,58 +1,70 @@
-// Components
-// #region
 import {
   Button,
   Card,
   Container,
+  Divider,
   Group,
+  MultiSelect,
   Select,
-  SimpleGrid,
   Title,
-  UnstyledButton,
 } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
-import { useEffect, useRef, useState } from 'react';
-import CreateReservationModal from '../Forms/CreateReservation';
-import ReservationTableStickyHeader from '../Tables/ReservationTableStickyHeader';
-// #endregion
-
-// Models
-// #region
+import { DateRangePicker, DateRangePickerValue } from '@mantine/dates';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import Reservation from '../../Models/Reservation';
+import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
-// #endregion
+import { getReservationByDateAsync } from '../../Services/ApiServices';
+import CreateReservationModal from '../Forms/CreateReservation';
 
-// Services
-// #region
-import {
-  getAreasAsync,
-  getReservationByDateAsync,
-  getSittingsAsync,
-} from '../../Services/ApiServices';
-// #endregion
+enum State {
+  Pending,
+  Confirmed,
+  Cancelled,
+  Assigned,
+  Seated,
+  Completed,
+}
+interface DashboardWidgetProps {
+  reservations: Reservation[];
+  areas: Area[];
+  sittings: Sitting[];
+  params: ReservationParams;
+  setParams: (params: ReservationParams) => void;
+  children?: React.ReactNode;
+}
 
-export default function DashboardReservationWidget() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+export default function DashboardReservationWidget({
+  reservations,
+  areas,
+  sittings,
+  params,
+  setParams,
+  children,
+}: DashboardWidgetProps) {
+  // UPDATED
+  const [dateRange, setDateRange] = useState<DateRangePickerValue>([
+    null,
+    null,
+  ]);
+  const [selectedAreas, setSelectedAreas] = useState<string[] | null>([]);
+  const [selectedSittings, setSelectedSittings] = useState<string[] | null>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string[] | null>([]);
+  const [states, setStates] = useState<string[]>(
+    Object.keys(State).filter((key) => Number.isNaN(Number(key)))
+  );
+
   const [areaData, setAreaData] = useState<Area[]>([]);
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [sittingData, setSittingData] = useState<Sitting[]>([]);
-  const [reservationData, setReservationData] = useState<Reservation[]>([]);
+  const [reservationData, setReservationData] =
+    useState<Reservation[]>(reservations);
   const [filteredReservationData, setFilteredReservationData] = useState<
     Reservation[]
   >([]);
   const [createModalOpened, setCreateModalOpened] = useState(false);
-  const [selectedArea, setSelectedArea] = useState(undefined);
-  const [selectedSitting, setSelectedSitting] = useState(undefined);
-
-  const sittingDropdown = useRef<HTMLSelectElement>(null);
-  function resetSittingDropdown() {
-    sittingDropdown.current.value = null;
-  }
-
-  const areaDropdown = useRef<HTMLSelectElement>(null);
-  function resetAreaDropdown() {
-    areaDropdown.current.value = null;
-  }
 
   // useEffect(() => {
   //   resetSittingDropdown();
@@ -61,19 +73,6 @@ export default function DashboardReservationWidget() {
   function onCloseCreateModal() {
     setCreateModalOpened(false);
   }
-
-  useEffect(() => {
-    async function fetchAreas() {
-      const res: Area[] = await getAreasAsync();
-      setAreaData(res);
-    }
-    fetchAreas();
-    async function fetchSittings() {
-      const res: Sitting[] = await getSittingsAsync();
-      setSittingData(res);
-    }
-    fetchSittings();
-  }, []);
 
   useEffect(() => {
     // Formatting date for url query. For some reason getMonth returns an incorrect number (e.g. october is 9) so have to do + 1.
@@ -89,32 +88,6 @@ export default function DashboardReservationWidget() {
     fetchReservations();
   }, [selectedDate]);
 
-  useEffect(() => {
-    if (selectedArea === undefined || selectedSitting === undefined) {
-      resetAreaDropdown();
-      resetSittingDropdown();
-    }
-    if (selectedArea !== undefined && selectedSitting !== undefined) {
-      const filteredReservations = reservationData.filter((reservation) => {
-        return (
-          reservation.areaId === selectedArea &&
-          reservation.sittingId === selectedSitting
-        );
-      });
-      setFilteredReservationData(filteredReservations);
-    } else if (selectedArea !== undefined && selectedSitting === undefined) {
-      const filteredReservations = reservationData.filter((reservation) => {
-        return reservation.areaId === selectedArea;
-      });
-      setFilteredReservationData(filteredReservations);
-    } else if (selectedArea === undefined && selectedSitting !== undefined) {
-      const filteredReservations = reservationData.filter((reservation) => {
-        return reservation.sittingId === selectedSitting;
-      });
-      setFilteredReservationData(filteredReservations);
-    }
-  }, [selectedArea, selectedSitting]);
-
   // useEffect(() => {
   //   console.log(selectedSitting);
   //   const filteredReservations = reservationData.filter((reservation) => {
@@ -125,86 +98,35 @@ export default function DashboardReservationWidget() {
 
   // Mapping the data so that it can be displayed in <Select> component.
   // Name of sitting will be displayed in select, but it will return the ID number.
-  const sittings = sittingData.map((s) => ({
-    label: s.type,
-    value: s.id,
-  }));
+
   // Name of area will be displayed in select, but it will return the ID number.
-  const areas = areaData.map((a) => ({
-    label: a.name,
-    value: a.id,
-  }));
   // Mapping reservation data for table
-  function mapReservationData() {
-    if (selectedArea === undefined && selectedSitting === undefined) {
-      const reservations = reservationData.map((r) => ({
-        key: r.id,
-        name: r.customer.fullName,
-        phone: r.customer.phone,
-        dateTime: r.dateTime,
-      }));
-      return reservations;
-    }
-    const reservations = filteredReservationData.map((r) => ({
-      key: r.id,
-      name: r.customer.fullName,
-      phone: r.customer.phone,
-      dateTime: r.dateTime,
-    }));
-    return reservations;
-  }
+
   // TODO FIX LAYOUT
+
+  // FILTER RESERVATIONS
+  useEffect(() => {
+    const reservationParams: ReservationParams = {
+      // areaId: selectedArea,
+      // sittingId: selectedSitting,
+      MinDate: dateRange[0]
+        ? dayjs(dateRange[0])?.startOf('day').toISOString()
+        : undefined,
+      MaxDate: dateRange[1]
+        ? dayjs(dateRange[1])?.endOf('day').toISOString()
+        : undefined,
+      Status: selectedStatus ?? undefined,
+      Areas: selectedAreas?.join(',') ?? undefined,
+      Sittings: selectedSittings?.join(',') ?? undefined,
+    };
+    setParams(reservationParams);
+  }, [selectedAreas, selectedSittings, selectedStatus, dateRange]);
+
   return (
     <Container mt={6}>
-      <Card withBorder radius="md">
-        <Title size="h4" mb={10}>
-          Reservations
-        </Title>
-        <DatePicker
-          dropdownType="modal"
-          placeholder="Pick date"
-          value={selectedDate}
-          onChange={(value) => setSelectedDate(value || new Date())}
-        />
-        <SimpleGrid cols={2} mb={30}>
-          <Title size="h4" mt={30} mb={10}>
-            Filter by area
-          </Title>
-          <Select
-            ref={areaDropdown}
-            data={areas}
-            onChange={(value) => {
-              setSelectedArea(value);
-            }}
-          />
-          <Title size="h5"></Title>
-          <UnstyledButton
-            onClick={() => {
-              setSelectedArea(undefined);
-              setSelectedSitting(undefined);
-            }}
-          >
-            <Title mt={10} size="h6">
-              Clear Filters
-            </Title>
-          </UnstyledButton>
-          <Title size="h4" mt={30} mb={10}>
-            Filter by sitting
-          </Title>
-          <Select
-            ref={sittingDropdown}
-            data={sittings}
-            onChange={(value) => {
-              setSelectedSitting(value);
-            }}
-          />
-        </SimpleGrid>
-        <ReservationTableStickyHeader
-          data={mapReservationData()}
-          sittingData={sittingData}
-          areaData={areas}
-        />
-        <Group mt={20} position="left">
+      <Card withBorder radius="md" className="h-full">
+        <div className="w-full flex justify-between mb-5">
+          <Title order={3}>Reservations</Title>
           <Button
             className="bg-[#FFB703]"
             size="lg"
@@ -212,6 +134,57 @@ export default function DashboardReservationWidget() {
           >
             Create
           </Button>
+        </div>
+        <Divider className="mb-5" />
+        <div className="w-full flex flex-col xs:flex-row flex-grow mb-5">
+          <div className="w-1/2 xs:mr-5">
+            <Title size="h4">Date</Title>
+            <DateRangePicker
+              clearable
+              placeholder="Select Date Range"
+              value={dateRange}
+              onChange={setDateRange}
+            />
+          </div>
+          <div className="w-1/2">
+            <Title size="h4">Status</Title>
+            <Select
+              clearable
+              placeholder="Select Status"
+              // data={Object.values(State)}
+              data={states}
+              onChange={(values) => {
+                setSelectedStatus(values ?? null);
+              }}
+            />
+          </div>
+        </div>
+        <div className="w-full flex flex-col xs:flex-row flex-grow mb-5">
+          <div className="w-1/2 xs:mr-5">
+            <Title size="h4">Filter by Areas</Title>
+            <MultiSelect
+              clearable
+              placeholder="Select Areas"
+              data={[...new Set(areas.map((a) => a.name))]}
+              onChange={(values) => {
+                setSelectedAreas(values ?? null);
+              }}
+            />
+          </div>
+          <div className="w-1/2">
+            <Title size="h4">Filter by Sitting types</Title>
+            <MultiSelect
+              clearable
+              placeholder="Select Sittings"
+              data={[...new Set(sittings.map((s) => s.type))]}
+              onChange={(values) => {
+                setSelectedSittings(values ?? null);
+              }}
+            />
+          </div>
+        </div>
+        {children}
+        <Group mt={20} position="left">
           <CreateReservationModal
             areaData={areaData}
             sittingData={sittingData}
