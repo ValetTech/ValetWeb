@@ -185,16 +185,17 @@ export default function TablesPage() {
   const [activeTable, setActiveTable] = useState<Table | null>(null);
 
   function UpdateTable(table: Table) {
+    const { reservation, area, ...newTable } = table;
     const newTables = tables?.map((t) => {
       if (t.id === table.id) {
-        return table;
+        return newTable;
       }
       return t;
     });
     setTables(newTables ?? null);
     console.log('update table', table);
 
-    UpdateTableAsync(table.id ?? 0, table)
+    UpdateTableAsync(table.id ?? 0, newTable)
       .then((res) => {
         console.log(res);
       })
