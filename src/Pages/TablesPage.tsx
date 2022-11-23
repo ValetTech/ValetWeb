@@ -10,7 +10,12 @@ import {
 } from '@dnd-kit/core';
 import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Button, Center, createStyles, Grid, Text } from '@mantine/core';
-import { useListState, useScrollLock, useViewportSize } from '@mantine/hooks';
+import {
+  useForceUpdate,
+  useListState,
+  useScrollLock,
+  useViewportSize,
+} from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import ErrorNotification from '../Components/Notifications/NotifyError';
@@ -171,6 +176,7 @@ export default function TablesPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [selectedSitting, setSelectedSitting] = useState<Sitting | null>(null);
   const [tables, setTables] = useState<Table[] | null>(null);
+  const forceUpdate = useForceUpdate();
 
   const [sittings, setSittings] = useState<Sitting[]>([]);
   const [areas, setAreas] = useState<Area[]>([]);
@@ -203,6 +209,7 @@ export default function TablesPage() {
         console.log(err);
         ErrorNotification(err.message);
       });
+    forceUpdate();
   }
 
   useEffect(() => {
@@ -318,6 +325,7 @@ export default function TablesPage() {
             console.log(err);
             ErrorNotification(err.message);
           });
+        forceUpdate();
       }
       if (type === 'table') {
         const table = tables?.find((t) => t.id?.toString() === id);

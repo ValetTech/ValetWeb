@@ -39,43 +39,20 @@ import { BasicDateTimePickerNew } from './DateTimePicker';
 interface CreateReservationModalProps {
   opened: boolean;
   onClose(): void;
-  sittingData: Sitting[];
-  areaData: Area[];
+  sittingsData: Sitting[];
+  areasData: Area[];
 }
 // #endregion
 
 export default function CreateReservationModal({
   opened,
   onClose,
-  sittingData,
-  areaData,
+  areasData,
+  sittingsData,
 }: CreateReservationModalProps) {
   // const [datePickerValue, setDatePickerValue] = useState(new Date());
   // const [timePickerValue, setTimePickerValue] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
-
-  // function getDateTime(date: Date, time: Date) {
-  //   console.log(`${date.getFullYear()}-${date.getMonth()}-${date.getDay()}T`);
-  //   // console.log(date);
-  //   // console.log(time);
-  //   // return `${date.toISOString().substring(0, 9)}${time
-  //   //   .toISOString()
-  //   //   .substring(10, time.toString().length)}`;
-  // }
-
-  // function getDateTimeString() {
-  //   const dateTime = dayjs(
-  //     new Date(
-  //       datePickerValue.getFullYear(),
-  //       datePickerValue.getMonth(),
-  //       datePickerValue.getDate(),
-  //       timePickerValue.getHours(),
-  //       timePickerValue.getMinutes(),
-  //       timePickerValue.getSeconds()
-  //     )
-  //   );
-  //   console.log(dateTime);
-  // }
 
   const form = useForm({
     initialValues: {
@@ -104,12 +81,12 @@ export default function CreateReservationModal({
   });
 
   // Name of sitting will be displayed in select, but it will return the ID number.
-  const sittings = sittingData.map((s) => ({
+  const sittings = sittingsData.map((s) => ({
     label: s.type,
     value: s.id,
   }));
 
-  const areas = areaData.map((a) => ({
+  const areas = areasData.map((a) => ({
     label: a.name,
     value: a.id,
   }));

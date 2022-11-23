@@ -58,9 +58,6 @@ export default function DashboardReservationWidget({
   const [areaData, setAreaData] = useState<Area[]>([]);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [sittingData, setSittingData] = useState<Sitting[]>([]);
-  const [reservationData, setReservationData] =
-    useState<Reservation[]>(reservations);
   const [filteredReservationData, setFilteredReservationData] = useState<
     Reservation[]
   >([]);
@@ -186,8 +183,8 @@ export default function DashboardReservationWidget({
         {children}
         <Group mt={20} position="left">
           <CreateReservationModal
-            areaData={areaData}
-            sittingData={sittingData}
+            areasData={areas}
+            sittingsData={sittings}
             opened={createModalOpened}
             onClose={() => onCloseCreateModal()}
           />
