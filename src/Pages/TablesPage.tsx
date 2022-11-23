@@ -20,6 +20,7 @@ import Reservation from '../Models/Reservation';
 import Sitting from '../Models/Sitting';
 import Table from '../Models/Table';
 import getReservationsAsync, {
+  getAreasAsync,
   getSittingsAsync,
   GetTablesAsync,
 } from '../Services/ApiServices';
@@ -208,6 +209,14 @@ export default function TablesPage() {
       })
       .catch((error) => {
         // ErrorNotification('Could not get sittings');
+        ErrorNotification(error.message);
+      });
+
+    getAreasAsync()
+      .then((response: Area[]) => {
+        setAreas(response);
+      })
+      .catch((error) => {
         ErrorNotification(error.message);
       });
 

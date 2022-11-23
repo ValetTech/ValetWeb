@@ -1,5 +1,12 @@
 import { useDroppable } from '@dnd-kit/core';
-import { Button, Grid, SegmentedControl } from '@mantine/core';
+import {
+  Button,
+  Center,
+  Grid,
+  SegmentedControl,
+  SegmentedControlItem,
+  Tooltip,
+} from '@mantine/core';
 import type {} from '@mui/x-date-pickers/themeAugmentation';
 import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
@@ -16,43 +23,81 @@ interface ViewHeaderProps {
   selectArea: (area: Area | null) => void;
 }
 
+function CreateSegement({
+  id,
+  name,
+  description,
+}: {
+  id: number | undefined;
+  name: string;
+  description: string | undefined;
+}) {
+  return {
+    label: (
+      // <div className="">
+      <Center>
+        <Tooltip
+          withArrow
+          label={description ?? 'Add an area to Sitting'}
+          position="top"
+        >
+          {/* <IconEye size={16} /> */}
+          <Button ml={10}>{name}</Button>
+        </Tooltip>
+      </Center>
+      // </div>
+    ),
+    value: id?.toString() ?? '',
+  };
+}
+
 function ViewHeader({ areas, selectedArea, selectArea }: ViewHeaderProps) {
+  const addAreaSegement = { label: 'Add Area', value: '0' };
+  const [data, setData] = useState<SegmentedControlItem[] | string[]>([
+    // { label: 'No Areas', value: '-1' },
+    { label: 'Add Area', value: '0' },
+  ]);
+
+  useEffect(() => {
+    console.log('Data', data);
+  }, [data]);
+
   useEffect(() => {
     console.log('Areas: ', areas);
+    if (areas.length > 1) {
+      setData(
+        areas
+          .map(({ id, name }) => ({ label: name, value: id?.toString() ?? '' }))
+          .concat({ label: 'Add Area', value: '0' })
+      );
+    }
+
+    // setData(
+    //   (areas.length ? areas : [{ name: 'No Areas', id: -1 }])
+    //     ?.map((area) => ({
+    //       label: area?.name,
+    //       value: area?.id?.toString() ?? '',
+    //     }))
+    //     .concat([{ label: 'Add Area', value: '0' }])
+    // );
   }, [areas]);
   useEffect(() => {
     console.log('SelectedArea: ', selectedArea);
   }, [selectedArea]);
 
   return (
-    <div className="flex flex-row justify-between">
-      {areas.length ? (
-        <SegmentedControl
-          data={
-            areas.length
-              ? areas?.map((area) => ({
-                  label: area?.name ?? 'AREA',
-                  value: area?.id?.toString() ?? '0',
-                }))
-              : [
-                  { label: 'All', value: '0' },
-                  { label: 'Area 1', value: '1' },
-                  { label: 'Area 2', value: '2' },
-                  { label: 'Area 2', value: '3' },
-                ]
-          }
-          value={selectedArea?.id?.toString() ?? undefined}
-          onChange={(value) =>
-            selectArea(
-              areas?.find((area) => area?.id?.toString() === value) ?? null
-            )
-          }
-        />
-      ) : (
-        <Button variant="outline" className="bg-[#FFB703] ml-5">
-          Add Area
-        </Button>
-      )}
+    <div className="flex flex-row justify-between z-50">
+      <SegmentedControl
+        transitionDuration={500}
+        transitionTimingFunction="linear"
+        data={data}
+        value={selectedArea?.id?.toString() ?? undefined}
+        onChange={(value) =>
+          +value > 0
+            ? selectArea(areas?.find((a) => a.id?.toString() === value) ?? null)
+            : selectArea(null)
+        }
+      />
       {/* <BasicDateTimePicker /> */}
     </div>
   );
@@ -77,7 +122,7 @@ export function Droppable(props) {
 interface TableViewProps {
   areas: Area[];
   selectedSitting: Sitting | null;
-  tables: Table[];
+  tables: Table[] | null;
   // selectedArea: Area;
   // selectArea: (area: Area) => void;
 }
@@ -119,20 +164,28 @@ export default function TableView({
 
       <Grid
         gutter={0}
-        className="w-full border"
+        className="w-full border  z-0"
         grow
         columns={selectedArea?.width ?? 12}
       >
         {Array(selectedArea?.width ?? 12)
           .fill(0)
           .map((_, x) => (
-            <Grid.Col key={x} span={1}>
+            <Grid.Col key={x} span={1} className=" z-0">
               {Array(selectedArea?.height ?? 12)
                 .fill(0)
                 .map((_, y) => (
-                  <Droppable key={`${x},${y}`} id={`${x},${y}`}>
-                    <div key={y} className="h-10 w-full bg-[#FFB703] border">
-                      {`${x},${y}`}
+                  <Droppable
+                    key={`${x},${y}`}
+                    id={`${x},${y}`}
+                    zIndex={0}
+                    className=""
+                  >
+                    <div
+                      key={y}
+                      className="h-10 w-full bg-[#FFB703] border  z-0"
+                    >
+                      {/* {`${x},${y}`} */}
                       {`${tables
                         ?.filter(
                           (table) =>
