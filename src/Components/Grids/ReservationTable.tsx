@@ -1,12 +1,15 @@
 import {
   Button,
   Chip,
+  Pagination,
   ScrollArea,
   Select,
   Table,
   Tooltip,
 } from '@mantine/core';
+import { usePagination } from '@mantine/hooks';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 import Reservation from '../../Models/Reservation';
 
 enum State {
@@ -27,6 +30,9 @@ export default function ReservationTable({
   UpdateReservation,
 }: ReservationTableProps) {
   const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
+  const [page, onChange] = useState(1);
+  const pagination = usePagination({ total: 20, initialPage: 1 });
+  const [activePage, setPage] = useState(1);
 
   const rows = reservations.map((reservation) => (
     <tr key={reservation.id}>
@@ -85,19 +91,31 @@ export default function ReservationTable({
   ));
 
   return (
-    <ScrollArea style={{ minHeight: 200 }} className="mt-4 w-full h-full">
-      <Table sx={{ minWidth: 220 }} className="w-full">
-        <thead className="">
-          <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Time</th>
-            <th>Location</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
-    </ScrollArea>
+    <div className="w-full">
+      <ScrollArea style={{ minHeight: 200 }} className="mt-4 w-full h-full">
+        <Table sx={{ minWidth: 220 }} className="w-full">
+          <thead className="">
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Time</th>
+              <th>Location</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </Table>
+      </ScrollArea>
+      <Pagination
+        className="w-full"
+        grow
+        withEdges
+        page={activePage}
+        onChange={setPage}
+        siblings={1}
+        total={20}
+        boundaries={1}
+      />
+    </div>
   );
 }

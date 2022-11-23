@@ -85,7 +85,7 @@ function App() {
 
     setActiveId(null);
   }
-} 
+}
 
 export default function AreaDesigner() {
   const form = useForm<Area>({
@@ -219,7 +219,7 @@ export default function AreaDesigner() {
     <DndContext modifiers={[restrictToVerticalAxis]}>
       <DragOverlay modifiers={[restrictToWindowEdges]}>{}</DragOverlay>
       <form onSubmit={form.onSubmit(handleSubmit)} onReset={handleReset}>
-        <Container className="mt-2">
+        <Container className="">
           <h1>Area Designer</h1>
           <div className="flex flex-row w-full">
             <TextInput

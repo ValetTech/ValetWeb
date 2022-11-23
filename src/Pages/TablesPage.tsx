@@ -358,15 +358,11 @@ export default function TablesPage() {
         setActiveId(event.active?.id ?? null);
       }}
     >
-      <div className="h-full w-full xs:pl-0 my-5 mx-4">
+      <div className="h-full w-full xs:pl-0 mx-4">
         <Grid className="w-full">
           <Grid.Col span={12}>
-            <Center className="w-full ">
-              {/* Page Title */}
-              <Text size="xl" weight={500} className="pr-8">
-                Tables View
-              </Text>
-            </Center>
+            {/* Page Title */}
+            <h1 className="mt-0">Tables View</h1>
           </Grid.Col>
           <Grid.Col span={12}>
             <Grid gutter="xs">
