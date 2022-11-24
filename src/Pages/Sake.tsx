@@ -1,5 +1,61 @@
 import { Title } from '@mantine/core';
+import HeaderPrimary from '../Components/Sake/HeaderPrimary';
 
 export default function Sake() {
-  return <Title>Hello</Title>;
+  const links = [
+    {
+      link: '/about',
+      label: 'Features',
+    },
+    {
+      link: '#1',
+      label: 'Learn',
+      links: [
+        {
+          link: '/docs',
+          label: 'Documentation',
+        },
+        {
+          link: '/resources',
+          label: 'Resources',
+        },
+        {
+          link: '/community',
+          label: 'Community',
+        },
+        {
+          link: '/blog',
+          label: 'Blog',
+        },
+      ],
+    },
+    {
+      link: '/about',
+      label: 'About',
+    },
+    {
+      link: '/pricing',
+      label: 'Pricing',
+    },
+    {
+      link: '#2',
+      label: 'Support',
+      links: [
+        {
+          link: '/faq',
+          label: 'FAQ',
+        },
+        {
+          link: '/demo',
+          label: 'Book a demo',
+        },
+        {
+          link: '/forums',
+          label: 'Forums',
+        },
+      ],
+    },
+  ];
+
+  return <HeaderPrimary links={links} />;
 }
