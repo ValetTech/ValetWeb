@@ -10,7 +10,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Button, Center, createStyles, Grid, Text } from '@mantine/core';
-import { useForceUpdate, useListState, useViewportSize } from '@mantine/hooks';
+import { useListState } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import ErrorNotification from '../Components/Notifications/NotifyError';
@@ -19,6 +19,7 @@ import TableSideBar from '../Components/TableView/TableSideBar';
 import TableView from '../Components/TableView/TableView';
 import Area from '../Models/Area';
 import Reservation from '../Models/Reservation';
+import ReservationParams from '../Models/ReservationParams';
 import Sitting from '../Models/Sitting';
 import Table from '../Models/Table';
 import getReservationsAsync, {
@@ -173,18 +174,30 @@ export default function TablesPage() {
   const [reservationsData, setReservations] = useState<Reservation[]>([]);
   const [selectedSitting, setSelectedSitting] = useState<Sitting | null>(null);
   const [tables, setTables] = useState<Table[] | null>(null);
-  const forceUpdate = useForceUpdate();
+  const [params, setParams] = useState<ReservationParams>({
+    SittingId: selectedSitting?.id?.toString() ?? undefined,
+    MinDate: dayjs().add(-1, 'day').toISOString(),
+
+    SortBy: 'DateTime',
+  });
 
   const [sittings, setSittings] = useState<Sitting[]>([]);
   const [areas, setAreas] = useState<Area[]>([]);
-  const { height, width } = useViewportSize();
+
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<Reservation | Table | null>(
     null
   );
-  const [activeReservation, setActiveReservation] =
-    useState<Reservation | null>(null);
-  const [activeTable, setActiveTable] = useState<Table | null>(null);
+
+  function loadReservations() {
+    getReservationsAsync(params ?? {})
+      .then((response: Reservation[]) => {
+        setReservations(response);
+      })
+      .catch((error) => {
+        ErrorNotification(error.message);
+      });
+  }
 
   function UpdateTable(table: Table) {
     const { reservations, area, ...newTable } = table;
@@ -195,17 +208,13 @@ export default function TablesPage() {
       return t;
     });
     setTables(newTables ?? null);
-    console.log('update table', table);
 
     UpdateTableAsync(table.id ?? 0, newTable)
-      .then((res) => {
-        console.log(res);
-      })
+      .then(() => {})
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       });
-    forceUpdate();
+    loadReservations();
   }
 
   useEffect(() => {
@@ -249,7 +258,7 @@ export default function TablesPage() {
     } else if (type === 'table') {
       setActiveItem(tables?.find((t) => t.id?.toString() === id) ?? null);
     }
-  }, [activeId]);
+  }, [activeId, reservationsData, tables]);
 
   // const [tables, setTables] = useState<BoxSpec[]>([]);
 
@@ -265,22 +274,20 @@ export default function TablesPage() {
     };
   }
 
-  function loadReservations() {
-    getReservationsAsync()
-      .then((response: Reservation[]) => {
-        setReservations(response);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        ErrorNotification(error.message);
-      });
-  }
-
   useEffect(() => {
     loadReservations();
   }, []);
 
   useEffect(() => {
+    loadReservations();
+  }, [params]);
+
+  useEffect(() => {
+    setParams({
+      ...params,
+      SittingId: selectedSitting?.id?.toString() ?? undefined,
+    });
+
     GetTablesAsync(selectedSitting?.id)
       .then((response) => {
         setTables(response);
@@ -295,43 +302,29 @@ export default function TablesPage() {
     const { active, over } = event;
 
     setActiveId(null);
-    if (active.id !== over.id) {
-      console.log('active', active);
-      console.log('over', over);
-    }
-    console.log(
-      'event',
-      over && over.data.current.accepts.includes(active.data.current.type)
-    );
 
     if (over && over.data.current.accepts.includes(active.data.current.type)) {
       const [type, id] = active?.id?.split('-', 2) || [null, null];
-      console.log('type', active?.id?.split('-', 2));
 
       if (type === 'reservation') {
         const reservation = reservationsData.find(
           (r) => r.id?.toString() === id
         );
         const [_, tableId] = over?.id?.split('-', 2) || [null, null];
-        console.log('tableId', tableId);
 
         AddTableToReservationAsync(reservation?.id ?? 0, tableId)
           .then((res) => {
-            console.log(res);
             loadReservations();
           })
           .catch((err) => {
-            console.log(err);
             ErrorNotification(err.message);
           });
-        forceUpdate();
+        loadReservations();
       }
       if (type === 'table') {
         const table = tables?.find((t) => t.id?.toString() === id);
-        console.log('table', table);
 
         const [x, y] = over?.id?.split(',', 2) || [null, null];
-        console.log('x,y', x, y);
 
         if (table && x && y) {
           table.xPosition = x;
@@ -351,41 +344,25 @@ export default function TablesPage() {
       return s;
     });
     setSittings(newSittings);
-    console.log('update sitting', sitting);
 
     updateSittingAsync(sitting.id ?? 0, newSitting)
-      .then((response) => {
-        console.log(response);
+      .then(() => {
         UpdatedNotification();
       })
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       });
-    forceUpdate();
+    loadReservations();
   }
 
   return (
-    // <DndContext
-    //   collisionDetection={closestCenter}
-    //   autoScroll={false}
-    //   onDragEnd={({ active, over }) => {
-    //     if (active.id !== over?.id) {
-    //       setItems((items) => {
-    //         const oldIndex = items.findIndex((item) => item.id === active.id);
-    //         const newIndex = items.findIndex((item) => item.id === over?.id);
-    //         return moveItem(items, oldIndex, newIndex);
-    //       });
-    //     }
-    //   }}
-    // ></DndContext>
     <DndContext
       onDragEnd={handleDragEnd}
       collisionDetection={pointerWithin}
       modifiers={[restrictToWindowEdges, snapCenterToCursor]}
       autoScroll={false}
       onDragStart={(event) => {
-        setActiveId(event.active?.id ?? null);
+        setActiveId(event.active?.id?.toString() ?? null);
       }}
     >
       <div className="h-full w-full xs:pl-0 mx-4">
@@ -403,7 +380,10 @@ export default function TablesPage() {
                     data={reservationsData}
                     sittings={sittings}
                     selectedSitting={selectedSitting}
+                    areas={areas}
                     selectSitting={setSelectedSitting}
+                    params={params}
+                    setParams={setParams}
                   />
                 </div>
               </Grid.Col>
@@ -415,6 +395,8 @@ export default function TablesPage() {
                     areas={areas}
                     selectedSitting={selectedSitting}
                     updateSitting={UpdateSitting}
+                    params={params}
+                    setParams={setParams}
                   />
                 </Center>
               </Grid.Col>

@@ -10,6 +10,7 @@ import {
 import type {} from '@mui/x-date-pickers/themeAugmentation';
 import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
+import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
 import Table from '../../Models/Table';
 import AreaDesigner from '../Area/AreaDesigner';
@@ -204,6 +205,8 @@ interface TableViewProps {
   selectedSitting: Sitting | null;
   tables: Table[] | null;
   updateSitting: (sitting: Sitting) => void;
+  params: ReservationParams;
+  setParams: (params: ReservationParams) => void;
   // selectedArea: Area;
   // selectArea: (area: Area) => void;
 }
@@ -213,6 +216,8 @@ export default function TableView({
   selectedSitting,
   tables,
   updateSitting,
+  params,
+  setParams,
 }: TableViewProps) {
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [sittingAreas, setSittingAreas] = useState<Area[]>(areas);
@@ -221,25 +226,18 @@ export default function TableView({
   );
 
   useEffect(() => {
-    // const newAreas = areas?.map((area) => {
-    //   const newArea = { ...area };
-    //   newArea?.tables?.forEach((table) => {
-    //     table?.sittings?.forEach((sitting) => {
-    //       sitting?.reservations?.forEach((reservation) => {
-    //         reservation?.guests?.forEach((guest) => {
-    //           guest?.name = 'Guest';
-    //         });
-    //       });
-    //     });
-    //   });
-    //   return newArea;
-    // });
-    // setSittingAreas(newAreas);
     setAddAreas(
       selectedSitting?.areas?.map((area) => area?.id.toString()) ?? []
     );
     setSittingAreas(selectedSitting?.areas ?? areas);
   }, [areas, selectedSitting]);
+
+  useEffect(() => {
+    setParams({
+      ...params,
+      AreaId: selectedArea?.id?.toString() ?? undefined,
+    });
+  }, [selectedArea]);
 
   return (
     <div className="h-full w-full mr-2">

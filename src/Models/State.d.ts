@@ -1,4 +1,5 @@
-enum State {
+/* eslint-disable import/prefer-default-export */
+export enum State {
   Pending,
   Confirmed,
   Cancelled,
@@ -6,5 +7,3 @@ enum State {
   Seated,
   Completed,
 }
-
-export default State;

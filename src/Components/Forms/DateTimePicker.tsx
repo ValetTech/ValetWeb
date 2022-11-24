@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import {
-  Box,
   createTheme,
   StyledEngineProvider,
   TextField,
@@ -64,6 +63,7 @@ export function BasicDateTimePickerNew({
   onChange,
   minDate = dayjs(),
   maxDate,
+  rounded = false,
 }: any) {
   return (
     <StyledEngineProvider injectFirst>
@@ -80,7 +80,11 @@ export function BasicDateTimePickerNew({
             label={label}
             value={value}
             onChange={(newValue) => {
-              onChange(newValue);
+              onChange(
+                dayjs(newValue).minute(
+                  (Math.ceil(dayjs(newValue).minute() / 15) * 15) % 60
+                )
+              );
             }}
           />
         </LocalizationProvider>
