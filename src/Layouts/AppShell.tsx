@@ -29,7 +29,7 @@ export default function DefaultAppShell(store: any) {
   const [scroll, scrollTo] = useWindowScroll();
   const [scrollLocked, setScrollLocked] = useScrollLock();
   const lockedPaths = ['/areas', '/tables', '/calendar', '/', '/settings'];
-  const navless = ['/', '/saki'];
+  const navless = ['/', '/sake'];
 
   useEffect(() => {
     console.log('pathname', pathname);
