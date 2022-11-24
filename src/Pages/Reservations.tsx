@@ -48,7 +48,7 @@ export default function Reservations() {
   }
 
   return (
-    <div className="px-4">
+    <div className=" ml-4">
       <h1>Reservations</h1>
       <Button
         className="my-2 bg-[#FFB703]"

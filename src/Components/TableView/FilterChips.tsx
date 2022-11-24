@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-no-bind */
 import { Chip } from '@mantine/core';
-import { useEventListener } from '@mantine/hooks';
+import { useEventListener, useMediaQuery } from '@mantine/hooks';
 
 interface Props {
-  filters: boolean[];
-  onChange: (filters: boolean[]) => void;
+  filters: [boolean, boolean, boolean];
+  onChange: (filters: [boolean, boolean, boolean]) => void;
 }
 
 export default function FilterChips({ filters, onChange }: Props) {
@@ -17,6 +17,7 @@ export default function FilterChips({ filters, onChange }: Props) {
       // behavior: 'smooth',
     });
   };
+  const largeScreen = useMediaQuery('(min-width: 1350px)');
 
   const ref = useEventListener('wheel', onWheel);
 
@@ -29,28 +30,28 @@ export default function FilterChips({ filters, onChange }: Props) {
       }
     >
       <Chip
-        size="xs"
+        size={largeScreen ? 'sm' : 'xs'}
         checked={filters.every((v) => !v)}
         onChange={() => onChange([false, false, false])}
       >
         All
       </Chip>
       <Chip
-        size="xs"
+        size={largeScreen ? 'sm' : 'xs'}
         checked={filters[0]}
         onChange={() => onChange([!filters[0], filters[1], filters[2]])}
       >
         Seated
       </Chip>
       <Chip
-        size="xs"
+        size={largeScreen ? 'sm' : 'xs'}
         checked={filters[1]}
         onChange={() => onChange([filters[0], !filters[1], filters[2]])}
       >
         Partially Seated
       </Chip>
       <Chip
-        size="xs"
+        size={largeScreen ? 'sm' : 'xs'}
         checked={filters[2]}
         onChange={() => onChange([filters[0], filters[1], !filters[2]])}
       >

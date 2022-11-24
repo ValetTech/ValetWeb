@@ -137,7 +137,7 @@ export default function TableSideBar({
     false,
     false,
   ]);
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState<Reservation[]>(data);
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
@@ -166,7 +166,11 @@ export default function TableSideBar({
   useEffect(() => {}, [data]);
 
   useEffect(() => {
-    let filteredReservations = data;
+    if (filters.every((filter) => filter === false)) {
+      setFilteredData(data);
+      return;
+    }
+    let filteredReservations: Reservation[] = [];
     filteredReservations = filters[2]
       ? filteredReservations
       : filteredReservations.filter(
@@ -216,7 +220,7 @@ export default function TableSideBar({
             .map((sitting) => ({
               label: `${sitting.title ?? sitting.type}, ${dayjs(
                 sitting.startTime
-              ).format('ddd, D MMMM, YYYY')} ${
+              ).format('ddd, D MMM, YYYY')} ${
                 sitting.areas?.length ? ' *' : ''
               }`,
               value: sitting.id?.toString() ?? '',
@@ -240,8 +244,9 @@ export default function TableSideBar({
             className="overscroll-contain"
           >
             {/* <TableSort data={rowData} /> */}
-            {Array.isArray(data) && data.length ? (
-              <ReservationsList data={filteredData} />
+            {Array.isArray(filteredData ?? data) &&
+            (filteredData?.length ?? data.length) ? (
+              <ReservationsList data={filteredData ?? data} />
             ) : (
               <Center>
                 <Text size="xl">No Reservations</Text>

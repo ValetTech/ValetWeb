@@ -26,11 +26,13 @@ import Sitting from '../../Models/Sitting';
 import {
   createSittingAsync,
   getSittingTypesAsync,
+  updateSittingAsync,
 } from '../../Services/ApiServices';
 import CustomRadioButton from '../Buttons/CustomRadioButton';
 import { BasicDateTimePickerNew } from '../Forms/DateTimePicker';
 import CreatedNotification from '../Notifications/NotifyCreate';
 import ErrorNotification from '../Notifications/NotifyError';
+import UpdatedNotification from '../Notifications/NotifyUpdate';
 
 export interface Rrule {
   freq?: string;
@@ -78,6 +80,7 @@ export default function CreateEventModal({
   const [endDate, setEndDate] = useState<Dayjs>(dayjs().add(1, 'hour'));
   const [eventAreas, setEventAreas] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -104,8 +107,7 @@ export default function CreateEventModal({
   useEffect(() => {
     setStartDate(dayjs(event?.start));
     setEndDate(dayjs(event?.end));
-    console.log(event?.start);
-    console.log(event?.end);
+    setIsUpdate(event?.event?.extendedProps?.data?.id !== undefined);
     setEventAreas([event?.resource?.id.toString()]);
   }, [event]);
 
@@ -178,8 +180,11 @@ export default function CreateEventModal({
     });
     setStartDate(dayjs(eventData?.startTime));
     setEndDate(dayjs(eventData?.endTime));
+
+    setIsUpdate(eventData?.id !== null);
+
     setEventAreas(eventData?.areas?.map((a: Area) => a.id?.toString()));
-    console.log('Form eventData: ', eventData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventData]);
 
   // ?????????????????????
@@ -218,15 +223,29 @@ export default function CreateEventModal({
     };
     console.log(sitting);
     setLoading(true);
+    if (values.sitting.id) {
+      updateSittingAsync(values.sitting.id, sitting)
+        .then(() => {
+          UpdatedNotification();
+          form.reset();
+          handleClose();
+        })
+        .catch((err) => {
+          ErrorNotification(err.message);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+
+      return;
+    }
     createSittingAsync(sitting)
       .then((data) => {
-        console.log(data);
         CreatedNotification();
         form.reset();
         handleClose();
       })
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       })
       .finally(() => {
@@ -235,8 +254,9 @@ export default function CreateEventModal({
   }
 
   function handleReset() {
-    form.reset();
     handleClose();
+    setIsUpdate(false);
+    form.reset();
     setEvent(null);
   }
   return (
@@ -245,11 +265,14 @@ export default function CreateEventModal({
 
       <Modal
         opened={show}
-        onClose={handleClose}
+        onClose={handleReset}
         centered
         radius="md"
         size="auto"
-        title="Create Sitting"
+        title={isUpdate ? 'Update Sitting' : 'Create Sitting'}
+        transition="fade"
+        transitionDuration={600}
+        transitionTimingFunction="ease"
       >
         <LoadingOverlay visible={loading} overlayBlur={2} />
         <form onSubmit={form.onSubmit(onSubmit)} onReset={handleReset}>
@@ -511,7 +534,7 @@ export default function CreateEventModal({
                 Cancel
               </Button>
               <Button className="bg-[#FFB703]" type="submit" variant="filled">
-                Submit
+                {isUpdate ? 'Update' : 'Create'}
               </Button>
             </Group>
           </Stack>

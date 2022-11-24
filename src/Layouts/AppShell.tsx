@@ -1,4 +1,5 @@
 import { AppShell } from '@mantine/core';
+import { useScrollLock, useWindowScroll } from '@mantine/hooks';
 import {
   IconBoxModel2,
   IconBrandAirtable,
@@ -6,6 +7,7 @@ import {
   IconCalendarStats,
   IconHome2,
 } from '@tabler/icons';
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import Nav from './NavBar';
@@ -24,12 +26,24 @@ const links = [
 
 export default function DefaultAppShell(store: any) {
   const { pathname } = useLocation();
+  const [scroll, scrollTo] = useWindowScroll();
+  const [scrollLocked, setScrollLocked] = useScrollLock();
+  const lockedPaths = ['/areas', '/tables', '/calendar', '/', '/settings'];
+  const navless = ['/', '/saki'];
+
+  useEffect(() => {
+    console.log('pathname', pathname);
+    scrollTo({ x: 0, y: 0 });
+    console.log('scroll', scroll);
+    setScrollLocked(lockedPaths.includes(pathname) && scroll.y === 0);
+  }, [pathname]);
+
   return (
     <AppShell
       padding={0}
       navbarOffsetBreakpoint="xs" // Removes side navbar and fills in space with page content when extra small resolution is reached
-      navbar={pathname === '/' ? <div /> : <Nav links={links} />}
-      header={pathname === '/' ? <div /> : <Header links={links} />}
+      navbar={navless.includes(pathname) ? <div /> : <Nav links={links} />}
+      header={navless.includes(pathname) ? <div /> : <Header links={links} />}
     >
       <RoutesController />
     </AppShell>

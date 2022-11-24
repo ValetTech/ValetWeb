@@ -10,12 +10,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Button, Center, createStyles, Grid, Text } from '@mantine/core';
-import {
-  useForceUpdate,
-  useListState,
-  useScrollLock,
-  useViewportSize,
-} from '@mantine/hooks';
+import { useForceUpdate, useListState, useViewportSize } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import ErrorNotification from '../Components/Notifications/NotifyError';
@@ -183,7 +178,6 @@ export default function TablesPage() {
   const [sittings, setSittings] = useState<Sitting[]>([]);
   const [areas, setAreas] = useState<Area[]>([]);
   const { height, width } = useViewportSize();
-  const [scrollLocked, setScrollLocked] = useScrollLock();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<Reservation | Table | null>(
     null
@@ -235,7 +229,6 @@ export default function TablesPage() {
         ErrorNotification(error.message);
       });
 
-    setScrollLocked(true);
     // getAreasAsync()
     //   .then((res) => {
     //     setAreas(res);

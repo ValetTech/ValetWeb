@@ -10,9 +10,8 @@ import {
   Textarea,
   TextInput,
 } from '@mantine/core';
-import { useScrollLock } from '@mantine/hooks';
 import { IconHelp, IconLogin } from '@tabler/icons';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ToggleColor from '../Components/Buttons/ToggleColorScheme';
 import LoginModal from '../Components/Login/LoginModal';
 import '../index.css';
@@ -89,11 +88,6 @@ export default function Home() {
   const { classes } = useStyles();
   const [loginModalOpened, setLoginModalOpened] = useState(false);
   const [contactModalOpened, setContactModalOpened] = useState(false);
-  const [scrollLocked, setScrollLocked] = useScrollLock();
-  useEffect(() => {
-    setScrollLocked(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // fontFamily: `Greycliff CF, ${theme.fontFamily}`,
 
