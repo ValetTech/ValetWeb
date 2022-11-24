@@ -16,6 +16,7 @@ import Dashboard from '../Pages/Dashboard';
 import Home from '../Pages/Home';
 import NotFound from '../Pages/NotFound';
 import Reservations from '../Pages/Reservations';
+import Sake from '../Pages/Sake';
 import Settings from '../Pages/Settings';
 import TablesPage from '../Pages/TablesPage';
 
@@ -88,6 +89,7 @@ export default function RoutesController() {
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/sake" element={<Sake />} />
 
         {/* Protected routes */}
         <Route element={<RequireAuth />}>
