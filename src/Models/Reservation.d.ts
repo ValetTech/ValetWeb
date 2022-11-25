@@ -1,8 +1,8 @@
 export default interface Reservation {
   id?: number;
-  customerId: number;
+  customerId?: number;
   customer?: Customer;
-  sittingId: number;
+  sittingId?: number;
   sitting?: Sitting;
   areaId?: number;
   area?: Area;

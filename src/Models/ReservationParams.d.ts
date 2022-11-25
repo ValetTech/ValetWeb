@@ -8,6 +8,7 @@ export default interface ReservationParams {
   Id?: string;
   CustomerId?: string;
   SittingId?: string;
+  AreaId?: string;
   Source?: string;
   Status?: string;
   Areas?: string;

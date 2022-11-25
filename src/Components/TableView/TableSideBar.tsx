@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 import { useDraggable } from '@dnd-kit/core';
 import {
+  Button,
   Center,
   createStyles,
   ScrollArea,
@@ -12,19 +13,12 @@ import { useListState, useScrollLock, useViewportSize } from '@mantine/hooks';
 import { IconCalendarEvent, IconSearch } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { ChangeEvent, useEffect, useState } from 'react';
+import Area from '../../Models/Area';
 import Reservation from '../../Models/Reservation';
 import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
-import getReservationsAsync from '../../Services/ApiServices';
-import ErrorNotification from '../Notifications/NotifyError';
+import CreateReservationModal from '../Forms/CreateReservation';
 import FilterChips from './FilterChips';
-
-interface TableSideBarProps {
-  data: Reservation[];
-  sittings: Sitting[];
-  selectedSitting: Sitting | null;
-  selectSitting: (sitting: Sitting | null) => void;
-}
 
 interface SearchBarProps {
   search: string;
@@ -34,7 +28,7 @@ interface SearchBarProps {
 function SearchBar({ search, onChange }: SearchBarProps) {
   return (
     <TextInput
-      placeholder="Search by any field"
+      placeholder="Search by Customer Name"
       icon={<IconSearch size={20} stroke={1.5} />}
       value={search}
       onChange={onChange}
@@ -125,11 +119,33 @@ export function ReservationsList({ data }: any) {
   );
 }
 
+enum State {
+  Pending,
+  Confirmed,
+  Cancelled,
+  Assigned,
+  Seated,
+  Completed,
+}
+
+interface TableSideBarProps {
+  data: Reservation[];
+  sittings: Sitting[];
+  selectedSitting: Sitting | null;
+  selectSitting: (sitting: Sitting | null) => void;
+  params: ReservationParams;
+  setParams: (params: ReservationParams) => void;
+  areas: Area[];
+}
+
 export default function TableSideBar({
   data,
   sittings,
   selectedSitting,
   selectSitting,
+  params,
+  setParams,
+  areas,
 }: TableSideBarProps) {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<[boolean, boolean, boolean]>([
@@ -137,8 +153,7 @@ export default function TableSideBar({
     false,
     false,
   ]);
-  const [filteredData, setFilteredData] = useState<Reservation[]>(data);
-
+  const [reservationModal, setReservationModal] = useState<boolean>(false);
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
     setSearch(value);
@@ -147,58 +162,24 @@ export default function TableSideBar({
     // );
   };
 
-  function handleFilterChange() {
-    const params: ReservationParams = {
-      MinDate: dayjs().toISOString(),
-      // hasTables: true,
-      SortBy: 'DateTime',
-    };
-
-    getReservationsAsync(params)
-      .then((reservations) => {
-        setFilteredData(reservations);
-      })
-      .catch((error) => {
-        ErrorNotification(error.message);
-      });
-  }
-
-  useEffect(() => {}, [data]);
+  useEffect(() => {
+    setParams({
+      ...params,
+      Customer: search ?? undefined,
+    });
+  }, [search]);
 
   useEffect(() => {
-    if (filters.every((filter) => filter === false)) {
-      setFilteredData(data);
-      return;
-    }
-    let filteredReservations: Reservation[] = [];
-    filteredReservations = filters[2]
-      ? filteredReservations
-      : filteredReservations.filter(
-          (reservation) => reservation.tables?.length === 0
-        );
-    filteredReservations = filters[1]
-      ? filteredReservations
-      : filteredReservations?.filter(
-          (reservation) =>
-            reservation?.tables &&
-            reservation.noGuests >
-              reservation.tables
-                ?.map((table) => table.capacity)
-                .reduce((a, b) => a + b, 0)
-        );
-    filteredReservations = filters[0]
-      ? filteredReservations
-      : filteredReservations.filter(
-          (reservation) =>
-            reservation?.tables &&
-            reservation.noGuests <
-              reservation.tables
-                ?.map((table) => table.capacity)
-                .reduce((a, b) => a + b, 0)
-        );
-
-    setFilteredData(filteredReservations);
-  }, [data, search, filters]);
+    const newParams = { ...params };
+    newParams.Status = filters[0] ? State.Assigned.toString() : undefined;
+    newParams.Source =
+      filters[1] || filters[2]
+        ? `${State.Pending},${State.Confirmed}`
+        : undefined;
+    newParams.hasTables = filters[1] ? true : undefined;
+    newParams.hasTables = filters[2] ? false : undefined;
+    setParams(newParams);
+  }, [filters]);
 
   const { height, width } = useViewportSize();
   const [scrollLocked, setScrollLocked] = useScrollLock();
@@ -216,7 +197,9 @@ export default function TableSideBar({
           placeholder="Select a sitting"
           icon={<IconCalendarEvent size={20} stroke={1.5} />}
           data={sittings
-            .filter((sitting) => dayjs(sitting.endTime) >= dayjs())
+            .filter(
+              (sitting) => dayjs(sitting.endTime) >= dayjs().add(-1, 'day')
+            )
             .map((sitting) => ({
               label: `${sitting.title ?? sitting.type}, ${dayjs(
                 sitting.startTime
@@ -244,15 +227,32 @@ export default function TableSideBar({
             className="overscroll-contain"
           >
             {/* <TableSort data={rowData} /> */}
-            {Array.isArray(filteredData ?? data) &&
-            (filteredData?.length ?? data.length) ? (
-              <ReservationsList data={filteredData ?? data} />
+            {Array.isArray(data) && data?.length ? (
+              <ReservationsList data={data} />
             ) : (
-              <Center>
-                <Text size="xl">No Reservations</Text>
-              </Center>
+              <div>
+                <Center className="py-4">
+                  <Text size="xl">No Reservations</Text>
+                </Center>
+                <Center>
+                  <Button
+                    className="bg-[#FFB703]"
+                    size="lg"
+                    onClick={() => setReservationModal(true)}
+                  >
+                    Create Reservation
+                  </Button>
+                </Center>
+              </div>
             )}
           </ScrollArea.Autosize>
+          <CreateReservationModal
+            areasData={areas}
+            sitting={selectedSitting ?? undefined}
+            sittingsData={sittings}
+            opened={reservationModal}
+            onClose={() => setReservationModal(true)}
+          />
         </div>
       </div>
     </Center>

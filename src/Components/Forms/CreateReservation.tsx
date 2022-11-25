@@ -1,96 +1,121 @@
+/* eslint-disable react/require-default-props */
 // Lint Rules
 // #region
 /* eslint-disable react/jsx-props-no-spreading */
 // #endregion
 
-// Components
-// #region
 import {
   Button,
-  Card,
   Group,
   Input,
   Modal,
   NumberInput,
   Select,
-  SimpleGrid,
+  Switch,
   Textarea,
   TextInput,
-  Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconPencil } from '@tabler/icons';
+import {
+  IconAt,
+  IconNews,
+  IconPencil,
+  IconPhone,
+  IconUser,
+} from '@tabler/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
-
+import InputMask from 'react-input-mask';
 import Area from '../../Models/Area';
+import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
-// #endregion
-// #endregion
-
-// Services
-// #region
 import { createReservationAndCustomerAsync } from '../../Services/ApiServices';
+import CreatedNotification from '../Notifications/NotifyCreate';
 import ErrorNotification from '../Notifications/NotifyError';
 import { BasicDateTimePickerNew } from './DateTimePicker';
-// #endregion
 
-// Props
-// #region
 interface CreateReservationModalProps {
   opened: boolean;
   onClose(): void;
   sittingsData: Sitting[];
   areasData: Area[];
+  sitting?: Sitting;
 }
-// #endregion
 
 export default function CreateReservationModal({
   opened,
   onClose,
   areasData,
   sittingsData,
+  sitting = undefined,
 }: CreateReservationModalProps) {
   // const [datePickerValue, setDatePickerValue] = useState(new Date());
   // const [timePickerValue, setTimePickerValue] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+  const sources = ['InPerson', 'Email', 'Phone', 'Website'];
+  const [loading, setLoading] = useState(false);
 
-  const form = useForm({
-    initialValues: {
+  const [reservationDetails, setReservationDetails] = useState<Reservation>({
+    customer: {
       firstName: '',
       lastName: '',
-      phone: '',
       email: '',
-      sittingId: 0,
-      areaId: 0,
-      time: '',
-      date: '',
-      duration: 90,
-      noGuests: 1,
-      notes: '',
-      isVip: '',
+      phone: '',
     },
-    validate: {
-      lastName: (value) =>
-        value.length < 2 ? 'Please provide a valid first name' : null,
-      phone: (value) =>
-        value.length < 10 ? 'Please provide a valid phone number' : null,
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      noGuests: (value) =>
-        value < 1 ? 'Please enter a valid number of guests' : null,
+    sittingId: sitting?.id ?? undefined,
+    sitting,
+    areaId: undefined,
+    area: undefined,
+    dateTime: dayjs().toISOString(),
+    duration: 90,
+    noGuests: 1,
+    source: 'InPerson',
+    status: 'Pending',
+    notes: '',
+  });
+
+  const form = useForm<Reservation>({
+    initialValues: {
+      ...reservationDetails,
     },
+    // validate: {
+    //   customer: {
+    //     lastName: (value) =>
+    //       value.length < 2 ? 'Please provide a valid first name' : null,
+    //     phone: (value) =>
+    //       value.length < 10 ? 'Please provide a valid phone number' : null,
+    //     email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+    //   },
+    //   dateTime: (value) => (value != null ? 'Please enter a valid date' : null),
+    //   sittingId: (value) => (value < 1 ? 'Please select a Sitting' : null),
+    //   areaId: (value) => (value < 1 ? 'Please select an Area' : null),
+    //   source: (value) => (value < 1 ? 'Please select a Source' : null),
+    //   duration: (value) =>
+    //     value < 15 ? 'Please enter a valid duration' : null,
+    //   noGuests: (value) =>
+    //     value < 1 ? 'Please enter a valid number of guests' : null,
+    // },
   });
 
   // Name of sitting will be displayed in select, but it will return the ID number.
-  const sittings = sittingsData.map((s) => ({
-    label: s.type,
-    value: s.id,
-  }));
 
-  const areas = areasData.map((a) => ({
-    label: a.name,
-    value: a.id,
-  }));
+  function onSubmit() {
+    setLoading(true);
+
+    console.log('Reservation to be created: ', reservationDetails);
+
+    createReservationAndCustomerAsync(reservationDetails)
+      .then(() => {
+        onClose();
+        CreatedNotification();
+      })
+      .catch((error) => {
+        ErrorNotification(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
 
   return (
     <Modal
@@ -98,173 +123,242 @@ export default function CreateReservationModal({
       opened={opened}
       onClose={onClose}
       title="Create New Reservation"
-      size="xl"
+      size="auto"
     >
-      <form
-        onSubmit={form.onSubmit((values) => {
-          console.log(selectedDate);
-          createReservationAndCustomerAsync({
-            customer: {
-              firstName: values.firstName,
-              lastName: values.lastName,
-              email: values.email,
-              phone: values.phone,
-              isVip: values.isVip,
-            },
-            sittingId: values.sittingId,
-            areaId: values.areaId,
-            dateTime: selectedDate,
-            duration: values.duration,
-            noGuests: values.noGuests,
-            notes: values.notes,
-          })
-            .catch((e) => {
-              console.log(e);
-              ErrorNotification(e.message);
-            })
-            .then((response) => {
-              // console.log(response);
-            });
+      <form onSubmit={form.onSubmit(onSubmit)}>
+        <div className="w-full flex flex-col flex-grow space-y-2 ">
+          <div className="flex flex-row space-x-2">
+            <TextInput
+              label="First Name"
+              icon={<IconUser />}
+              placeholder="First Name"
+              value={reservationDetails?.customer?.firstName?.toString() ?? ''}
+              onChange={(event) =>
+                setReservationDetails({
+                  ...reservationDetails,
+                  customer: {
+                    ...reservationDetails.customer,
+                    firstName: event.currentTarget.value,
+                  },
+                })
+              }
+              className="w-1/2"
+            />
+            <TextInput
+              label="Last Name"
+              icon={<IconUser />}
+              withAsterisk
+              required
+              placeholder="Last Name"
+              value={reservationDetails?.customer?.lastName?.toString() ?? ''}
+              onChange={(event) =>
+                setReservationDetails({
+                  ...reservationDetails,
+                  customer: {
+                    ...reservationDetails.customer,
+                    lastName: event.currentTarget.value,
+                  },
+                })
+              }
+              className="w-1/2"
+            />
+          </div>
+          <div className="flex flex-row space-x-2">
+            <Input.Wrapper label="Phone number" required className="w-1/2">
+              <Input
+                component={InputMask}
+                icon={<IconPhone />}
+                mask="+(99) 999 999 999"
+                placeholder="Your phone number"
+                value={reservationDetails.customer?.phone}
+                onChange={(event) =>
+                  setReservationDetails({
+                    ...reservationDetails,
+                    customer: {
+                      ...reservationDetails.customer,
+                      phone: event.currentTarget.value,
+                    },
+                  })
+                }
+              />
+            </Input.Wrapper>
+            <TextInput
+              label="Email"
+              icon={<IconAt />}
+              placeholder="Your email"
+              value={reservationDetails.customer?.email}
+              onChange={(event) =>
+                setReservationDetails({
+                  ...reservationDetails,
+                  customer: {
+                    ...reservationDetails.customer,
+                    email: event.currentTarget.value,
+                  },
+                })
+              }
+              className="w-1/2"
+            />
+          </div>
+          <div className=" w-full space-x-2 flex flex-row flex-grow justify-around ">
+            <Input.Wrapper label="Time" required className="w-1/2">
+              <Input
+                component={BasicDateTimePickerNew}
+                value={reservationDetails.dateTime}
+                onChange={(value) => {
+                  form.clearFieldError('dateTime');
+                  setReservationDetails({
+                    ...reservationDetails,
+                    dateTime: value,
+                  });
+                }}
+                // Add min and max
+                rounded
+                minDate={dayjs().add(-1, 'hour').toISOString()}
+                error={form.errors.dateTime}
+              />
+            </Input.Wrapper>
+            <Select
+              data={sources}
+              placeholder="Select source"
+              searchable
+              label="Source"
+              icon={<IconNews />}
+              withAsterisk
+              {...form.getInputProps('source')}
+              value={reservationDetails.source ?? ''}
+              onChange={(value) => {
+                form.clearFieldError('source');
 
-          // createCustomerAsync({
-          //   firstName: values.firstName,
-          //   lastName: values.lastName,
-          //   email: values.email,
-          //   phone: values.phone,
-          //   isVip: values.isVip,
-          // }).then((customerResponse) => {
-          //   console.log(customerResponse.data);
-          //   createReservationAsync({
-          //     customerId: customerResponse.data.id,
-          //     sittingId: values.sittingId,
-          //     areaId: values.areaId,
-          //     dateTime: getDateTimeString(),
-          //     duration: values.duration,
-          //     noGuests: values.noGuests,
-          //     notes: values.notes,
-          //   }).then((reservationResponse) => {
-          //     console.log(reservationResponse.data);
-          //     onClose();
-          //   });
-          // });
-        })}
-      >
-        <SimpleGrid cols={1}>
-          <Group position="center">
-            <Card radius="md" p="xl">
-              <Title color="dimmed" italic size="h5" align="center">
-                CUSTOMER DETAILS
-              </Title>
-              <SimpleGrid cols={2}>
-                <>
-                  <TextInput
-                    label="First Name"
-                    mt={20}
-                    icon={<IconPencil />}
-                    {...form.getInputProps('firstName')}
-                  />
-                  <TextInput
-                    label="Last Name"
-                    mt={20}
-                    icon={<IconPencil />}
-                    withAsterisk
-                    required
-                    {...form.getInputProps('lastName')}
-                  />
-                </>
-                <>
-                  <TextInput
-                    label="Phone"
-                    mt={20}
-                    icon={<IconPencil />}
-                    withAsterisk
-                    required
-                    {...form.getInputProps('phone')}
-                  />
-                  <TextInput
-                    label="Email"
-                    mt={20}
-                    icon={<IconPencil />}
-                    {...form.getInputProps('email')}
-                  />
-                </>
-              </SimpleGrid>
-            </Card>
-          </Group>
-          <Group position="center">
-            <Card radius="md" px={150}>
-              <Title color="dimmed" italic size="h5" align="center">
-                RESERVATION DETAILS
-              </Title>
-              <Select
-                data={sittings}
-                label="Sitting Id"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                {...form.getInputProps('sittingId')}
-              />
-              <Select
-                data={areas}
-                label="Area"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                {...form.getInputProps('areaId')}
-                mb={30}
-              />
-              {/* <DateTimePicker
-                  label="DateTime"
-                  inputVariant="outlined"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                /> */}
-              <Input.Wrapper label="Time" required>
-                <Input
-                  component={BasicDateTimePickerNew}
-                  value={selectedDate}
-                  onChange={setSelectedDate}
-                />
-              </Input.Wrapper>
-              <NumberInput
-                label="Duration"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                required
-                {...form.getInputProps('duration')}
-              />
-              <NumberInput
-                label="Number of Guests"
-                mt={20}
-                icon={<IconPencil />}
-                withAsterisk
-                required
-                {...form.getInputProps('noGuests')}
-              />
-              <Textarea
-                autosize
-                minRows={2}
-                maxRows={4}
-                label="Notes"
-                mt={20}
-                mb={20}
-                icon={<IconPencil />}
-                {...form.getInputProps('notes')}
-              />
-              <Select
-                label="VIP"
-                data={[
-                  { value: 'false', label: 'False' },
-                  { value: 'true', label: 'True' },
-                ]}
-                icon={<IconPencil />}
-                {...form.getInputProps('isVip')}
-              />
-            </Card>
-          </Group>
-        </SimpleGrid>
+                setReservationDetails({
+                  ...reservationDetails,
+                  source: value ?? 'InPerson',
+                });
+              }}
+              className="w-1/2"
+            />
+          </div>
+
+          <div className="flex flex-row space-x-2">
+            <Select
+              data={sittingsData.map((s) => ({
+                label: s.title ?? s.type,
+                value: s.id?.toString(),
+                group: s.type,
+              }))}
+              placeholder="Select sitting"
+              searchable
+              label="Sitting"
+              icon={<IconPencil />}
+              withAsterisk
+              {...form.getInputProps('sittingId')}
+              value={reservationDetails.sitting?.id?.toString()}
+              onChange={(value) => {
+                form.clearFieldError('sittingId');
+
+                setReservationDetails({
+                  ...reservationDetails,
+                  sittingId: Number(value) ?? 0,
+                });
+              }}
+            />
+            <Select
+              searchable
+              placeholder="Select area"
+              data={
+                areasData.map((a) => ({
+                  label: a.name,
+                  value: a.id?.toString() ?? '',
+                })) ?? []
+              }
+              label="Area"
+              icon={<IconPencil />}
+              withAsterisk
+              {...form.getInputProps('areaId')}
+              value={reservationDetails.area?.id?.toString()}
+              onChange={(value) =>
+                setReservationDetails({
+                  ...reservationDetails,
+                  areaId: Number(value) ?? 0,
+                })
+              }
+            />
+          </div>
+          <div className="w-full flex flex-row flex-grow space-x-2">
+            <NumberInput
+              label="Duration"
+              icon={<IconPencil />}
+              withAsterisk
+              required
+              min={15}
+              max={120}
+              step={15}
+              {...form.getInputProps('duration')}
+              value={reservationDetails.duration}
+              onChange={(value) =>
+                setReservationDetails({
+                  ...reservationDetails,
+                  duration: value ?? 15,
+                })
+              }
+              formatter={(value) =>
+                !Number.isNaN(Number(value) ?? 15)
+                  ? `${value} mins`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  : ' '
+              }
+            />
+            <NumberInput
+              label="Number of Guests"
+              icon={<IconPencil />}
+              withAsterisk
+              required
+              min={1}
+              {...form.getInputProps('noGuests')}
+              value={reservationDetails.noGuests}
+              onChange={(value) =>
+                setReservationDetails({
+                  ...reservationDetails,
+                  noGuests: value ?? 1,
+                })
+              }
+            />
+          </div>
+          <Textarea
+            autosize
+            maxRows={4}
+            label="Notes"
+            icon={<IconPencil />}
+            placeholder="Notes"
+            value={reservationDetails.notes}
+            onChange={(event) =>
+              setReservationDetails({
+                ...reservationDetails,
+                notes: event.currentTarget.value,
+              })
+            }
+          />
+          <Switch
+            label={reservationDetails.customer?.isVip ? 'VIP' : 'Not VIP'}
+            checked={reservationDetails.customer?.isVip?.toString() === 'true'}
+            onChange={(value) =>
+              setReservationDetails({
+                ...reservationDetails,
+                customer: {
+                  ...reservationDetails.customer,
+                  isVip: value.currentTarget.checked,
+                },
+              })
+            }
+          />
+        </div>
         <Group mt={20} position="center">
+          <Button
+            className="bg-[#FFB703]"
+            variant="outline"
+            type="submit"
+            size="lg"
+          >
+            Cancel
+          </Button>
           <Button className="bg-[#FFB703]" type="submit" size="lg">
             Create
           </Button>

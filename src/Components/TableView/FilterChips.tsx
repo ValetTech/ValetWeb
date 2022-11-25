@@ -39,21 +39,21 @@ export default function FilterChips({ filters, onChange }: Props) {
       <Chip
         size={largeScreen ? 'sm' : 'xs'}
         checked={filters[0]}
-        onChange={() => onChange([!filters[0], filters[1], filters[2]])}
+        onChange={() => onChange([!filters[0], false, false])}
       >
         Seated
       </Chip>
       <Chip
         size={largeScreen ? 'sm' : 'xs'}
         checked={filters[1]}
-        onChange={() => onChange([filters[0], !filters[1], filters[2]])}
+        onChange={() => onChange([false, !filters[1], false])}
       >
         Partially Seated
       </Chip>
       <Chip
         size={largeScreen ? 'sm' : 'xs'}
         checked={filters[2]}
-        onChange={() => onChange([filters[0], filters[1], !filters[2]])}
+        onChange={() => onChange([false, false, !filters[2]])}
       >
         Not Seated
       </Chip>

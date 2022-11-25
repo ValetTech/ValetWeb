@@ -82,6 +82,12 @@ export default function CreateEventModal({
   const [loading, setLoading] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
 
+  function RoundTime(date: Date) {
+    return dayjs(date).minute(
+      (Math.round(dayjs(date).minute() / 15) * 15) % 60
+    );
+  }
+
   const form = useForm({
     initialValues: {
       sitting: {
@@ -163,9 +169,10 @@ export default function CreateEventModal({
         title: eventData?.title ?? eventData?.type ?? '',
         capacity: eventData?.capacity ?? 1,
         type: eventData?.type ?? '',
-        startTime: dayjs(eventData?.startTime).toDate() ?? dayjs().toDate(),
+        startTime: RoundTime(eventData?.startTime).toDate() ?? dayjs().toDate(),
         endTime:
-          dayjs(eventData?.endTime).toDate() ?? dayjs().add(1, 'hour').toDate(),
+          RoundTime(eventData?.endTime).toDate() ??
+          dayjs().add(1, 'hour').toDate(),
         venueId: eventData?.venueId ?? 1,
         groupId: eventData?.groupId ?? null,
         areaIds: eventData?.areas.map((a: Area) => a.id?.toString()) ?? [],
@@ -178,8 +185,8 @@ export default function CreateEventModal({
         count: rrule.count ?? 1,
       },
     });
-    setStartDate(dayjs(eventData?.startTime));
-    setEndDate(dayjs(eventData?.endTime));
+    setStartDate(RoundTime(eventData?.startTime));
+    setEndDate(RoundTime(eventData?.endTime));
 
     setIsUpdate(eventData?.id !== null);
 
@@ -216,8 +223,8 @@ export default function CreateEventModal({
   function onSubmit(values) {
     const sitting: Sitting = {
       ...values.sitting,
-      startDate: startDate.toDate(),
-      endDate: endDate.toDate(),
+      startDate: RoundTime(startDate).toDate(),
+      endDate: RoundTime(endDate).toDate(),
       areaIds: eventAreas,
       groupId: values.sitting.groupId ?? null,
     };
@@ -349,6 +356,7 @@ export default function CreateEventModal({
                     component={BasicDateTimePickerNew}
                     value={startDate}
                     onChange={setStartDate}
+                    rounded
                     // {...form.getInputProps('sitting.startTime')}
                   />
                 </Input.Wrapper>
@@ -366,6 +374,7 @@ export default function CreateEventModal({
                     component={BasicDateTimePickerNew}
                     value={endDate}
                     onChange={setEndDate}
+                    rounded
                     // {...form.getInputProps('sitting.endTime')}
                   />
                 </Input.Wrapper>

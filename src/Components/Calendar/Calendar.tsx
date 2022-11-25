@@ -5,7 +5,6 @@ import '@fullcalendar/react/dist/vdom';
 import FullCalendar, {
   DateSelectArg,
   EventClickArg,
-  EventHoveringArg,
   EventSourceInput,
 } from '@fullcalendar/react';
 
@@ -16,10 +15,8 @@ import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import rrulePlugin from '@fullcalendar/rrule';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { Popover, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import dayjs from 'dayjs';
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
 import {
@@ -52,70 +49,11 @@ Recurrence
 
 */
 
-const MyComponent = forwardRef((props, ref) => (
-  <div ref={ref} {...props}>
-    <button onMouseEnter={props.onMouseEnter} onMouseLeave={props.onMouseLeave}>
-      <Text>Click me</Text>
-    </button>
-  </div>
-));
-
-function EventPopover({ event, element }) {
-  const [opened, { close, open }] = useDisclosure(false);
-  const [eventInfo, setEventInfo] = useState<EventClickArg>();
-  const ref = useRef();
-  return (
-    <Popover
-      width={200}
-      position="bottom"
-      withArrow
-      shadow="md"
-      opened={opened}
-    >
-      <Popover.Target>
-        <MyComponent
-          props={{
-            onMouseEnter: { open },
-            onMouseLeave: { close },
-            setEvent: { setEventInfo },
-          }}
-          ref={ref}
-        />
-      </Popover.Target>
-      <Popover.Dropdown sx={{ pointerEvents: 'none' }}>
-        <Text size="sm">
-          This popover is shown when user hovers the target element{' '}
-          {eventInfo?.event?.title}
-        </Text>
-      </Popover.Dropdown>
-    </Popover>
-  );
-}
-
-function RenderPopover() {
-  const popoverRef = useRef();
-
-  return (
-    <Popover opened={opened} onClose={close} withArrow ref={popoverRef}>
-      <Popover.Target>
-        <div />
-      </Popover.Target>
-
-      <Popover.Dropdown>
-        <div className="p-2">HELLO WORLD</div>
-      </Popover.Dropdown>
-    </Popover>
-  );
-}
-
 export default function SittingsCalendar() {
   const [sittingData, setSittingData] = useState<Sitting[]>([]);
   const [events, setEvents] = useState<EventSourceInput>();
   const [selectedEvent, setSelectedEvent] = useState<Event>();
   const [show, setShow] = useState(false);
-  const [opened, { close, open }] = useDisclosure(false);
-  const [popover, setPopover] = useState<Element | null>(null);
-  const [element, setElement] = useState<Element | null>(null);
 
   const [areas, setAreas] = useState<Area[]>([
     {
@@ -141,20 +79,25 @@ export default function SittingsCalendar() {
     },
   ]);
 
+  function RoundTime(date: Date) {
+    return dayjs(date).minute(
+      (Math.round(dayjs(date).minute() / 15) * 15) % 60
+    );
+  }
+
   function createEvents() {
     const sittings: EventSourceInput = sittingData.map((s) => ({
       id: s.id?.toString(),
       title: s.title ?? s.type,
       type: s.type,
-      start: s.startTime,
-      end: s.endTime,
+      start: RoundTime(s.startTime).toDate(),
+      end: RoundTime(s.endTime).toDate(),
       resourceIds: s.areas?.map((a) => a.id?.toString()) ?? [],
       groupId: s.groupId?.toString() ?? s.id?.toString(),
       editable: dayjs(s.endTime).isAfter(dayjs()),
       backgroundColor: s.areas?.length ? '#023047' : '#3f51b5',
       data: s,
     }));
-    console.log('Sitting events', sittings);
 
     setEvents(sittings);
     return sittings;
@@ -235,8 +178,8 @@ export default function SittingsCalendar() {
     getSittingByIdAsync(info.event.id).then((response) => {
       updateSitting({
         ...response,
-        startTime: info.event.start,
-        endTime: info.event.end,
+        startTime: RoundTime(info.event.start).toISOString(),
+        endTime: RoundTime(info.event.end).toISOString(),
       });
     });
   };
@@ -245,32 +188,11 @@ export default function SittingsCalendar() {
     getSittingByIdAsync(info.event.id).then((response) => {
       updateSitting({
         ...response,
-        startTime: info.event.start,
-        endTime: info.event.end,
+        startTime: RoundTime(info.event.start).toISOString(),
+        endTime: RoundTime(info.event.end).toISOString(),
       });
     });
   };
-
-  function handleMouseEnter({ event, el, jsEvent, view }: EventHoveringArg) {
-    console.log('Event', event);
-    console.log('Element', el);
-    console.log('Event', jsEvent);
-    console.log('View', view);
-    setElement(el);
-    // setPopover();
-
-    // const Event = forwardRef((props, ref) => (
-    //   <div ref={ref} {...props}>
-    //     My component
-    //   </div>
-    // ));
-    open();
-  }
-
-  function handleMouseLeave(info) {
-    console.log('Mouse leave', info);
-    close();
-  }
 
   return (
     <div className="w-full h-full pb-2 px-1 ml-0 ">
@@ -298,9 +220,16 @@ export default function SittingsCalendar() {
         editable
         eventResizableFromStart
         selectable
+        selectAllow={(selectInfo) => selectInfo.start >= dayjs().toDate()}
         selectMirror
         dayMaxEvents
         weekends
+        nowIndicator
+        businessHours={{
+          daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+          startTime: '08:00',
+          endTime: '24:00',
+        }}
         firstDay={1}
         allDaySlot={false}
         dropAccept=".sitting"
@@ -312,8 +241,6 @@ export default function SittingsCalendar() {
         events={events}
         select={handleSelect}
         eventClick={handleEventClick}
-        eventMouseEnter={handleMouseEnter}
-        eventMouseLeave={handleMouseLeave}
         eventDrop={handleDrop}
         eventResize={handleResize}
       />
@@ -325,7 +252,6 @@ export default function SittingsCalendar() {
         setEvent={setSelectedEvent}
         areas={areas}
       />
-      <EventPopover event={selectedEvent} element={element} />
     </div>
   );
 }
