@@ -27,7 +27,6 @@
     "@fullcalendar/resource-timeline": "^5.11.3",
     "@fullcalendar/rrule": "^5.11.3",
     "@fullcalendar/timegrid": "^5.11.3",
-    "@mantine/carousel": "^5.2.6",
     "@mantine/core": "^5.2.6",
     "@mantine/dates": "^5.2.6",
     "@mantine/dropzone": "^5.2.6",
