@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons';
+import BookingModal from './BookingModal';
 import SakeLogo from './SakeLogo';
 
 const HEADER_HEIGHT = 60;
@@ -124,9 +125,7 @@ export default function HeaderAction({ links }: HeaderActionProps) {
         <Group spacing={5} className={classes.links}>
           {items}
         </Group>
-        <Button radius="xl" sx={{ height: 30 }}>
-          Get early access
-        </Button>
+        <BookingModal />
       </Container>
     </Header>
   );
