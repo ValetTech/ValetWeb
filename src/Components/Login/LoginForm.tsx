@@ -36,9 +36,9 @@ export default function LoginForm({
 
   const form = useForm({
     initialValues: {
-      email: '',
+      email: 'a@a.com',
       username: '',
-      password: '',
+      password: 'adminAdmin1!',
       terms: true,
     },
 
@@ -196,7 +196,7 @@ export default function LoginForm({
             )}
           </Stack>
 
-          <Group position="apart" mt="xl">
+          <div className="mt-4 flex flex-row justify-between">
             <Anchor
               component="button"
               type="button"
@@ -209,7 +209,7 @@ export default function LoginForm({
                 : "Don't have an account? Register"}
             </Anchor>
             <Button type="submit">{upperFirst(type)}</Button>
-          </Group>
+          </div>
         </form>
       </Paper>
       {/* </Modal> */}

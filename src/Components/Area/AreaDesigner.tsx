@@ -220,7 +220,6 @@ export default function AreaDesigner() {
       <DragOverlay modifiers={[restrictToWindowEdges]}>{}</DragOverlay>
       <form onSubmit={form.onSubmit(handleSubmit)} onReset={handleReset}>
         <Container className="">
-          <h1>Area Designer</h1>
           <div className="flex flex-row w-full">
             <TextInput
               label="Name"

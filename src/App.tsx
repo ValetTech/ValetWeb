@@ -17,7 +17,9 @@ function MyGlobalStyles() {
   return (
     <Global
       styles={(theme) => ({
-        body: { backgroundColor: '#f1f4f8' },
+        body: {
+          backgroundColor: theme.colorScheme === 'dark' ? '#141517' : '#f1f4f8',
+        },
         // 'button, [type="button"], [type="reset"], [type="submit"]': {
         //   background: '#ffcc4b',
         // },

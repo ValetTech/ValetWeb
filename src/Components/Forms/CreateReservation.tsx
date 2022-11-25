@@ -29,7 +29,7 @@ import InputMask from 'react-input-mask';
 import Area from '../../Models/Area';
 import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
-import { createReservationAndCustomerAsync } from '../../Services/ApiServices';
+import { createReservationAsync } from '../../Services/ApiServices';
 import CreatedNotification from '../Notifications/NotifyCreate';
 import ErrorNotification from '../Notifications/NotifyError';
 import { BasicDateTimePickerNew } from './DateTimePicker';
@@ -40,6 +40,7 @@ interface CreateReservationModalProps {
   sittingsData: Sitting[];
   areasData: Area[];
   sitting?: Sitting;
+  area?: Area;
 }
 
 export default function CreateReservationModal({
@@ -48,6 +49,7 @@ export default function CreateReservationModal({
   areasData,
   sittingsData,
   sitting = undefined,
+  area = undefined,
 }: CreateReservationModalProps) {
   // const [datePickerValue, setDatePickerValue] = useState(new Date());
   // const [timePickerValue, setTimePickerValue] = useState(new Date());
@@ -63,9 +65,7 @@ export default function CreateReservationModal({
       phone: '',
     },
     sittingId: sitting?.id ?? undefined,
-    sitting,
-    areaId: undefined,
-    area: undefined,
+    areaId: area?.id ?? undefined,
     dateTime: dayjs().toISOString(),
     duration: 90,
     noGuests: 1,
@@ -102,15 +102,20 @@ export default function CreateReservationModal({
   function onSubmit() {
     setLoading(true);
 
-    console.log('Reservation to be created: ', reservationDetails);
+    const reservation: Reservation = {
+      ...reservationDetails,
+      sittingId: sitting?.id ?? reservationDetails.sittingId,
+      areaId: area?.id ?? reservationDetails.areaId,
+      dateTime: reservationDetails.dateTime,
+    };
 
-    createReservationAndCustomerAsync(reservationDetails)
+    createReservationAsync(reservation)
       .then(() => {
         onClose();
         CreatedNotification();
       })
       .catch((error) => {
-        ErrorNotification(error);
+        ErrorNotification(error.message);
       })
       .finally(() => {
         setLoading(false);
@@ -176,7 +181,7 @@ export default function CreateReservationModal({
                     ...reservationDetails,
                     customer: {
                       ...reservationDetails.customer,
-                      phone: event.currentTarget.value,
+                      phone: event.currentTarget.value.replace(/\s/g, ''),
                     },
                   })
                 }
@@ -203,12 +208,12 @@ export default function CreateReservationModal({
             <Input.Wrapper label="Time" required className="w-1/2">
               <Input
                 component={BasicDateTimePickerNew}
-                value={reservationDetails.dateTime}
+                value={dayjs(reservationDetails.dateTime)}
                 onChange={(value) => {
                   form.clearFieldError('dateTime');
                   setReservationDetails({
                     ...reservationDetails,
-                    dateTime: value,
+                    dateTime: value.toISOString(),
                   });
                 }}
                 // Add min and max
@@ -251,7 +256,10 @@ export default function CreateReservationModal({
               icon={<IconPencil />}
               withAsterisk
               {...form.getInputProps('sittingId')}
-              value={reservationDetails.sitting?.id?.toString()}
+              value={
+                sitting?.id?.toString() ??
+                reservationDetails.sitting?.id?.toString()
+              }
               onChange={(value) => {
                 form.clearFieldError('sittingId');
 
@@ -274,7 +282,9 @@ export default function CreateReservationModal({
               icon={<IconPencil />}
               withAsterisk
               {...form.getInputProps('areaId')}
-              value={reservationDetails.area?.id?.toString()}
+              value={
+                area?.id?.toString() ?? reservationDetails.area?.id?.toString()
+              }
               onChange={(value) =>
                 setReservationDetails({
                   ...reservationDetails,
@@ -354,8 +364,12 @@ export default function CreateReservationModal({
           <Button
             className="bg-[#FFB703]"
             variant="outline"
-            type="submit"
+            type="button"
             size="lg"
+            onClick={() => {
+              form.reset();
+              onClose();
+            }}
           >
             Cancel
           </Button>

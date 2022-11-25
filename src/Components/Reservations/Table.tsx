@@ -4,20 +4,14 @@ import {
   ScrollArea,
   Table,
   Text,
-  TextInput,
   UnstyledButton,
 } from '@mantine/core';
-import { keys } from '@mantine/utils';
-import {
-  IconChevronDown,
-  IconChevronUp,
-  IconSearch,
-  IconSelector,
-} from '@tabler/icons';
+import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Customer from '../../Models/Customer';
 import Reservation from '../../Models/Reservation';
+import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
 
 const useStyles = createStyles((theme) => ({
@@ -39,10 +33,6 @@ const useStyles = createStyles((theme) => ({
     borderRadius: 21,
   },
 }));
-
-interface TableSortProps {
-  data: Reservation[];
-}
 
 interface ThProps {
   children: React.ReactNode;
@@ -71,68 +61,36 @@ function Th({ children, reversed, sorted, onSort }: ThProps) {
   );
 }
 
-function filterData(data: Reservation[], search: string) {
-  const query = search.toLowerCase().trim();
-  return data.filter((item) =>
-    keys(data[0]).some((key) =>
-      item[key].toString().toLowerCase().includes(query)
-    )
-  );
+interface TableSortProps {
+  reservations: Reservation[];
+  params: ReservationParams;
+  setParams: (params: ReservationParams) => void;
 }
 
-function sortData(
-  data: Reservation[],
-  payload: {
-    sortBy: keyof Reservation | keyof Customer | keyof Sitting | null;
-    reversed: boolean;
-    search: string;
-  }
-) {
-  const { sortBy } = payload;
-
-  if (!sortBy) {
-    return filterData(data, payload.search);
-  }
-
-  return filterData(
-    [...data].sort((a, b) => {
-      if (payload.reversed) {
-        return b[sortBy].toString().localeCompare(a[sortBy]);
-      }
-      return a[sortBy].toString().localeCompare(b[sortBy]);
-    }),
-    payload.search
-  );
-}
-
-export default function ReservationsTable({ data }: TableSortProps) {
-  const [search, setSearch] = useState('');
-  const [sortedData, setSortedData] = useState(data);
+export default function ReservationsTable({
+  reservations,
+  params,
+  setParams,
+}: TableSortProps) {
   const [sortBy, setSortBy] = useState<
     keyof Reservation | keyof Customer | keyof Sitting | null
   >(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
+  const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+
   const setSorting = (field: keyof Reservation) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
     setReverseSortDirection(reversed);
     setSortBy(field);
-    setSortedData(sortData(data, { sortBy: field, reversed, search }));
+    setParams({
+      ...params,
+      SortBy: capitalize(field),
+      SortOrder: reversed ? 'asc' : 'desc',
+    });
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.currentTarget;
-    setSearch(value);
-    setSortedData(
-      sortData(data, { sortBy, reversed: reverseSortDirection, search: value })
-    );
-  };
-
-  useEffect(() => {
-    setSortedData(data);
-  }, [data]);
-
-  const rows = sortedData.map((row) => (
+  const rows = reservations.map((row) => (
     <tr key={row.id}>
       <td>
         <Center>{row.customer.fullName}</Center>
@@ -168,111 +126,101 @@ export default function ReservationsTable({ data }: TableSortProps) {
 
   return (
     <ScrollArea className="w-full">
-      <TextInput
-        placeholder="Search by any field"
-        className="w-[95%]"
-        mb="md"
-        icon={<IconSearch size={14} stroke={1.5} />}
-        value={search}
-        onChange={handleSearchChange}
-      />
-      <div className="w-[95%] overflow-auto">
-        <Table
-          horizontalSpacing="md"
-          verticalSpacing="xs"
-          sx={{
-            tableLayout: 'auto',
-            // minWidth: 700,
-            // width: '50%',
-            maxWidth: '100%',
-            overflowX: 'auto',
-            // overflowY: 'hidden',
-            // whiteSpace: 'nowrap',
-          }}
-        >
-          <thead>
-            <tr>
-              <Th
-                sorted={sortBy === 'fullName'}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting('fullName')}
-              >
-                Customer
-              </Th>
-              <Th
-                sorted={sortBy === 'type'}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting('type')}
-              >
-                Sitting
-              </Th>
-              {/* <Th
+      <Table
+        horizontalSpacing="md"
+        verticalSpacing="xs"
+        sx={{
+          tableLayout: 'auto',
+          // minWidth: 700,
+          // width: '50%',
+          maxWidth: '95%',
+          overflowX: 'auto',
+          // overflowY: 'hidden',
+          // whiteSpace: 'nowrap',
+        }}
+      >
+        <thead>
+          <tr>
+            <Th
+              sorted={sortBy === 'customerId'}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting('customerId')}
+            >
+              Customer
+            </Th>
+            <Th
+              sorted={sortBy === 'sittingId'}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting('sittingId')}
+            >
+              Sitting
+            </Th>
+            {/* <Th
               sorted={sortBy === 'venueId'}
               reversed={reverseSortDirection}
               onSort={() => setSorting('venueId')}
             >
               Venue
             </Th> */}
-              <Th
-                sorted={sortBy === 'dateTime'}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting('dateTime')}
-              >
-                Date
-              </Th>
-              <Th
-                sorted={sortBy === 'duration'}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting('duration')}
-              >
-                Duration
-              </Th>
-              <Th
-                sorted={sortBy === 'noGuests'}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting('noGuests')}
-              >
-                Guests
-              </Th>
-              <Th
-                sorted={sortBy === 'source'}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting('source')}
-              >
-                Source
-              </Th>
-              <Th
-                sorted={sortBy === 'status'}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting('status')}
-              >
-                Status
-              </Th>
-              <Th
-                sorted={sortBy === 'notes'}
-                reversed={reverseSortDirection}
-                onSort={() => setSorting('notes')}
-              >
-                Notes
-              </Th>
+            <Th
+              sorted={sortBy === 'dateTime'}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting('dateTime')}
+            >
+              Date
+            </Th>
+            <Th
+              sorted={sortBy === 'duration'}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting('duration')}
+            >
+              Duration
+            </Th>
+            <Th
+              sorted={sortBy === 'noGuests'}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting('noGuests')}
+            >
+              Guests
+            </Th>
+            <Th
+              sorted={sortBy === 'source'}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting('source')}
+            >
+              Source
+            </Th>
+            <Th
+              sorted={sortBy === 'status'}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting('status')}
+            >
+              Status
+            </Th>
+            <Th
+              sorted={sortBy === 'notes'}
+              reversed={reverseSortDirection}
+              onSort={() => setSorting('notes')}
+            >
+              Notes
+            </Th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length > 0 ? (
+            rows
+          ) : (
+            <tr>
+              <td colSpan={9}>
+                {/* <td colSpan={Object.keys(data[0]).length}> */}
+                <Text weight={500} align="center">
+                  Nothing found
+                </Text>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {rows.length > 0 ? (
-              rows
-            ) : (
-              <tr>
-                <td colSpan={9}>
-                  {/* <td colSpan={Object.keys(data[0]).length}> */}
-                  <Text weight={500} align="center">
-                    Nothing found
-                  </Text>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
-      </div>
+          )}
+        </tbody>
+      </Table>
     </ScrollArea>
   );
 }

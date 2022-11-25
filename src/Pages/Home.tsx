@@ -22,6 +22,7 @@ const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
     boxSizing: 'border-box',
+    height: '100vh',
     backgroundColor:
       theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.white,
   },
@@ -153,6 +154,10 @@ export default function Home() {
         onClose={() => setContactModalOpened(false)}
         centered
         withCloseButton={false}
+        trapFocus
+        transition="fade"
+        transitionDuration={600}
+        transitionTimingFunction="ease"
       >
         <Box>
           <Text size="xl" weight={500}>
@@ -169,23 +174,19 @@ export default function Home() {
               console.log('submit');
             }}
           >
-            <TextInput
-              label="Name"
-              id="name"
-              className="border border-gray-300 rounded-md p-2"
-            />
-            <TextInput
-              label="Email"
-              id="email"
-              className="border border-gray-300 rounded-md p-2"
-            />
+            <TextInput label="Name" id="name" className=" rounded-md p-2" />
+            <TextInput label="Email" id="email" className=" rounded-md p-2" />
             <Textarea
               label="Message"
               id="message"
-              className="border border-gray-300 rounded-md p-2"
+              className=" rounded-md p-2"
             />
             <div className="flex justify-end mt-4">
-              <Button type="submit" className="px-4 py-2 rounded-md">
+              <Button
+                type="submit"
+                className="px-4 py-2 rounded-md"
+                onClick={() => setContactModalOpened(false)}
+              >
                 Submit
               </Button>
             </div>

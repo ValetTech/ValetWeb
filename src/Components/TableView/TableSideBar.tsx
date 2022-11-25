@@ -1,16 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-no-bind */
 import { useDraggable } from '@dnd-kit/core';
 import {
   Button,
   Center,
   createStyles,
+  Divider,
+  Loader,
+  Paper,
   ScrollArea,
   Select,
   Text,
   TextInput,
 } from '@mantine/core';
-import { useListState, useScrollLock, useViewportSize } from '@mantine/hooks';
-import { IconCalendarEvent, IconSearch } from '@tabler/icons';
+import { useScrollLock, useViewportSize } from '@mantine/hooks';
+import { IconCalendarEvent, IconSearch, IconStar } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { ChangeEvent, useEffect, useState } from 'react';
 import Area from '../../Models/Area';
@@ -86,39 +90,6 @@ export function Draggable({ id, type, children }: any) {
   );
 }
 
-export function ReservationsList({ data }: any) {
-  const classes = useStyles();
-  const [items, setItems] = useListState<Reservation>(data);
-
-  return (
-    <>
-      {items.map((item: Reservation) => (
-        <Draggable
-          key={`reservation-${item.id}`}
-          id={`reservation-${item.id}`}
-          type="reservation"
-        >
-          <div className="p-2 z-50 focus:hidden">
-            <Text className="" size="sm">
-              {item.customer?.fullName ?? 'Unnamed Customer'}
-            </Text>
-            <Text size="sm">
-              {dayjs(item.dateTime).format('h:mm A - D MMM YY')}
-            </Text>
-            <Text size="sm">{item.tables?.length} tables</Text>
-            <Text color="dimmed" size="sm">
-              Source: {item.source ?? 'Unknown Source'}
-            </Text>
-            <Text color="dimmed" size="sm">
-              Status: {item.status ?? 'No Status'}
-            </Text>
-          </div>
-        </Draggable>
-      ))}
-    </>
-  );
-}
-
 enum State {
   Pending,
   Confirmed,
@@ -136,6 +107,9 @@ interface TableSideBarProps {
   params: ReservationParams;
   setParams: (params: ReservationParams) => void;
   areas: Area[];
+  loading: boolean;
+  selectedArea: Area | undefined;
+  loadReservations: () => void;
 }
 
 export default function TableSideBar({
@@ -146,6 +120,9 @@ export default function TableSideBar({
   params,
   setParams,
   areas,
+  loading,
+  selectedArea,
+  loadReservations,
 }: TableSideBarProps) {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<[boolean, boolean, boolean]>([
@@ -219,39 +196,98 @@ export default function TableSideBar({
         {/* SEARCH */}
         <SearchBar search={search} onChange={handleSearchChange} />
         {/* CHIPS */}
-        <FilterChips filters={filters} onChange={setFilters} />
+        <FilterChips params={params} setParams={setParams} />
         {/* TABLE */}
         <div className="m-2 ">
-          <ScrollArea.Autosize
-            maxHeight={height}
-            className="overscroll-contain"
-          >
+          {loading && (
+            <Center className="mt-4">
+              <Loader variant="dots" />
+            </Center>
+          )}
+          <ScrollArea.Autosize maxHeight={height - 250} offsetScrollbars>
             {/* <TableSort data={rowData} /> */}
+
             {Array.isArray(data) && data?.length ? (
-              <ReservationsList data={data} />
+              <div className="space-y-2 select-none">
+                {data.map((item: Reservation) => (
+                  <Paper
+                    key={`reservation-${item.id}`}
+                    className="p-2  focus:hidden"
+                  >
+                    <Draggable
+                      key={`reservation-${item.id}`}
+                      id={`reservation-${item.id}`}
+                      type="reservation"
+                    >
+                      <Divider
+                        variant="dotted"
+                        label="Customer"
+                        labelPosition="center"
+                      />
+                      <div>
+                        <div className="flex flex-row flex-nowrap  justify-center">
+                          {item?.customer?.isVip && (
+                            <IconStar size={16} className="mr-4" />
+                          )}
+                          <Text className="" size="sm">
+                            {item.customer?.fullName ?? 'Unnamed Customer'}
+                          </Text>
+                        </div>
+                        <Divider
+                          variant="dotted"
+                          label="Date"
+                          labelPosition="center"
+                        />
+                        <div className="flex flex-nowrap justify-center">
+                          <Text size="sm">
+                            {dayjs(item.dateTime).format('h:mm A - D MMM YY')}
+                          </Text>
+                        </div>
+                        <Divider
+                          variant="dotted"
+                          label="Info"
+                          labelPosition="center"
+                        />
+                        <div className="flex flex-wrap flex-auto justify-evenly ">
+                          <Text size="sm">
+                            {item.noGuests ?? 1}{' '}
+                            {item.noGuests === 1 ? 'Guest' : 'Guests'}
+                          </Text>
+                          <Text size="sm">{item.duration} mins</Text>
+                          <Text size="sm">{item.tables?.length} tables</Text>
+                        </div>
+                      </div>
+                    </Draggable>
+                  </Paper>
+                ))}
+              </div>
             ) : (
               <div>
                 <Center className="py-4">
                   <Text size="xl">No Reservations</Text>
                 </Center>
-                <Center>
-                  <Button
-                    className="bg-[#FFB703]"
-                    size="lg"
-                    onClick={() => setReservationModal(true)}
-                  >
-                    Create Reservation
-                  </Button>
-                </Center>
               </div>
             )}
+            <Center>
+              <Button
+                className="bg-[#FFB703] my-5"
+                size="lg"
+                onClick={() => setReservationModal(true)}
+              >
+                Create Reservation
+              </Button>
+            </Center>
           </ScrollArea.Autosize>
           <CreateReservationModal
             areasData={areas}
             sitting={selectedSitting ?? undefined}
+            area={selectedArea ?? undefined}
             sittingsData={sittings}
             opened={reservationModal}
-            onClose={() => setReservationModal(true)}
+            onClose={() => {
+              loadReservations();
+              setReservationModal(false);
+            }}
           />
         </div>
       </div>

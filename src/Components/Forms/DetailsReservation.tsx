@@ -40,7 +40,7 @@ const initialValues: Reservation = {
     capacity: 0,
     price: 0,
   },
-  dateTime: new Date('1970-01-01T00:00'),
+  dateTime: new Date('1970-01-01T00:00').toISOString(),
   duration: 90,
   noGuests: 2,
   source: '',

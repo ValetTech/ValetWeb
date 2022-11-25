@@ -81,26 +81,30 @@ export default function Analytics({ reservations }: AnalyticsProps) {
   }
 
   return (
-    <div className="flex flex-grow  mt-5">
-      <div className="w-full">
-        <Text weight={700} align="center" size="xl">
-          Average Party Size
-        </Text>
-        <Center>
-          <Text color="blue" weight={700} align="center" size="xl">
-            {totalAveragePartySize} guests
+    <div className="flex flex-grow flex-col xs:flex-row mt-5 h-full xs:space-x-3">
+      <div className="w-full flex flex-col flex-grow  mb-3 xs:mb-0 rounded-lg justify-evenly p-2 space-y-1 shadow-lg bg-[#f1f4f8]">
+        <div>
+          <Text weight={700} align="center" size="xl">
+            Average Party Size
           </Text>
-        </Center>
-        <Text weight={700} align="center" size="xl">
-          Average Duration
-        </Text>
-        <Center>
-          <Text color="blue" weight={700} align="center" size="xl">
-            {totalAverageDuration} minutes
+          <Center>
+            <Text color="blue" weight={700} align="center" size="xl">
+              {totalAveragePartySize} guests
+            </Text>
+          </Center>
+        </div>
+        <div>
+          <Text weight={700} align="center" size="xl">
+            Average Duration
           </Text>
-        </Center>
+          <Center>
+            <Text color="blue" weight={700} align="center" size="xl">
+              {totalAverageDuration} minutes
+            </Text>
+          </Center>
+        </div>
       </div>
-      <div className="w-full">
+      <div className="w-full h-full rounded-lg p-2 shadow-lg bg-[#f1f4f8] mb-3 xs:mb-0">
         <Text weight={700} align="center" size="xl">
           Unallocated Reservations
         </Text>
@@ -133,7 +137,7 @@ export default function Analytics({ reservations }: AnalyticsProps) {
           />
         </Center>
       </div>
-      <div className="w-full">
+      <div className="w-full h-full rounded-lg justify-evenly p-2 shadow-lg bg-[#f1f4f8]">
         <Text weight={700} align="center" size="xl">
           Occupancy Rate
         </Text>

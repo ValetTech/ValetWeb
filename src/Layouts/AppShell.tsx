@@ -21,7 +21,7 @@ const links = [
   { link: '/reservations', icon: IconCalendarStats, label: 'Reservations' },
   { link: '/tables', icon: IconBrandAirtable, label: 'Tables' },
   { link: '/calendar', icon: IconCalendarEvent, label: 'Calendar' },
-  { link: '/areas', icon: IconBoxModel2, label: 'Area Designer' },
+  { link: '/areas', icon: IconBoxModel2, label: 'Areas' },
 ];
 
 export default function DefaultAppShell(store: any) {

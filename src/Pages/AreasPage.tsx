@@ -7,24 +7,87 @@ import {
   Card,
   Group,
   Modal,
+  SegmentedControl,
+  Table,
   Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AreaDesigner from '../Components/Area/AreaDesigner';
+import ErrorNotification from '../Components/Notifications/NotifyError';
 import Area from '../Models/Area';
-import { createAreaAsync } from '../Services/ApiServices';
+import { createAreaAsync, getAreasAsync } from '../Services/ApiServices';
+
+function AreasTable({ areas }: { areas: Area[] | undefined }) {
+  if (!areas || areas?.length === 0) {
+    return <div>No areas found</div>;
+  }
+  const rows = areas?.map((area) => (
+    <tr key={area.id}>
+      <td>{area.name}</td>
+      <td>{area.description}</td>
+      <td>
+        {area.width}m by {area.height}m
+      </td>
+      <td>{area.sittings?.length ?? 0}</td>
+      <td>{area.tables?.length ?? 0}</td>
+    </tr>
+  ));
+
+  return (
+    <Table highlightOnHover>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>description</th>
+          <th>Size</th>
+          <th>Number of Sittings</th>
+          <th>Number of tables</th>
+        </tr>
+      </thead>
+      <tbody>{rows}</tbody>
+    </Table>
+  );
+}
 
 export default function AreasPage() {
   const [opened, setOpened] = useState(false);
+  const [value, setValue] = useState('areas');
+  const [areas, setAreas] = useState<Area[]>();
+
+  useEffect(() => {
+    getAreasAsync()
+      .then((res) => setAreas(res))
+      .catch((err) => {
+        ErrorNotification(err.message);
+      });
+  }, []);
 
   function modalClose() {
     setOpened(false);
   }
-  return <AreaDesigner />;
+  return (
+    <div className="mx-3">
+      <h1>{value === 'areas' ? 'Areas' : 'Area Designer'}</h1>
+      <SegmentedControl
+        value={value}
+        onChange={setValue}
+        fullWidth
+        data={[
+          { label: 'Areas', value: 'areas' },
+          { label: 'Area Designer', value: 'areaDesigner' },
+        ]}
+      />
+      <div className="mx-1">
+        <Card shadow="sm">
+          {value === 'areas' ? <AreasTable areas={areas} /> : <AreaDesigner />}
+        </Card>
+      </div>
+    </div>
+  );
 }
 
 interface CreateAreaModalProps {

@@ -1,13 +1,15 @@
 /* eslint-disable react/jsx-no-bind */
 import { Chip } from '@mantine/core';
-import { useEventListener, useMediaQuery } from '@mantine/hooks';
+import { useEventListener } from '@mantine/hooks';
+import { useState } from 'react';
+import ReservationParams from '../../Models/ReservationParams';
 
 interface Props {
-  filters: [boolean, boolean, boolean];
-  onChange: (filters: [boolean, boolean, boolean]) => void;
+  params: ReservationParams;
+  setParams: (params: ReservationParams) => void;
 }
 
-export default function FilterChips({ filters, onChange }: Props) {
+export default function FilterChips({ params, setParams }: Props) {
   const onWheel = (e: any) => {
     if (e.deltaY === 0) return;
     e.preventDefault();
@@ -17,7 +19,7 @@ export default function FilterChips({ filters, onChange }: Props) {
       // behavior: 'smooth',
     });
   };
-  const largeScreen = useMediaQuery('(min-width: 1350px)');
+  const [chipValue, setChipValue] = useState<string>();
 
   const ref = useEventListener('wheel', onWheel);
 
@@ -30,32 +32,56 @@ export default function FilterChips({ filters, onChange }: Props) {
       }
     >
       <Chip
-        size={largeScreen ? 'sm' : 'xs'}
-        checked={filters.every((v) => !v)}
-        onChange={() => onChange([false, false, false])}
+        checked={chipValue === 'Assigned'}
+        onChange={(value) => {
+          setChipValue(value ? 'Assigned' : undefined);
+          setParams({
+            ...params,
+            Status: value ? 'Assigned' : undefined,
+          });
+        }}
+        radius="md"
       >
-        All
+        Assigned
       </Chip>
       <Chip
-        size={largeScreen ? 'sm' : 'xs'}
-        checked={filters[0]}
-        onChange={() => onChange([!filters[0], false, false])}
+        checked={chipValue === 'Pending'}
+        onChange={(value) => {
+          setChipValue(value ? 'Pending' : undefined);
+          setParams({
+            ...params,
+            Status: value ? 'Pending' : undefined,
+          });
+        }}
+        radius="md"
+      >
+        Pending
+      </Chip>
+      <Chip
+        checked={chipValue === 'Confirmed'}
+        onChange={(value) => {
+          setChipValue(value ? 'Confirmed' : undefined);
+          setParams({
+            ...params,
+            Status: value ? 'Confirmed' : undefined,
+          });
+        }}
+        radius="md"
+      >
+        Confirmed
+      </Chip>
+      <Chip
+        checked={chipValue === 'Seated'}
+        onChange={(value) => {
+          setChipValue(value ? 'Seated' : undefined);
+          setParams({
+            ...params,
+            Status: value ? 'Seated' : undefined,
+          });
+        }}
+        radius="md"
       >
         Seated
-      </Chip>
-      <Chip
-        size={largeScreen ? 'sm' : 'xs'}
-        checked={filters[1]}
-        onChange={() => onChange([false, !filters[1], false])}
-      >
-        Partially Seated
-      </Chip>
-      <Chip
-        size={largeScreen ? 'sm' : 'xs'}
-        checked={filters[2]}
-        onChange={() => onChange([false, false, !filters[2]])}
-      >
-        Not Seated
       </Chip>
     </div>
   );
