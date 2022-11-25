@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/button-has-type */
@@ -11,7 +12,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Button, Center, createStyles, Grid, Text } from '@mantine/core';
-import { useListState, useViewportSize } from '@mantine/hooks';
+import { useViewportSize } from '@mantine/hooks';
 import { IconBrandAirtable, IconStar } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -94,36 +95,6 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function ReservationsList({ data }: any) {
-  const { classes, cx } = useStyles();
-  const [state, handlers] = useListState(data);
-
-  const items = state.map((item, index) => (
-    <Draggable key={item.id} index={index} draggableId={item.id} data={item}>
-      <Text className="pr-2">{item.customer.fullName}</Text>
-      <div>
-        <Text>{dayjs(item.dateTime).format('h:mm A - D MMM YY')}</Text>
-        <Text color="dimmed" size="sm">
-          Source: {item.source} | Status: {item.status}
-        </Text>
-      </div>
-    </Draggable>
-  ));
-
-  const dItems = state.map((item, index) => (
-    <Draggable className="" key={item.id} id={item.id}>
-      <Text className="pr-2">Full name</Text>
-      <div>
-        <Text>{dayjs('2022-10-16').format('h:mm A - D MMM YY')}</Text>
-        <Text color="dimmed" size="sm">
-          Source: | Status:
-        </Text>
-      </div>
-    </Draggable>
-  ));
-  return <DndContext autoScroll={false}>{dItems}</DndContext>;
-}
-
 export function Draggable({ id, children }: any) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -161,9 +132,7 @@ export default function TablesPage() {
   const [areas, setAreas] = useState<Area[]>([]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeItem, setActiveItem] = useState<Reservation | Table | null>(
-    null
-  );
+  const [activeItem, setActiveItem] = useState<Reservation | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { height, width } = useViewportSize();
   const [grid, setGrid] = useState<JSX.Element[][]>([]);
@@ -171,7 +140,6 @@ export default function TablesPage() {
 
   function CreateGrid() {
     if (!selectedArea) return;
-    console.log('CreateGrid');
 
     const { width: w, height: h } = selectedArea;
     const size = Math.max(w ?? 12, h ?? 12);
@@ -205,6 +173,7 @@ export default function TablesPage() {
   }, [selectedArea, tables]);
 
   function loadReservations() {
+    setLoading(true);
     getReservationsAsync(params ?? {})
       .then((response: Reservation[]) => {
         setReservations(response);
@@ -212,9 +181,11 @@ export default function TablesPage() {
       .catch((error) => {
         ErrorNotification(error.message);
       });
+    setLoading(false);
   }
 
   function UpdateTable(table: Table) {
+    setLoading(true);
     const { reservations, area, ...newTable } = table;
     const newTables = tables?.map((t) => {
       if (t.id === table.id) {
@@ -230,10 +201,12 @@ export default function TablesPage() {
         ErrorNotification(err.message);
       });
     loadReservations();
+    setLoading(false);
   }
 
   useEffect(() => {
     // Add param for future only
+    setLoading(true);
     getSittingsAsync()
       .then((response: Sitting[]) => {
         setSittings(response);
@@ -252,6 +225,7 @@ export default function TablesPage() {
       .catch((error) => {
         ErrorNotification(error.message);
       });
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -261,8 +235,6 @@ export default function TablesPage() {
       setActiveItem(
         reservationsData.find((r) => r.id?.toString() === id) ?? null
       );
-    } else if (type === 'table') {
-      setActiveItem(tables?.find((t) => t.id?.toString() === id) ?? null);
     }
   }, [activeId, reservationsData, tables]);
 
@@ -277,6 +249,7 @@ export default function TablesPage() {
   }, [params]);
 
   useEffect(() => {
+    setLoading(true);
     setParams({
       ...params,
       SittingId: selectedSitting?.id?.toString() ?? undefined,
@@ -287,9 +260,9 @@ export default function TablesPage() {
         setTables(response);
       })
       .catch((error) => {
-        console.error('Error:', error);
         ErrorNotification(error.message);
       });
+    setLoading(false);
   }, [selectedSitting]);
 
   function handleDragEnd(event) {
@@ -307,13 +280,11 @@ export default function TablesPage() {
         );
         const [_, tableId] = over?.id?.split('-', 2) || [null, null];
 
-        AddTableToReservationAsync(reservation?.id ?? 0, tableId)
-          .then((res) => {
-            loadReservations();
-          })
-          .catch((err) => {
+        AddTableToReservationAsync(reservation?.id ?? 0, tableId).catch(
+          (err) => {
             ErrorNotification(err.message);
-          });
+          }
+        );
         loadReservations();
       }
       if (type === 'table') {
@@ -332,6 +303,7 @@ export default function TablesPage() {
   }
 
   function UpdateSitting(sitting: Sitting) {
+    setLoading(true);
     const { reservations, ...newSitting } = sitting;
     const newSittings = sittings.map((s) => {
       if (s.id === sitting.id) {
@@ -349,6 +321,7 @@ export default function TablesPage() {
         ErrorNotification(err.message);
       });
     loadReservations();
+    setLoading(false);
   }
 
   if (height < 500 || width < 500) {
@@ -392,7 +365,6 @@ export default function TablesPage() {
                     setParams={setParams}
                     loading={loading}
                     selectedArea={selectedArea ?? undefined}
-                    setSelectedArea={setSelectedArea}
                     loadReservations={loadReservations}
                   />
                 </div>

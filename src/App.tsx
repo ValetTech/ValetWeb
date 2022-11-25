@@ -5,7 +5,7 @@ import {
   Global,
   MantineProvider,
 } from '@mantine/core';
-import { useColorScheme, useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -30,20 +30,11 @@ function MyGlobalStyles() {
   );
 }
 export default function App() {
-  const preferredColorScheme = useColorScheme();
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
     defaultValue: 'light',
     getInitialValueInEffect: true,
   });
-
-  // const [value, setValue] = useLocalStorage({
-  //   key: 'user-auth',
-  //   defaultValue: {},
-  // });
-  // dispatch(setCredentials({ accessToken: value.accessToken, user: value.use }));
-
-  // const state = store.getState();
 
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));

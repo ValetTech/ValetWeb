@@ -16,7 +16,7 @@ import Area from '../../Models/Area';
 import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
 import Table from '../../Models/Table';
-import AreaDesigner from '../Area/AreaDesigner';
+import AreaDesigner from '../Forms/AreaDesigner';
 import { Draggable } from './TableSideBar';
 
 // TODO - Nav | Area | Date | Sitting |

@@ -51,9 +51,6 @@ export default function CreateReservationModal({
   sitting = undefined,
   area = undefined,
 }: CreateReservationModalProps) {
-  // const [datePickerValue, setDatePickerValue] = useState(new Date());
-  // const [timePickerValue, setTimePickerValue] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const sources = ['InPerson', 'Email', 'Phone', 'Website'];
   const [loading, setLoading] = useState(false);
 

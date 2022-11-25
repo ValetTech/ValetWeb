@@ -48,7 +48,7 @@ export default function CreateUserModal({
     },
   });
 
-  function onSubmit(values: any) {
+  function onSubmit() {
     onClose();
   }
 
@@ -63,7 +63,7 @@ export default function CreateUserModal({
       <Card radius="md" p="xl">
         <Title align="center">Create User</Title>
         <Box sx={{ maxWidth: 300 }} mx="auto" mt={20}>
-          <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
+          <form onSubmit={form.onSubmit(onSubmit)}>
             <TextInput
               mt={20}
               withAsterisk

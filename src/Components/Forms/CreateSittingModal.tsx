@@ -1,10 +1,4 @@
-// Lint Rules
-// #region
 /* eslint-disable react/jsx-props-no-spreading */
-// #endregion
-
-// Components
-// #region
 import {
   Box,
   Button,
@@ -19,18 +13,9 @@ import {
 import { TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
-// #endregion
-
-// Services
-// #region
-import { createSittingAsync } from '../../Services/ApiServices';
-// #endregion
-
-// Models
-// #region
 import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
-// #endregion
+import { createSittingAsync } from '../../Services/ApiServices';
 
 interface CreateSittingModalProps {
   opened: boolean;
@@ -76,7 +61,6 @@ export default function CreateSittingModal({
       reservations: values.reservations,
     };
     createSittingAsync(sitting);
-    console.log(sitting);
     onClose();
   }
 

@@ -6,13 +6,13 @@ import Reservation from '../../Models/Reservation';
 function CreateCustomerForm({
   reservationDetails,
   setReservationDetails,
-  className,
+  className = '',
 }: {
   reservationDetails: Reservation;
   setReservationDetails: (reservation: Reservation) => void;
-  className?: string;
+  className: string;
 }) {
-  const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
+  // const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
 
   return (
     <div className={`w-full flex flex-col flex-grow space-y-2 ${className}`}>

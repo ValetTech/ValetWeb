@@ -16,7 +16,7 @@ import {
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
 import { useEffect, useState } from 'react';
-import AreaDesigner from '../Components/Area/AreaDesigner';
+import AreaDesigner from '../Components/Forms/AreaDesigner';
 import ErrorNotification from '../Components/Notifications/NotifyError';
 import Area from '../Models/Area';
 import { createAreaAsync, getAreasAsync } from '../Services/ApiServices';

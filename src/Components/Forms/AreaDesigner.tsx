@@ -1,27 +1,10 @@
 /* eslint-disable react/jsx-no-bind */
-import {
-  closestCenter,
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  useDraggable,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
+import { DndContext, DragOverlay } from '@dnd-kit/core';
 import {
   restrictToVerticalAxis,
   restrictToWindowEdges,
 } from '@dnd-kit/modifiers';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
 /* eslint-disable react/jsx-props-no-spreading */
-import { CSS } from '@dnd-kit/utilities';
 import {
   Button,
   Container,
@@ -33,59 +16,11 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { forwardRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import { createAreaAsync, getAreasAsync } from '../../Services/ApiServices';
 import CreatedNotification from '../Notifications/NotifyCreate';
 import ErrorNotification from '../Notifications/NotifyError';
-
-function App() {
-  const [activeId, setActiveId] = useState(null);
-  const [items, setItems] = useState(['1', '2', '3']);
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map((id) => (
-          <SortableItem key={id} id={id} />
-        ))}
-      </SortableContext>
-      <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay>
-    </DndContext>
-  );
-
-  function handleDragStart(event) {
-    const { active } = event;
-
-    setActiveId(active.id);
-  }
-
-  function handleDragEnd(event) {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
-
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-
-    setActiveId(null);
-  }
-}
 
 export default function AreaDesigner() {
   const form = useForm<Area>({
@@ -135,30 +70,9 @@ export default function AreaDesigner() {
         setAreas(response);
       })
       .catch((error) => {
-        console.log(error);
         ErrorNotification(error.message);
       });
   }, []);
-
-  //   const fields = form.values.employees.map((_, index) => (
-  //     <Draggable key={index} index={index} draggableId={index.toString()}>
-  //       {(provided) => (
-  //         <Group ref={provided.innerRef} mt="xs" {...provided.draggableProps}>
-  //           <Center {...provided.dragHandleProps}>
-  //             <IconGripVertical size={18} />
-  //           </Center>
-  //           <TextInput
-  //             placeholder="John Doe"
-  //             {...form.getInputProps(`employees.${index}.name`)}
-  //           />
-  //           <TextInput
-  //             placeholder="example@mail.com"
-  //             {...form.getInputProps(`employees.${index}.email`)}
-  //           />
-  //         </Group>
-  //       )}
-  //     </Draggable>
-  //   ));
 
   function handleSubmit() {
     const { sittings, id, ...rest } = form.values;
@@ -177,7 +91,6 @@ export default function AreaDesigner() {
         form.reset();
       })
       .catch((err) => {
-        console.log(err);
         ErrorNotification(err.message);
       });
   }
@@ -194,16 +107,6 @@ export default function AreaDesigner() {
     });
     setTables(tablesData ?? []);
 
-    const tablesForm =
-      selectedArea?.tables?.map((t) => ({
-        label: t.type,
-        value: t.type,
-        type: t.type,
-        capacity: t.capacity ?? 0,
-        position: t.position ?? null,
-      })) ?? [];
-
-    // form.setFieldValue('tables', tablesForm);
     if (area) {
       form.setValues(area);
     }
@@ -233,7 +136,7 @@ export default function AreaDesigner() {
               placeholder="Select layout"
               data={areas.map((area) => ({
                 label: area.name,
-                value: area.id,
+                value: area.id?.toString() ?? '',
                 ...area,
               }))}
               searchable
@@ -249,7 +152,6 @@ export default function AreaDesigner() {
               label="Description"
               placeholder="Description"
               required
-              // autosize
               minRows={3}
               maxRows={5}
               {...form.getInputProps('description')}
@@ -301,12 +203,6 @@ export default function AreaDesigner() {
               return item;
             }}
             {...form.getInputProps('tables')}
-            // value={tables}
-            // onChange={(value) => {
-            //   console.log(value);
-            //   setTables(value);
-            //   form.setFieldValue('tables', value);
-            // }}
           />
           <Button
             className="bg-[#FFB703]"
@@ -323,60 +219,11 @@ export default function AreaDesigner() {
           >
             Create Area
           </Button>
-          <App />
         </Container>
       </form>
     </DndContext>
   );
 }
-
-function Draggable({ id, children }: any) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id,
-  });
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-
-  return (
-    <button
-      type="button"
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-    >
-      {children}
-    </button>
-  );
-}
-
-function SortableItem(props) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <Item ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {props.id}
-    </Item>
-  );
-}
-
-const Item = forwardRef(({ id, ...props }, ref) => {
-  return (
-    <div {...props} ref={ref}>
-      {id}
-    </div>
-  );
-});
-Item.displayName = 'Item';
 
 /*
 

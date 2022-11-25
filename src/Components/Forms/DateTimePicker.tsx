@@ -92,17 +92,3 @@ export function BasicDateTimePickerNew({
     </StyledEngineProvider>
   );
 }
-
-// function CustomerTextInput(props) {
-//   console.log('Props', props);
-
-//   return (
-//     <TextInput
-//       {...props.inputProps}
-//       label={props.label}
-//       rightSection={<IconCalendar size="22" />}
-//       inputContainer={(children) => (
-//       )}
-//     />
-//   );
-// }
