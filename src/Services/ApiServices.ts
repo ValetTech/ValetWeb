@@ -262,6 +262,15 @@ export function deleteSittingAsync(id: number) {
   return response;
 }
 
+export function deleteSittingGroupAsync(id: number) {
+  const response = axios.delete(`/sittings/${id}/group`, {
+    headers: {
+      Authorization: `Bearer ${getTokenFromState()}`,
+    },
+  });
+  return response;
+}
+
 // CUSTOMER
 export function createCustomerAsync(customer: Customer) {
   const response = axios.post(

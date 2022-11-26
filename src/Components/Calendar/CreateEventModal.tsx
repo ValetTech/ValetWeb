@@ -26,6 +26,7 @@ import Sitting from '../../Models/Sitting';
 import {
   createSittingAsync,
   deleteSittingAsync,
+  deleteSittingGroupAsync,
   getSittingTypesAsync,
   updateSittingAsync,
 } from '../../Services/ApiServices';
@@ -225,12 +226,11 @@ export default function CreateEventModal({
   function onSubmit(values) {
     const sitting: Sitting = {
       ...values.sitting,
-      startDate: RoundTime(startDate).toDate(),
-      endDate: RoundTime(endDate).toDate(),
+      startTime: RoundTime(startDate).toDate(),
+      endTime: RoundTime(endDate).toDate(),
       areaIds: eventAreas,
       groupId: values.sitting.groupId ?? null,
     };
-    console.log(sitting);
     setLoading(true);
     if (values.sitting.id) {
       updateSittingAsync(values.sitting.id, sitting)
@@ -264,6 +264,23 @@ export default function CreateEventModal({
 
   function handleDelete() {
     setLoading(true);
+    if (eventData?.groupId) {
+      deleteSittingGroupAsync(eventData?.groupId)
+        .then(() => {
+          DeletedNotification();
+          handleClose();
+          form.reset();
+          setEvent(null);
+          setIsUpdate(false);
+        })
+        .catch((err) => {
+          ErrorNotification(err.message);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      return;
+    }
     deleteSittingAsync(eventData?.id)
       .then(() => {
         DeletedNotification();

@@ -14,8 +14,8 @@ import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
 import { getAreasAsync, getSittingsAsync } from '../../Services/ApiServices';
-import CreateReservationModal from '../Forms/CreateReservation';
 import ErrorNotification from '../Notifications/NotifyError';
+import BookingModal from './BookingModal';
 import SakeLogo from './SakeLogo';
 
 const HEADER_HEIGHT = 60;
@@ -160,7 +160,7 @@ export default function HeaderAction({ links }: HeaderActionProps) {
         >
           Make a Reservation
         </Button>
-        <CreateReservationModal
+        <BookingModal
           opened={reservationModalOpened}
           onClose={() => setReservationModalOpened(false)}
           sittingsData={sittingsData}

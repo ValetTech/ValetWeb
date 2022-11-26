@@ -96,9 +96,9 @@ export default function ReservationsTable({
         <Center>{row.customer.fullName}</Center>
       </td>
       <td>
-        <Center>{`${row.sitting.type} (${dayjs(row.sitting.startTime).format(
+        <Center>{`${row.sitting?.type} (${dayjs(row.sitting?.startTime).format(
           'ddd hh:mma'
-        )} - ${dayjs(row.sitting.endTime).format('hh:mma')}) `}</Center>
+        )} - ${dayjs(row.sitting?.endTime).format('hh:mma')}) `}</Center>
       </td>
       {/* <td>
         <Center>{row.venueId}</Center>

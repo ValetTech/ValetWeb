@@ -72,7 +72,7 @@ export function BasicDateTimePickerNew({
           <DateTimePicker
             minDate={minDate}
             maxDate={maxDate}
-            inputFormat="DD/MM/YYYY HH:mm a"
+            inputFormat="DD/MM/YYYY hh:mm a"
             InputAdornmentProps={{ position: 'start' }}
             renderInput={(props) => {
               return <TextField {...props} fullWidth size="small" />;
