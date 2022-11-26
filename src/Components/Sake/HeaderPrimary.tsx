@@ -89,7 +89,7 @@ export default function HeaderAction({ links }: HeaderActionProps) {
       .catch((error) => {
         ErrorNotification(error.message);
       });
-  });
+  }, []);
 
   useEffect(() => {
     getSittingsAsync()
@@ -99,7 +99,7 @@ export default function HeaderAction({ links }: HeaderActionProps) {
       .catch((error) => {
         ErrorNotification(error.message);
       });
-  });
+  }, []);
 
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (

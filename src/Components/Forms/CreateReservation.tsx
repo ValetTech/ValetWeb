@@ -343,7 +343,7 @@ export default function CreateReservationModal({
               })
             }
           />
-          <Switch
+          {/* <Switch
             label={reservationDetails.customer?.isVip ? 'VIP' : 'Not VIP'}
             checked={reservationDetails.customer?.isVip?.toString() === 'true'}
             onChange={(value) =>
@@ -355,7 +355,7 @@ export default function CreateReservationModal({
                 },
               })
             }
-          />
+          /> */}
         </div>
         <Group mt={20} position="center">
           <Button
