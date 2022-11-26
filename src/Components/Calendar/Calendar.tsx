@@ -148,7 +148,6 @@ export default function SittingsCalendar() {
   }, []);
 
   function updateSitting(sitting: Sitting) {
-    console.log('Update sitting', sitting);
     updateSittingAsync(sitting?.id, sitting)
       .then((res) => {
         setSittingData([...sittingData, sitting]);
@@ -160,7 +159,6 @@ export default function SittingsCalendar() {
   }
 
   useEffect(() => {
-    console.log('Sitting data changed', sittingData);
 
     createEvents();
   }, [sittingData]);
@@ -176,7 +174,6 @@ export default function SittingsCalendar() {
   }
 
   const handleDrop = (info) => {
-    console.log('Dropped', info.event);
     getSittingByIdAsync(info.event.id).then((response) => {
       updateSitting({
         ...response,
@@ -188,7 +185,6 @@ export default function SittingsCalendar() {
 
   const handleResize = (info) => {
     getSittingByIdAsync(info.event.id).then((response) => {
-      console.log('response', response);
 
       updateSitting({
         ...response,

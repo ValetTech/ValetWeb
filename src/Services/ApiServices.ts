@@ -206,7 +206,7 @@ export function deleteAreaAsync(id: number) {
 
 // SITTING
 export async function getSittingsAsync() {
-  const response = await axios.get('/sittings', {
+  const response = await axios.get('/sittings?SortBy=StartTime', {
     // withCredentials: false,
     headers: {
       Authorization: `Bearer ${getTokenFromState()}`,

@@ -34,7 +34,6 @@ import Reservation from '../../Models/Reservation';
 import Sitting from '../../Models/Sitting';
 import { createReservationAsync } from '../../Services/ApiServices';
 import CreatedNotification from '../Notifications/NotifyCreate';
-import ErrorNotification from '../Notifications/NotifyError';
 
 interface BookingModalProps {
   opened: boolean;
@@ -117,7 +116,7 @@ export default function BookingModal({
         CreatedNotification();
       })
       .catch((error) => {
-        ErrorNotification(error.message);
+        // ErrorNotification(error.message);
       })
       .finally(() => {
         setLoading(false);
