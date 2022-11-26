@@ -158,7 +158,7 @@ export default function TablesPage() {
         return (
           <Droppable key={`${i},${j}`} id={`${i},${j}`} accepts={['table']}>
             <div
-              className="border min-w-[44px] min-h-[44px]"
+              className="border min-w-[44px] min-h-[44px] h-full w-full"
               key={`${i}-${j}`}
             />
           </Droppable>

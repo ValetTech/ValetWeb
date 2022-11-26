@@ -217,14 +217,14 @@ export async function getSittingsAsync() {
 }
 
 export async function getSittingByIdAsync(id: number) {
-  const response = await axios.get(`/sittings?${id}`, {
+  const response = await axios.get(`/sittings?id=${id}`, {
     // withCredentials: false,
     headers: {
       Authorization: `Bearer ${getTokenFromState()}`,
     },
   });
 
-  return response.data.sittings;
+  return response.data.sittings[0];
 }
 
 export async function createSittingAsync(sitting: Sitting) {

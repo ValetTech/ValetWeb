@@ -1043,7 +1043,7 @@
   "resolved" "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz"
   "version" "3.1.0"
 
-"@tabler/icons@^1.68.0":
+"@tabler/icons@^1.113.0", "@tabler/icons@^1.68.0":
   "integrity" "sha512-DjxsvR/0HFHD/utQlM+q3wpl1W2n+jgEZkyfkCkc295rCoAfeXHIBfz/9ROrSHkr205Kq/M8KpQR0Nd4kjwODQ=="
   "resolved" "https://registry.npmjs.org/@tabler/icons/-/icons-1.113.0.tgz"
   "version" "1.113.0"

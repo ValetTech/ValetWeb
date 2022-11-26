@@ -27,7 +27,7 @@ interface ViewHeaderProps {
   areas: Area[];
   selectedArea: Area | null;
   selectedSitting: Sitting | null;
-  setSelectedArea: (area: Area | null) => void;
+  setSelectedArea: (area: Area | undefined) => void;
 }
 
 function ViewHeader({
@@ -214,27 +214,41 @@ export default function TableView({
       />
       {selectedArea?.id ? (
         <div>
-          <div className={`grid grid-cols-${gridSize} gap-0 `}>{grid}</div>
-          <div className="flex flex-row w-full h-full">
-            {tables?.length ? (
-              tables
+          <div className={`grid grid-cols-${gridSize ?? 12} gap-0 `}>
+            {grid}
+          </div>
+          <div
+            className={
+              tables?.filter(
+                (table) =>
+                  table?.areaId === selectedArea?.id &&
+                  (table?.xPosition === -1 || table?.yPosition === -1)
+              )?.length
+                ? 'block'
+                : 'hidden'
+            }
+          >
+            <h2>Unplaced Tables</h2>
+            <div className="flex flex-row w-full h-full border border-slate-800">
+              {tables
                 ?.filter(
                   (table) =>
                     table?.areaId === selectedArea?.id &&
                     (table?.xPosition === -1 || table?.yPosition === -1)
                 )
-                ?.map((table) => <TableDnD key={table.id} table={table} />)
-            ) : (
-              <Button>Add Table</Button>
-            )}
+                ?.map((table) => (
+                  <TableDnD key={table.id} table={table} />
+                ))}
+            </div>
           </div>
+          <Button className="mt-2">Add New Table</Button>
         </div>
       ) : (
         <div className="flex flex-col">
           <Accordion defaultValue="existing">
             <Accordion.Item value="existing">
               <Accordion.Control>
-                <h1>Add Exiting Areas</h1>
+                <h1>Update Sitting Areas</h1>
               </Accordion.Control>
               <Accordion.Panel>
                 <MultiSelect
@@ -295,8 +309,6 @@ export default function TableView({
           </Accordion>
         </div>
       )}
-
-      {/* <Skeleton className="h-full w-full" radius="md" animate={false} /> */}
     </div>
   );
 }
