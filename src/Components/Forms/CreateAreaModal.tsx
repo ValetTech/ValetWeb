@@ -1,10 +1,4 @@
-// Lint Rules
-// #region
 /* eslint-disable react/jsx-props-no-spreading */
-// #endregion
-
-// Components
-// #region
 import {
   Box,
   Button,
@@ -17,17 +11,8 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPencil } from '@tabler/icons';
-// #endregion
-
-// Services
-// #region
-import { createAreaAsync } from '../../Services/ApiServices';
-// #endregion
-
-// Models
-// #region
 import Area from '../../Models/Area';
-// #endregion
+import { createAreaAsync } from '../../Services/ApiServices';
 
 interface CreateAreaModalProps {
   opened: boolean;
@@ -80,7 +65,6 @@ export default function CreateAreaModal({
               icon={<IconPencil />}
               {...form.getInputProps('name')}
             />
-
             <Textarea
               withAsterisk
               autosize

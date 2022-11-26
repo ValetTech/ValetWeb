@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/jsx-no-bind */
@@ -10,13 +12,17 @@ import {
 } from '@dnd-kit/core';
 import { restrictToWindowEdges, snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Button, Center, createStyles, Grid, Text } from '@mantine/core';
-import { useListState } from '@mantine/hooks';
+import { useViewportSize } from '@mantine/hooks';
+import { IconBrandAirtable, IconStar } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import ErrorNotification from '../Components/Notifications/NotifyError';
 import UpdatedNotification from '../Components/Notifications/NotifyUpdate';
 import TableSideBar from '../Components/TableView/TableSideBar';
-import TableView from '../Components/TableView/TableView';
+import TableView, {
+  Droppable,
+  TableDnD,
+} from '../Components/TableView/TableView';
 import Area from '../Models/Area';
 import Reservation from '../Models/Reservation';
 import ReservationParams from '../Models/ReservationParams';
@@ -89,66 +95,6 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function ReservationsList({ data }: any) {
-  const { classes, cx } = useStyles();
-  const [state, handlers] = useListState(data);
-
-  const items = state.map((item, index) => (
-    <Draggable key={item.id} index={index} draggableId={item.id} data={item}>
-      <Text className="pr-2">{item.customer.fullName}</Text>
-      <div>
-        <Text>{dayjs(item.dateTime).format('h:mm A - D MMM YY')}</Text>
-        <Text color="dimmed" size="sm">
-          Source: {item.source} | Status: {item.status}
-        </Text>
-      </div>
-    </Draggable>
-  ));
-
-  const dItems = state.map((item, index) => (
-    <Draggable className="" key={item.id} id={item.id}>
-      <Text className="pr-2">Full name</Text>
-      <div>
-        <Text>{dayjs('2022-10-16').format('h:mm A - D MMM YY')}</Text>
-        <Text color="dimmed" size="sm">
-          Source: | Status:
-        </Text>
-      </div>
-    </Draggable>
-  ));
-  return <DndContext autoScroll={false}>{dItems}</DndContext>;
-}
-
-// function Draggable({ id, data, children }: any) {
-// const { classes, cx } = useStyles();
-// const { attributes, listeners, setNodeRef, transform } = useDraggable({
-//   id,
-//   data,
-// });
-// const style = transform
-//   ? {
-//       transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-//     }
-//   : undefined;
-
-// return (
-//   <button
-//     style={style}
-//     {...listeners}
-//     {...attributes}
-//     className={`${cx(classes.item)} border`}
-//     ref={setNodeRef}
-//   >
-//     <Text className="pr-2 ">A name</Text>
-//     <div>
-//       <Text>{dayjs('2022-10-16T16:00').format('h:mm A - D MMM YY')}</Text>
-//       <Text color="dimmed" size="sm">
-//         Source: Some | Status: Thing
-//       </Text>
-//     </div>
-//   </button>
-// );
-// }
 export function Draggable({ id, children }: any) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -180,16 +126,54 @@ export default function TablesPage() {
 
     SortBy: 'DateTime',
   });
+  const [selectedArea, setSelectedArea] = useState<Area | null>(null);
 
   const [sittings, setSittings] = useState<Sitting[]>([]);
   const [areas, setAreas] = useState<Area[]>([]);
 
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeItem, setActiveItem] = useState<Reservation | Table | null>(
-    null
-  );
+  const [activeItem, setActiveItem] = useState<Reservation | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const { height, width } = useViewportSize();
+  const [grid, setGrid] = useState<JSX.Element[][]>([]);
+  const [gridSize, setGridSize] = useState<number>(12);
+
+  function CreateGrid() {
+    if (!selectedArea) return;
+
+    const { width: w, height: h } = selectedArea;
+    const size = Math.max(w ?? 12, h ?? 12);
+    setGridSize(size);
+    const newGrid = new Array(size).fill(0).map((_, i) => {
+      return new Array(size).fill(0).map((_, j) => {
+        const table = tables?.find(
+          (t) =>
+            t.xPosition === i &&
+            t.yPosition === j &&
+            t.areaId === selectedArea.id
+        );
+        if (table) {
+          return <TableDnD key={`table-${table.id}`} table={table} />;
+        }
+        return (
+          <Droppable key={`${i},${j}`} id={`${i},${j}`} accepts={['table']}>
+            <div
+              className="border min-w-[44px] min-h-[44px] h-full w-full"
+              key={`${i}-${j}`}
+            />
+          </Droppable>
+        );
+      });
+    });
+    setGrid(newGrid);
+  }
+
+  useEffect(() => {
+    CreateGrid();
+  }, [selectedArea, tables]);
 
   function loadReservations() {
+    setLoading(true);
     getReservationsAsync(params ?? {})
       .then((response: Reservation[]) => {
         setReservations(response);
@@ -197,9 +181,11 @@ export default function TablesPage() {
       .catch((error) => {
         ErrorNotification(error.message);
       });
+    setLoading(false);
   }
 
   function UpdateTable(table: Table) {
+    setLoading(true);
     const { reservations, area, ...newTable } = table;
     const newTables = tables?.map((t) => {
       if (t.id === table.id) {
@@ -215,10 +201,12 @@ export default function TablesPage() {
         ErrorNotification(err.message);
       });
     loadReservations();
+    setLoading(false);
   }
 
   useEffect(() => {
     // Add param for future only
+    setLoading(true);
     getSittingsAsync()
       .then((response: Sitting[]) => {
         setSittings(response);
@@ -237,15 +225,7 @@ export default function TablesPage() {
       .catch((error) => {
         ErrorNotification(error.message);
       });
-
-    // getAreasAsync()
-    //   .then((res) => {
-    //     setAreas(res);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //     ErrorNotification('Could not get areas');
-    //   });
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -255,24 +235,10 @@ export default function TablesPage() {
       setActiveItem(
         reservationsData.find((r) => r.id?.toString() === id) ?? null
       );
-    } else if (type === 'table') {
-      setActiveItem(tables?.find((t) => t.id?.toString() === id) ?? null);
     }
   }, [activeId, reservationsData, tables]);
 
   // const [tables, setTables] = useState<BoxSpec[]>([]);
-
-  const gridSize = 20;
-
-  function snapToGrid(args) {
-    const { transform } = args;
-
-    return {
-      ...transform,
-      x: Math.ceil(transform.x / gridSize) * gridSize,
-      y: Math.ceil(transform.y / gridSize) * gridSize,
-    };
-  }
 
   useEffect(() => {
     loadReservations();
@@ -283,6 +249,7 @@ export default function TablesPage() {
   }, [params]);
 
   useEffect(() => {
+    setLoading(true);
     setParams({
       ...params,
       SittingId: selectedSitting?.id?.toString() ?? undefined,
@@ -293,15 +260,16 @@ export default function TablesPage() {
         setTables(response);
       })
       .catch((error) => {
-        console.error('Error:', error);
         ErrorNotification(error.message);
       });
+    setLoading(false);
   }, [selectedSitting]);
 
   function handleDragEnd(event) {
     const { active, over } = event;
 
     setActiveId(null);
+    setActiveItem(null);
 
     if (over && over.data.current.accepts.includes(active.data.current.type)) {
       const [type, id] = active?.id?.split('-', 2) || [null, null];
@@ -312,13 +280,11 @@ export default function TablesPage() {
         );
         const [_, tableId] = over?.id?.split('-', 2) || [null, null];
 
-        AddTableToReservationAsync(reservation?.id ?? 0, tableId)
-          .then((res) => {
-            loadReservations();
-          })
-          .catch((err) => {
+        AddTableToReservationAsync(reservation?.id ?? 0, tableId).catch(
+          (err) => {
             ErrorNotification(err.message);
-          });
+          }
+        );
         loadReservations();
       }
       if (type === 'table') {
@@ -333,9 +299,11 @@ export default function TablesPage() {
         }
       }
     }
+    CreateGrid();
   }
 
   function UpdateSitting(sitting: Sitting) {
+    setLoading(true);
     const { reservations, ...newSitting } = sitting;
     const newSittings = sittings.map((s) => {
       if (s.id === sitting.id) {
@@ -353,6 +321,17 @@ export default function TablesPage() {
         ErrorNotification(err.message);
       });
     loadReservations();
+    setLoading(false);
+  }
+
+  if (height < 500 || width < 500) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen select-none">
+        <Text size="xl" weight="bold">
+          Please use a larger device
+        </Text>
+      </div>
+    );
   }
 
   return (
@@ -360,16 +339,16 @@ export default function TablesPage() {
       onDragEnd={handleDragEnd}
       collisionDetection={pointerWithin}
       modifiers={[restrictToWindowEdges, snapCenterToCursor]}
-      autoScroll={false}
       onDragStart={(event) => {
         setActiveId(event.active?.id?.toString() ?? null);
       }}
+      autoScroll={false}
     >
-      <div className="h-full w-full xs:pl-0 mx-4">
+      <div className="h-full w-full xs:pl-0 mx-4 overscroll-x-none">
         <Grid className="w-full">
           <Grid.Col span={12}>
             {/* Page Title */}
-            <h1 className="mt-0">Tables View</h1>
+            <h1 className="mt-0 select-none">Tables View</h1>
           </Grid.Col>
           <Grid.Col span={12}>
             <Grid gutter="xs">
@@ -384,6 +363,9 @@ export default function TablesPage() {
                     selectSitting={setSelectedSitting}
                     params={params}
                     setParams={setParams}
+                    loading={loading}
+                    selectedArea={selectedArea ?? undefined}
+                    loadReservations={loadReservations}
                   />
                 </div>
               </Grid.Col>
@@ -397,6 +379,11 @@ export default function TablesPage() {
                     updateSitting={UpdateSitting}
                     params={params}
                     setParams={setParams}
+                    selectedArea={selectedArea}
+                    setSelectedArea={setSelectedArea}
+                    grid={grid}
+                    setGrid={setGrid}
+                    gridSize={gridSize}
                   />
                 </Center>
               </Grid.Col>
@@ -404,19 +391,33 @@ export default function TablesPage() {
           </Grid.Col>
         </Grid>
       </div>
-      <DragOverlay className="w-32 h-32 ">
-        {activeId ? (
-          <Button>
-            <div className="flex flex-col justify-between">
-              <div>{activeItem?.type ?? activeItem?.customer?.fullName}</div>
-              <div>
-                {activeItem?.capacity ??
-                  dayjs(activeItem?.dateTime).format('h:mm A - D MMM YY')}
+      {activeId?.split('-', 2)[0] === 'reservation' ? (
+        <DragOverlay className="w-32 h-32 ">
+          {activeItem ? (
+            <Button>
+              {activeItem?.customer?.isVip && (
+                <IconStar size={16} className="mr-4" />
+              )}
+              <div className="flex flex-col justify-between">
+                <div>{activeItem?.customer?.fullName ?? ''}</div>
+                <div>
+                  {dayjs(activeItem?.dateTime).format('h:mm A - D MMM YY')}
+                </div>
               </div>
+            </Button>
+          ) : null}
+        </DragOverlay>
+      ) : (
+        <DragOverlay className="w-32 h-32 ">
+          {activeId ? (
+            <div className="w-11 h-11 bg-green-500 rounded-full relative z-100">
+              <Center>
+                <IconBrandAirtable size={40} />
+              </Center>
             </div>
-          </Button>
-        ) : null}
-      </DragOverlay>
+          ) : null}
+        </DragOverlay>
+      )}
     </DndContext>
   );
 }

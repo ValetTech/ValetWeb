@@ -25,12 +25,14 @@ import Area from '../../Models/Area';
 import Sitting from '../../Models/Sitting';
 import {
   createSittingAsync,
+  deleteSittingAsync,
   getSittingTypesAsync,
   updateSittingAsync,
 } from '../../Services/ApiServices';
 import CustomRadioButton from '../Buttons/CustomRadioButton';
 import { BasicDateTimePickerNew } from '../Forms/DateTimePicker';
 import CreatedNotification from '../Notifications/NotifyCreate';
+import DeletedNotification from '../Notifications/NotifyDelete';
 import ErrorNotification from '../Notifications/NotifyError';
 import UpdatedNotification from '../Notifications/NotifyUpdate';
 
@@ -251,6 +253,24 @@ export default function CreateEventModal({
         CreatedNotification();
         form.reset();
         handleClose();
+      })
+      .catch((err) => {
+        ErrorNotification(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  function handleDelete() {
+    setLoading(true);
+    deleteSittingAsync(eventData?.id)
+      .then(() => {
+        DeletedNotification();
+        handleClose();
+        form.reset();
+        setEvent(null);
+        setIsUpdate(false);
       })
       .catch((err) => {
         ErrorNotification(err.message);
@@ -534,18 +554,31 @@ export default function CreateEventModal({
                 {/* </Radio.Group> */}
               </Group>
             </Collapse>
-            <Group position="right" mt="md">
-              <Button
-                className="bg-[#FFB703]"
-                variant="subtle"
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
-              <Button className="bg-[#FFB703]" type="submit" variant="filled">
-                {isUpdate ? 'Update' : 'Create'}
-              </Button>
-            </Group>
+            <div className="flex flex-row justify-between">
+              <div>
+                {isUpdate && (
+                  <Button
+                    className="bg-red-500 hover:bg-red-600"
+                    variant="subtle"
+                    onClick={handleDelete}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
+              <div className="space-x-3">
+                <Button
+                  className="bg-[#FFB703]"
+                  variant="subtle"
+                  onClick={handleClose}
+                >
+                  Cancel
+                </Button>
+                <Button className="bg-[#FFB703]" type="submit" variant="filled">
+                  {isUpdate ? 'Update' : 'Create'}
+                </Button>
+              </div>
+            </div>
           </Stack>
         </form>
       </Modal>

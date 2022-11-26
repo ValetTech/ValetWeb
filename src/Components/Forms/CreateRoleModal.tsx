@@ -37,7 +37,7 @@ export default function CreateRoleModal({
     validate: {},
   });
 
-  function onSubmit(values: any) {
+  function onSubmit() {
     onClose();
   }
 
@@ -52,7 +52,7 @@ export default function CreateRoleModal({
       <Card radius="md" p="xl">
         <Title align="center">Create Role</Title>
         <Box sx={{ maxWidth: 300 }} mx="auto" mt={20}>
-          <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
+          <form onSubmit={form.onSubmit(onSubmit)}>
             <Select
               mt={20}
               withAsterisk

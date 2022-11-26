@@ -35,16 +35,29 @@ export default function ReservationTable({
   const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
 
   const rows = reservations.map((reservation) => (
-    <tr
-      key={reservation.id}
-      onClick={() => {
-        setSelectedReservation(reservation);
-        setOpenDetailsModal(true);
-      }}
-    >
-      <td>{reservation.customer.fullName}</td>
+    <tr key={reservation.id}>
       <td>
-        <Tooltip label={`Call ${reservation.customer.firstName}`}>
+        <Tooltip label="Reservation Details" withArrow position="right">
+          <Button
+            compact
+            variant="subtle"
+            size="xs"
+            className="py-0 m-0 h-7"
+            onClick={() => {
+              setSelectedReservation(reservation);
+              setOpenDetailsModal(true);
+            }}
+          >
+            {reservation.customer.fullName}
+          </Button>
+        </Tooltip>
+      </td>
+      <td>
+        <Tooltip
+          label={`Call ${reservation.customer.firstName}`}
+          position="right"
+          withArrow
+        >
           <Button
             compact
             variant="subtle"
@@ -58,16 +71,16 @@ export default function ReservationTable({
       </td>
       <td>{dayjs(reservation.dateTime).format('h:mma ddd, DD/MM/YY')}</td>
       <td>
-        <Chip.Group spacing={0}>
-          <Chip key={reservation.sitting.id} size="xs" className="mb-1">
+        <Chip.Group spacing={0} className="">
+          <Chip key={reservation.sitting.id} size="xs" className="mb-2 xs:mb-0">
             {reservation.sitting.type}
           </Chip>
-          <Chip key={reservation.area.id} size="xs" className="mb-1">
+          <Chip key={reservation.area.id} size="xs">
             {reservation.area.name}
           </Chip>
         </Chip.Group>
       </td>
-      <td>
+      <td className="min-w-32">
         <Select
           data={Object.keys(State).filter((key) => Number.isNaN(Number(key)))}
           value={reservation.status}
@@ -103,10 +116,14 @@ export default function ReservationTable({
   return (
     <div className="w-full">
       <ScrollArea style={{ minHeight: 200 }} className="mt-4 w-full h-full">
-        <Table sx={{ minWidth: 220 }} className="w-full">
+        <Table
+          sx={{ minWidth: 645 }}
+          highlightOnHover
+          className="table-auto w-full overflow-x:auto"
+        >
           <thead className="">
             <tr>
-              <th>Name</th>
+              <th className="">Name</th>
               <th>Phone</th>
               <th>Time</th>
               <th>Location</th>

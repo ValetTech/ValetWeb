@@ -82,8 +82,8 @@ export default function DashboardReservationWidget({
   return (
     <Container mt={6}>
       <Card withBorder radius="md" className="h-full">
-        <div className="w-full flex justify-between mb-5">
-          <Title order={3}>Reservations</Title>
+        <div className="w-full flex justify-between ">
+          <h1>Reservations</h1>
           <Button
             className="bg-[#FFB703]"
             size="lg"
@@ -93,8 +93,8 @@ export default function DashboardReservationWidget({
           </Button>
         </div>
         <Divider className="mb-5" />
-        <div className="w-full flex flex-col xs:flex-row flex-grow mb-5">
-          <div className="w-1/2 xs:mr-5">
+        <div className="w-full flex flex-row space-x-2 flex-grow mb-2">
+          <div className="w-full ">
             <Title size="h4">Date</Title>
             <DateRangePicker
               clearable
@@ -103,7 +103,7 @@ export default function DashboardReservationWidget({
               onChange={setDateRange}
             />
           </div>
-          <div className="w-1/2">
+          <div className="w-full h-full">
             <Title size="h4">Status</Title>
             <Select
               clearable
@@ -118,8 +118,8 @@ export default function DashboardReservationWidget({
             />
           </div>
         </div>
-        <div className="w-full flex flex-col xs:flex-row flex-grow mb-5">
-          <div className="w-1/2 xs:mr-5">
+        <div className="w-full h-full flex flex-col xs:flex-row flex-grow space-y-2 xs:space-x-2 xs:space-y-0 mb-3 ">
+          <div className="w-full">
             <Title size="h4">Filter by Areas</Title>
             <MultiSelect
               clearable
@@ -130,7 +130,7 @@ export default function DashboardReservationWidget({
               }}
             />
           </div>
-          <div className="w-1/2">
+          <div className="w-full">
             <Title size="h4">Filter by Sitting types</Title>
             <MultiSelect
               clearable
@@ -143,7 +143,7 @@ export default function DashboardReservationWidget({
           </div>
         </div>
         {children}
-        <Group mt={20} position="left">
+        <Group position="left">
           <CreateReservationModal
             areasData={areas}
             sittingsData={sittings}

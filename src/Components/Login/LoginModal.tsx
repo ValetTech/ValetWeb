@@ -15,6 +15,9 @@ export default function LoginModal({
       //   closeOnEscape={false}
       overlayBlur={1}
       trapFocus
+      transition="fade"
+      transitionDuration={600}
+      transitionTimingFunction="ease"
       shadow="lg"
       // size="lg"
       opened={modalOpened}

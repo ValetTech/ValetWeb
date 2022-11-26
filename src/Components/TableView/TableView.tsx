@@ -1,19 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useDroppable } from '@dnd-kit/core';
 import {
+  Accordion,
   Button,
-  Grid,
+  Center,
   MultiSelect,
   SegmentedControl,
   SegmentedControlItem,
   Tooltip,
 } from '@mantine/core';
 import type {} from '@mui/x-date-pickers/themeAugmentation';
+import { IconBrandAirtable } from '@tabler/icons';
 import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
 import ReservationParams from '../../Models/ReservationParams';
 import Sitting from '../../Models/Sitting';
 import Table from '../../Models/Table';
-import AreaDesigner from '../Area/AreaDesigner';
+import AreaDesigner from '../Forms/AreaDesigner';
 import { Draggable } from './TableSideBar';
 
 // TODO - Nav | Area | Date | Sitting |
@@ -24,19 +27,22 @@ interface ViewHeaderProps {
   areas: Area[];
   selectedArea: Area | null;
   selectedSitting: Sitting | null;
-  selectArea: (area: Area | null) => void;
+  setSelectedArea: (area: Area | undefined) => void;
 }
 
 function ViewHeader({
   areas,
   selectedSitting,
   selectedArea,
-  selectArea,
+  setSelectedArea,
 }: ViewHeaderProps) {
   const addAreaSegment = { label: 'Add Area', value: '0' };
   const [data, setData] = useState<SegmentedControlItem[] | string[]>([
     { label: 'Add Area', value: '0' },
   ]);
+  const [areaSegment, setAreaSegment] = useState<string>(
+    selectedArea?.id?.toString() ?? data[0]?.value?.toString()
+  );
 
   useEffect(() => {
     const activeAreas =
@@ -47,7 +53,7 @@ function ViewHeader({
       ) ?? [];
 
     if (!activeAreas || !activeAreas?.length) {
-      selectArea(null);
+      setSelectedArea(null);
       setData([addAreaSegment]);
       return;
     }
@@ -59,37 +65,27 @@ function ViewHeader({
         }))
         .concat({ label: 'Add Area', value: '0' })
     );
+    setAreaSegment(selectedArea?.id?.toString() ?? data[0]?.value?.toString());
   }, [selectedSitting, areas]);
 
-  // useEffect(() => {
-  //   console.log('Areas: ', areas);
-  //   if (areas.length > 1) {
-  //     setData(
-  //       areas
-  //         .map(({ id, name }) => ({ label: name, value: id?.toString() ?? '' }))
-  //         .concat({ label: 'Add Area', value: '0' })
-  //     );
-  //   }
-  // }, [areas]);
-  // useEffect(() => {
-  //   console.log('SelectedArea: ', selectedArea);
-  // }, [selectedArea]);
+  useEffect(() => {
+    if (areaSegment === '0') {
+      setSelectedArea(null);
+      return;
+    }
+    setSelectedArea(
+      areas.find((area) => area.id?.toString() === areaSegment) ?? null
+    );
+  }, [areaSegment]);
 
   return (
-    <div className="flex flex-row justify-between z-50">
-      <SegmentedControl
-        transitionDuration={500}
-        transitionTimingFunction="linear"
-        data={data}
-        value={selectedArea?.id?.toString() ?? '0'}
-        onChange={(value) =>
-          +value > 0
-            ? selectArea(areas?.find((a) => a.id?.toString() === value) ?? null)
-            : selectArea(null)
-        }
-      />
-      {/* <BasicDateTimePicker /> */}
-    </div>
+    <SegmentedControl
+      transitionDuration={500}
+      transitionTimingFunction="linear"
+      data={data}
+      value={areaSegment}
+      onChange={setAreaSegment}
+    />
   );
 }
 
@@ -110,17 +106,17 @@ export function Droppable({
     color:
       isOver &&
       over?.data?.current?.accepts?.includes(active?.data?.current?.type)
-        ? 'green'
+        ? '#FFB703'
         : undefined,
     background:
       isOver &&
       over?.data?.current?.accepts?.includes(active?.data?.current?.type)
-        ? 'green'
+        ? '#FFB703'
         : undefined,
     backgroundColor:
       isOver &&
       over?.data?.current?.accepts?.includes(active?.data?.current?.type)
-        ? 'green'
+        ? '#FFB703'
         : undefined,
   };
   // if (over && over.data.current.accepts.includes(active.data.current.type)) {
@@ -133,70 +129,32 @@ export function Droppable({
   );
 }
 
-function TableDnD({ table }: { table: Table }) {
+export function TableDnD({ table }: { table: Table }) {
   return (
-    <Draggable
-      key={`table-${table.id}`}
-      id={`table-${table.id}`}
-      // data={table}
-      type="table"
-    >
-      <Droppable
+    <Tooltip position="top" label={`${table?.type} - ${table?.capacity} Seats`}>
+      <Draggable
         key={`table-${table.id}`}
         id={`table-${table.id}`}
-        accepts={['reservation']}
+        // data={table}
+        type="table"
       >
-        <Button>
-          <div className="flex flex-col justify-between">
-            <div>{table?.type}</div>
-            <div>
-              {table?.xPosition},{table?.yPosition}
-            </div>
-            <div>{table?.capacity} Seats</div>
+        <Droppable
+          key={`table-${table.id}`}
+          id={`table-${table.id}`}
+          accepts={['reservation']}
+        >
+          <div
+            className={`w-11 h-11  rounded-full relative z-100 ${
+              table?.reservations?.length > 0 ? ' bg-slate-500' : 'bg-blue-500'
+            }`}
+          >
+            <Center>
+              <IconBrandAirtable size={40} />
+            </Center>
           </div>
-        </Button>
-      </Droppable>
-    </Draggable>
-  );
-}
-
-function CreateGrid({ area, tables }: { area: Area; tables: Table[] | null }) {
-  return (
-    <Grid
-      gutter={0}
-      className="w-full border  z-0"
-      grow
-      columns={area?.width ?? 12}
-    >
-      {Array(area?.width ?? 12)
-        .fill(0)
-        .map((_, x) => (
-          <Grid.Col key={x} span={1}>
-            {Array(area?.height ?? 12)
-              .fill(0)
-              .map((_, y) => (
-                <Droppable
-                  key={`${x},${y}`}
-                  id={`${x},${y}`}
-                  accepts={['table']}
-                >
-                  <div key={y} className="h-10 w-full  border  z-0">
-                    {tables
-                      ?.filter(
-                        (table) =>
-                          table?.areaId === area?.id &&
-                          table?.xPosition === x &&
-                          table?.yPosition === y
-                      )
-                      ?.map((table) => (
-                        <TableDnD key={table.id} table={table} />
-                      ))}
-                  </div>
-                </Droppable>
-              ))}
-          </Grid.Col>
-        ))}
-    </Grid>
+        </Droppable>
+      </Draggable>
+    </Tooltip>
   );
 }
 
@@ -207,8 +165,11 @@ interface TableViewProps {
   updateSitting: (sitting: Sitting) => void;
   params: ReservationParams;
   setParams: (params: ReservationParams) => void;
-  // selectedArea: Area;
-  // selectArea: (area: Area) => void;
+  selectedArea: Area | null;
+  setSelectedArea: (area: Area) => void;
+  grid: JSX.Element[][];
+  setGrid: (grid: JSX.Element[][]) => void;
+  gridSize: number;
 }
 
 export default function TableView({
@@ -218,15 +179,19 @@ export default function TableView({
   updateSitting,
   params,
   setParams,
+  selectedArea,
+  setSelectedArea,
+  grid,
+  setGrid,
+  gridSize,
 }: TableViewProps) {
-  const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [sittingAreas, setSittingAreas] = useState<Area[]>(areas);
-  const [addAreas, setAddAreas] = useState<string[]>(
+  const [addAreasValue, setAddAreasValue] = useState<string[]>(
     selectedSitting?.areas?.map((area) => area?.id.toString()) ?? []
   );
 
   useEffect(() => {
-    setAddAreas(
+    setAddAreasValue(
       selectedSitting?.areas?.map((area) => area?.id.toString()) ?? []
     );
     setSittingAreas(selectedSitting?.areas ?? areas);
@@ -244,75 +209,106 @@ export default function TableView({
       <ViewHeader
         areas={sittingAreas ?? areas}
         selectedArea={selectedArea}
-        selectArea={setSelectedArea}
+        setSelectedArea={setSelectedArea}
         selectedSitting={selectedSitting}
       />
       {selectedArea?.id ? (
         <div>
-          <CreateGrid area={selectedArea} tables={tables} />
-          {tables?.length ? (
-            tables
-              ?.filter(
+          <div className={`grid grid-cols-${gridSize ?? 12} gap-0 `}>
+            {grid}
+          </div>
+          <div
+            className={
+              tables?.filter(
                 (table) =>
                   table?.areaId === selectedArea?.id &&
-                  (table?.xPosition === -1 || table?.yPosition === 1)
-              )
-              ?.map((table) => <TableDnD key={table.id} table={table} />)
-          ) : (
-            <Button>Add Table</Button>
-          )}
+                  (table?.xPosition === -1 || table?.yPosition === -1)
+              )?.length
+                ? 'block'
+                : 'hidden'
+            }
+          >
+            <h2>Unplaced Tables</h2>
+            <div className="flex flex-row w-full h-full border border-slate-800">
+              {tables
+                ?.filter(
+                  (table) =>
+                    table?.areaId === selectedArea?.id &&
+                    (table?.xPosition === -1 || table?.yPosition === -1)
+                )
+                ?.map((table) => (
+                  <TableDnD key={table.id} table={table} />
+                ))}
+            </div>
+          </div>
+          <Button className="mt-2">Add New Table</Button>
         </div>
       ) : (
         <div className="flex flex-col">
-          <div className="p-4">
-            <h1>Add Exiting Areas</h1>
-            <MultiSelect
-              placeholder="Select Area"
-              clearable
-              searchable
-              nothingFound="No Areas"
-              data={areas.map((a) => ({
-                label: a.name,
-                value: a.id?.toString() ?? '',
-              }))}
-              onChange={(values) => {
-                const newAreas = values?.map((value) => {
-                  const area = areas.find((a) => a.id?.toString() === value);
-                  return area;
-                });
-                setSittingAreas(newAreas);
-                setAddAreas(values);
-              }}
-              value={addAreas}
-            />
-            <Tooltip
-              position="right"
-              label={
-                selectedSitting ? 'Update Sitting Areas' : 'Select A Sitting'
-              }
-            >
-              <Button
-                className="mt-2 bg-[#FFB703]"
-                variant="outline"
-                type="submit"
-                disabled={!selectedSitting}
-                onClick={() => {
-                  if (!selectedSitting) return;
-                  updateSitting({
-                    ...selectedSitting,
-                    areaIds: sittingAreas.map((area) => area.id),
-                  });
-                }}
-              >
-                Set Areas
-              </Button>
-            </Tooltip>
-          </div>
-          <AreaDesigner />
+          <Accordion defaultValue="existing">
+            <Accordion.Item value="existing">
+              <Accordion.Control>
+                <h1>Update Sitting Areas</h1>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <MultiSelect
+                  placeholder="Select Area"
+                  clearable
+                  searchable
+                  nothingFound="No Areas"
+                  data={areas.map((a) => ({
+                    label: a.name,
+                    value: a.id?.toString() ?? '',
+                  }))}
+                  onChange={(values) => {
+                    const newAreas = values?.map((value) => {
+                      const area = areas.find(
+                        (a) => a.id?.toString() === value
+                      );
+                      return area;
+                    });
+                    setSittingAreas(newAreas);
+                    setAddAreasValue(values);
+                  }}
+                  value={addAreasValue}
+                />
+                <Tooltip
+                  position="right"
+                  label={
+                    selectedSitting
+                      ? 'Update Sitting Areas'
+                      : 'Select A Sitting'
+                  }
+                >
+                  <Button
+                    className="mt-2 bg-[#FFB703]"
+                    variant="outline"
+                    type="submit"
+                    disabled={!selectedSitting}
+                    onClick={() => {
+                      if (!selectedSitting) return;
+                      updateSitting({
+                        ...selectedSitting,
+                        areaIds: sittingAreas.map((area) => area.id),
+                      });
+                    }}
+                  >
+                    Set Areas
+                  </Button>
+                </Tooltip>
+              </Accordion.Panel>
+            </Accordion.Item>
+            <Accordion.Item value="designer">
+              <Accordion.Control>
+                <h1>Area Designer</h1>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <AreaDesigner />
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
         </div>
       )}
-
-      {/* <Skeleton className="h-full w-full" radius="md" animate={false} /> */}
     </div>
   );
 }

@@ -68,8 +68,6 @@ function NavbarLink({
 }: // onClick = () => {},
 NavbarLinkProps) {
   const { classes, cx } = useStyles();
-  const { colorScheme } = useMantineColorScheme();
-  const color = colorScheme === 'dark' ? 'color-[#000]' : 'color-[#000]';
   return (
     <Tooltip label={label} position="right" transitionDuration={0}>
       <UnstyledButton

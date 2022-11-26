@@ -127,8 +127,8 @@ export default function SittingsCalendar() {
         createEvents();
         // setEvents(sittings.map((s) => s.toEvent()));
       })
-      .catch(() => {
-        ErrorNotification('Could not get sittings');
+      .catch((err) => {
+        ErrorNotification(err.message);
       });
     getAreasAsync()
       .then((res) => {
@@ -148,7 +148,8 @@ export default function SittingsCalendar() {
   }, []);
 
   function updateSitting(sitting: Sitting) {
-    updateSittingAsync(sitting?.id ?? 0, sitting)
+    console.log('Update sitting', sitting);
+    updateSittingAsync(sitting?.id, sitting)
       .then((res) => {
         setSittingData([...sittingData, sitting]);
         createEvents();
@@ -175,6 +176,7 @@ export default function SittingsCalendar() {
   }
 
   const handleDrop = (info) => {
+    console.log('Dropped', info.event);
     getSittingByIdAsync(info.event.id).then((response) => {
       updateSitting({
         ...response,
@@ -186,6 +188,8 @@ export default function SittingsCalendar() {
 
   const handleResize = (info) => {
     getSittingByIdAsync(info.event.id).then((response) => {
+      console.log('response', response);
+
       updateSitting({
         ...response,
         startTime: RoundTime(info.event.start).toISOString(),

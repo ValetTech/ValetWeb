@@ -5,7 +5,7 @@ import {
   Global,
   MantineProvider,
 } from '@mantine/core';
-import { useColorScheme, useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -17,7 +17,9 @@ function MyGlobalStyles() {
   return (
     <Global
       styles={(theme) => ({
-        body: { backgroundColor: '#f1f4f8' },
+        body: {
+          backgroundColor: theme.colorScheme === 'dark' ? '#141517' : '#f1f4f8',
+        },
         // 'button, [type="button"], [type="reset"], [type="submit"]': {
         //   background: '#ffcc4b',
         // },
@@ -28,20 +30,11 @@ function MyGlobalStyles() {
   );
 }
 export default function App() {
-  const preferredColorScheme = useColorScheme();
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: 'mantine-color-scheme',
     defaultValue: 'light',
     getInitialValueInEffect: true,
   });
-
-  // const [value, setValue] = useLocalStorage({
-  //   key: 'user-auth',
-  //   defaultValue: {},
-  // });
-  // dispatch(setCredentials({ accessToken: value.accessToken, user: value.use }));
-
-  // const state = store.getState();
 
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
