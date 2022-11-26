@@ -11,8 +11,11 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons';
+import { useEffect, useState } from 'react';
 import BookingModal from './BookingModal';
 import SakeLogo from './SakeLogo';
+import CreateReservationModal from '../Forms/CreateReservation';
+import { getAreasAsync, getSittingsAsync } from '../../Services/ApiServices';
 
 const HEADER_HEIGHT = 60;
 
@@ -73,6 +76,21 @@ interface HeaderActionProps {
 export default function HeaderAction({ links }: HeaderActionProps) {
   const { classes } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
+  const [areasData, setAreasData] = useState();
+  const [sittingsData, setSittingsData] = useState();
+
+  useEffect(() => {
+    getAreasAsync().then((response) => {
+      setAreasData(response);
+    });
+  });
+
+  useEffect(() => {
+    getSittingsAsync().then((response) => {
+      setSittingsData(response);
+    });
+  });
+
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (
       <Menu.Item key={item.link}>{item.label}</Menu.Item>
@@ -125,7 +143,10 @@ export default function HeaderAction({ links }: HeaderActionProps) {
         <Group spacing={5} className={classes.links}>
           {items}
         </Group>
-        <BookingModal />
+        <CreateReservationModal
+          sittingsData={sittingsData}
+          areasData={areasData}
+        />
       </Container>
     </Header>
   );
