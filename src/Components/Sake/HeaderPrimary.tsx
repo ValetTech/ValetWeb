@@ -1,5 +1,6 @@
 import {
   Burger,
+  Button,
   Center,
   Container,
   createStyles,
@@ -78,6 +79,7 @@ export default function HeaderAction({ links }: HeaderActionProps) {
   const [opened, { toggle }] = useDisclosure(false);
   const [areasData, setAreasData] = useState<Area[]>([]);
   const [sittingsData, setSittingsData] = useState<Sitting[]>([]);
+  const [reservationModalOpened, setReservationModalOpened] = useState(false);
 
   useEffect(() => {
     getAreasAsync()
@@ -151,7 +153,16 @@ export default function HeaderAction({ links }: HeaderActionProps) {
         <Group spacing={5} className={classes.links}>
           {items}
         </Group>
+        <Button
+          onClick={() => {
+            setReservationModalOpened(true);
+          }}
+        >
+          Make a Reservation
+        </Button>
         <CreateReservationModal
+          opened={reservationModalOpened}
+          onClose={() => setReservationModalOpened(false)}
           sittingsData={sittingsData}
           areasData={areasData}
         />
