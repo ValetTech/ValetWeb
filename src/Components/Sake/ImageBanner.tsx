@@ -5,6 +5,7 @@ import {
   CardProps,
   Button,
   Text,
+  Image,
 } from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
@@ -95,6 +96,13 @@ export default function ImageActionBanner({
         >
           {action.label}
         </Button> */}
+        <Image
+          mt={30}
+          ml={350}
+          height={26}
+          width={131}
+          src="src/Components/Sake/SakeAssets/powered.png"
+        />
       </div>
     </Card>
   );
