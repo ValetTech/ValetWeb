@@ -1,21 +1,21 @@
 import {
-  createStyles,
-  Menu,
-  Center,
-  Header,
-  Container,
-  Group,
-  Button,
   Burger,
-  Title,
+  Center,
+  Container,
+  createStyles,
+  Group,
+  Header,
+  Menu,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons';
 import { useEffect, useState } from 'react';
-import BookingModal from './BookingModal';
-import SakeLogo from './SakeLogo';
-import CreateReservationModal from '../Forms/CreateReservation';
+import Area from '../../Models/Area';
+import Sitting from '../../Models/Sitting';
 import { getAreasAsync, getSittingsAsync } from '../../Services/ApiServices';
+import CreateReservationModal from '../Forms/CreateReservation';
+import ErrorNotification from '../Notifications/NotifyError';
+import SakeLogo from './SakeLogo';
 
 const HEADER_HEIGHT = 60;
 
@@ -76,19 +76,27 @@ interface HeaderActionProps {
 export default function HeaderAction({ links }: HeaderActionProps) {
   const { classes } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
-  const [areasData, setAreasData] = useState();
-  const [sittingsData, setSittingsData] = useState();
+  const [areasData, setAreasData] = useState<Area[]>([]);
+  const [sittingsData, setSittingsData] = useState<Sitting[]>([]);
 
   useEffect(() => {
-    getAreasAsync().then((response) => {
-      setAreasData(response);
-    });
+    getAreasAsync()
+      .then((response) => {
+        setAreasData(response);
+      })
+      .catch((error) => {
+        ErrorNotification(error.message);
+      });
   });
 
   useEffect(() => {
-    getSittingsAsync().then((response) => {
-      setSittingsData(response);
-    });
+    getSittingsAsync()
+      .then((response) => {
+        setSittingsData(response);
+      })
+      .catch((error) => {
+        ErrorNotification(error.message);
+      });
   });
 
   const items = links.map((link) => {

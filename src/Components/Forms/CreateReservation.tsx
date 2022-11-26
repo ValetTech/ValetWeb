@@ -23,7 +23,7 @@ import {
   IconPhone,
   IconUser,
 } from '@tabler/icons';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { useState } from 'react';
 import InputMask from 'react-input-mask';
 import Area from '../../Models/Area';
