@@ -15,6 +15,7 @@ import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import rrulePlugin from '@fullcalendar/rrule';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import { useMediaQuery } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import Area from '../../Models/Area';
@@ -54,7 +55,7 @@ export default function SittingsCalendar() {
   const [events, setEvents] = useState<EventSourceInput>();
   const [selectedEvent, setSelectedEvent] = useState<Event>();
   const [show, setShow] = useState(false);
-
+  const matches = useMediaQuery('(min-width: 700px)');
   const [areas, setAreas] = useState<Area[]>([
     {
       id: 1,
@@ -159,7 +160,6 @@ export default function SittingsCalendar() {
   }
 
   useEffect(() => {
-
     createEvents();
   }, [sittingData]);
 
@@ -185,7 +185,6 @@ export default function SittingsCalendar() {
 
   const handleResize = (info) => {
     getSittingByIdAsync(info.event.id).then((response) => {
-
       updateSitting({
         ...response,
         startTime: RoundTime(info.event.start).toISOString(),
@@ -206,11 +205,18 @@ export default function SittingsCalendar() {
           resourceTimeGridPlugin,
           resourceTimelinePlugin,
         ]}
-        headerToolbar={{
-          left: 'title',
-          center: 'prev,today,next',
-          right: 'dayGridMonth,timeGridWeek,resourceTimeGridDay',
-        }}
+        headerToolbar={
+          matches
+            ? {
+                left: 'prev,today,next',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,resourceTimeGridDay',
+              }
+            : {
+                left: 'prev,today,next',
+                right: 'dayGridMonth,timeGridWeek,resourceTimeGridDay',
+              }
+        }
         eventColor="#023047"
         locales={allLocales}
         locale="en-au"
