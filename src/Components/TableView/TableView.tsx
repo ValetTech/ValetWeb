@@ -214,9 +214,7 @@ export default function TableView({
       />
       {selectedArea?.id ? (
         <div>
-          <div className={`grid grid-cols-${gridSize ?? 12} gap-0 `}>
-            {grid}
-          </div>
+          <div className={`grid grid-cols-12 gap-0 `}>{grid}</div>
           <div
             className={
               tables?.filter(

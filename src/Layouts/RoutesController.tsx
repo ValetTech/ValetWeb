@@ -13,6 +13,7 @@ import RequireAuth from '../Features/Auth/RequireAuth';
 import AreasPage from '../Pages/AreasPage';
 import Calendar from '../Pages/Calendar';
 import Dashboard from '../Pages/Dashboard';
+import GenerateData from '../Pages/GenerateData';
 import Home from '../Pages/Home';
 import NotFound from '../Pages/NotFound';
 import Reservations from '../Pages/Reservations';
@@ -99,6 +100,7 @@ export default function RoutesController() {
           <Route path="/areas" element={<AreasPage />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/GenerateData" element={<GenerateData />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

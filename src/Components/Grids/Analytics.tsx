@@ -89,7 +89,7 @@ export default function Analytics({ reservations }: AnalyticsProps) {
           </Text>
           <Center>
             <Text color="blue" weight={700} align="center" size="xl">
-              {totalAveragePartySize} guests
+              {totalAveragePartySize.toFixed(0)} guests
             </Text>
           </Center>
         </div>
@@ -99,7 +99,7 @@ export default function Analytics({ reservations }: AnalyticsProps) {
           </Text>
           <Center>
             <Text color="blue" weight={700} align="center" size="xl">
-              {totalAverageDuration} minutes
+              {totalAverageDuration.toFixed(0)} minutes
             </Text>
           </Center>
         </div>
