@@ -33,6 +33,7 @@ import getReservationsAsync, {
   getAreasAsync,
   getSittingsAsync,
   GetTablesAsync,
+  RemoveTableFromReservationAsync,
   updateSittingAsync,
   UpdateTableAsync,
 } from '../Services/ApiServices';
@@ -153,7 +154,19 @@ export default function TablesPage() {
             t.areaId === selectedArea.id
         );
         if (table) {
-          return <TableDnD key={`table-${table.id}`} table={table} />;
+          return (
+            <TableDnD
+              key={`table-${table.id}`}
+              table={table}
+              color={
+                table?.reservations?.filter(
+                  (r) => r?.sittingId == selectedSitting?.id
+                )?.length
+                  ? ' bg-slate-500'
+                  : ' bg-blue-500'
+              }
+            />
+          );
         }
         return (
           <Droppable key={`${i},${j}`} id={`${i},${j}`} accepts={['table']}>
@@ -187,20 +200,29 @@ export default function TablesPage() {
   function UpdateTable(table: Table) {
     setLoading(true);
     const { reservations, area, ...newTable } = table;
-    const newTables = tables?.map((t) => {
-      if (t.id === table.id) {
-        return newTable;
-      }
-      return t;
-    });
-    setTables(newTables ?? null);
+    // const newTables = tables?.map((t) => {
+    //   if (t.id === table.id) {
+    //     return newTable;
+    //   }
+    //   return t;
+    // });
 
     UpdateTableAsync(table.id ?? 0, newTable)
-      .then(() => {})
-      .catch((err) => {
-        ErrorNotification(err.message);
+      .then(() => {
+        GetTablesAsync()
+          .then((response) => {
+            setTables(response);
+          })
+          .catch((error) => {
+            ErrorNotification(error.message);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      })
+      .catch((error) => {
+        ErrorNotification(error.message);
       });
-    loadReservations();
     setLoading(false);
   }
 
@@ -279,12 +301,37 @@ export default function TablesPage() {
           (r) => r.id?.toString() === id
         );
         const [_, tableId] = over?.id?.split('-', 2) || [null, null];
+        const table = tables?.find((t) => t.id?.toString() === tableId);
+        if (
+          reservation?.tables?.map((t) => t.id?.toString())?.includes(tableId)
+        ) {
+          reservation.tables = reservation?.tables?.filter(
+            (t) => t.id !== table?.id
+          );
+          console.log('remove', reservation);
 
-        AddTableToReservationAsync(reservation?.id ?? 0, tableId).catch(
-          (err) => {
-            ErrorNotification(err.message);
-          }
-        );
+          // Remove table from reservation
+          RemoveTableFromReservationAsync(reservation.id ?? 0, tableId).catch(
+            (err) => {
+              ErrorNotification(err.message);
+            }
+          );
+        } else {
+          reservation?.tables?.push(table);
+          console.log('add', reservation);
+
+          // Add table to reservation
+          AddTableToReservationAsync(reservation?.id ?? 0, tableId).catch(
+            (err) => {
+              ErrorNotification(err.message);
+            }
+          );
+        }
+        setReservations([
+          ...reservationsData.filter((r) => r.id !== reservation?.id),
+          reservation,
+        ]);
+
         loadReservations();
       }
       if (type === 'table') {
@@ -295,6 +342,7 @@ export default function TablesPage() {
         if (table && x && y) {
           table.xPosition = x;
           table.yPosition = y;
+          setTables(tables?.map((t) => (t.id == table.id ? table : t)) ?? null);
           UpdateTable(table);
         }
       }

@@ -6,6 +6,7 @@ import Customer from '../Models/Customer';
 import Reservation from '../Models/Reservation';
 import ReservationParams from '../Models/ReservationParams';
 import Sitting from '../Models/Sitting';
+import SittingParams from '../Models/SittingParams';
 import Table from '../Models/Table';
 // import { IApiService } from './IApiService';
 // const API_URL = 'https://localhost:7028/api';
@@ -205,11 +206,14 @@ export function deleteAreaAsync(id: number) {
 }
 
 // SITTING
-export async function getSittingsAsync() {
-  const response = await axios.get('/sittings?SortBy=StartTime', {
+export async function getSittingsAsync(params?: SittingParams) {
+  const response = await axios.get('/sittings', {
     // withCredentials: false,
     headers: {
       Authorization: `Bearer ${getTokenFromState()}`,
+    },
+    params: {
+      ...params,
     },
   });
 
@@ -378,5 +382,21 @@ export async function AddTableToReservationAsync(
       tableId: tableId ?? table?.id,
     },
   });
+  return response;
+}
+
+export async function RemoveTableFromReservationAsync(
+  id: number,
+  tableId?: number,
+  table?: Table
+) {
+  const response = await axios.delete(
+    `/reservations/${id}/table?tableId=${tableId ?? table?.id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${getTokenFromState()}`,
+      },
+    }
+  );
   return response;
 }

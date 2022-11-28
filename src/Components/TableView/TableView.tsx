@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useDroppable } from '@dnd-kit/core';
 import {
@@ -129,7 +130,9 @@ export function Droppable({
   );
 }
 
-export function TableDnD({ table }: { table: Table }) {
+export function TableDnD({ table, color }: { table: Table; color?: string }) {
+  console.log('Color', color);
+
   return (
     <Tooltip position="top" label={`${table?.type} - ${table?.capacity} Seats`}>
       <Draggable
@@ -144,9 +147,7 @@ export function TableDnD({ table }: { table: Table }) {
           accepts={['reservation']}
         >
           <div
-            className={`w-11 h-11  rounded-full relative z-100 ${
-              table?.reservations?.length > 0 ? ' bg-slate-500' : 'bg-blue-500'
-            }`}
+            className={`w-11 h-11  rounded-full relative z-100 ${color}`} //  ?.filter((t)=> )
           >
             <Center>
               <IconBrandAirtable size={40} />
@@ -235,7 +236,17 @@ export default function TableView({
                     (table?.xPosition === -1 || table?.yPosition === -1)
                 )
                 ?.map((table) => (
-                  <TableDnD key={table.id} table={table} />
+                  <TableDnD
+                    key={table.id}
+                    table={table}
+                    color={
+                      table?.reservations?.filter(
+                        (r) => r?.sittingId == selectedSitting?.id
+                      )?.length
+                        ? ' bg-slate-500'
+                        : ' bg-blue-500'
+                    }
+                  />
                 ))}
             </div>
           </div>

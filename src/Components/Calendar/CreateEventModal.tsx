@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/jsx-props-no-spreading */
+import { EventSourceInput } from '@fullcalendar/react';
 import {
   Button,
   Checkbox,
@@ -43,6 +44,7 @@ export interface Rrule {
   byweekday?: number[];
   until?: Date;
   count?: number;
+  GetEvents: () => EventSourceInput[];
 }
 
 export enum StopCondition {
@@ -59,6 +61,7 @@ export default function CreateEventModal({
   setEvent,
   event,
   areas,
+  GetEvents,
 }: any) {
   const [types, setTypes] = useState<string[]>([
     'Breakfast',
@@ -245,7 +248,7 @@ export default function CreateEventModal({
         .finally(() => {
           setLoading(false);
         });
-
+      GetEvents();
       return;
     }
     createSittingAsync(sitting)
@@ -260,6 +263,7 @@ export default function CreateEventModal({
       .finally(() => {
         setLoading(false);
       });
+    GetEvents();
   }
 
   function handleDelete() {

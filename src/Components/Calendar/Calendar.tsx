@@ -104,16 +104,56 @@ export default function SittingsCalendar() {
     return sittings;
   }
 
-  function GetEvents() {
-    getSittingsAsync()
-      .then((data) => {
-        setSittingData(data);
-        return createEvents();
+  function fetchEvents(info, successCallback, failureCallback) {
+    getSittingsAsync({
+      MinDateTime: dayjs(info.start).toISOString(),
+      MaxDateTime: dayjs(info.end).toISOString(),
+    })
+      .then((response: Sitting[]) => {
+        // setSittingData(response);
+        const sittings = response.map((s) => ({
+          id: s.id?.toString(),
+          title: s.title ?? s.type,
+          type: s.type,
+          start: RoundTime(s.startTime).toDate(),
+          end: RoundTime(s.endTime).toDate(),
+          resourceIds: s.areas?.map((a) => a.id?.toString()) ?? [],
+          groupId: s.groupId?.toString() ?? s.id?.toString(),
+          editable: dayjs(s.endTime).isAfter(dayjs()),
+          backgroundColor: s.areas?.length ? '#023047' : '#3f51b5',
+          data: s,
+        }));
+        successCallback(sittings.slice());
       })
-      .catch((error) => {
-        ErrorNotification(error);
+      .catch((e) => {
+        ErrorNotification(e.message);
+        failureCallback(e);
       });
   }
+
+  // function GetEvents() {
+  //   let sittings: EventSourceInput = [];
+  //   getSittingsAsync()
+  //     .then((data) => {
+  //       sittings = data.map((s) => ({
+  //         id: s.id?.toString(),
+  //         title: s.title ?? s.type,
+  //         type: s.type,
+  //         start: RoundTime(s.startTime).toDate(),
+  //         end: RoundTime(s.endTime).toDate(),
+  //         resourceIds: s.areas?.map((a) => a.id?.toString()) ?? [],
+  //         groupId: s.groupId?.toString() ?? s.id?.toString(),
+  //         editable: dayjs(s.endTime).isAfter(dayjs()),
+  //         backgroundColor: s.areas?.length ? '#023047' : '#3f51b5',
+  //         data: s,
+  //       }));
+  //     })
+  //     .catch((error) => {
+  //       ErrorNotification(error.message);
+  //     });
+
+  //   setEvents(sittings);
+  // }
 
   const handleClose = () => {
     setShow(false);
@@ -122,25 +162,17 @@ export default function SittingsCalendar() {
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    getSittingsAsync()
-      .then((sittings) => {
-        setSittingData(sittings);
-        createEvents();
-        // setEvents(sittings.map((s) => s.toEvent()));
-      })
-      .catch((err) => {
-        ErrorNotification(err.message);
-      });
+    // getSittingsAsync()
+    //   .then((sittings) => {
+    //     setSittingData(sittings);
+    //     createEvents();
+    //     // setEvents(sittings.map((s) => s.toEvent()));
+    //   })
+    //   .catch((err) => {
+    //     ErrorNotification(err.message);
+    //   });
     getAreasAsync()
       .then((res) => {
-        console.log(
-          'Areas',
-          areas.map((area) => ({
-            id: area?.id?.toString(),
-            title: area?.name,
-          }))
-        );
-
         setAreas(res);
       })
       .catch((err) => {
@@ -149,26 +181,32 @@ export default function SittingsCalendar() {
   }, []);
 
   function updateSitting(sitting: Sitting) {
-    updateSittingAsync(sitting?.id, sitting)
-      .then((res) => {
-        setSittingData([...sittingData, sitting]);
-        createEvents();
+    getSittingByIdAsync(sitting?.id ?? 0).then((response) => {
+      updateSittingAsync(sitting?.id ?? 0, {
+        ...response,
+        ...sitting,
+        areaIds: sitting.areas?.map((a) => a.id),
       })
-      .catch((err) => {
-        ErrorNotification(err.message);
-      });
+        .then(() => {})
+        .catch((err) => {
+          ErrorNotification(err.message);
+        });
+    });
+    // GetEvents();
   }
 
-  useEffect(() => {
-    createEvents();
-  }, [sittingData]);
+  // useEffect(() => {
+  //   createEvents();
+  // }, [sittingData]);
 
   const handleSelect = (arg: DateSelectArg) => {
+    // GetEvents();
     setSelectedEvent({ ...selectedEvent, ...arg });
     setShow(true);
   };
 
   function handleEventClick(arg: EventClickArg) {
+    // GetEvents();
     setSelectedEvent({ ...selectedEvent, ...arg });
     setShow(true);
   }
@@ -226,7 +264,9 @@ export default function SittingsCalendar() {
         editable
         eventResizableFromStart
         selectable
-        selectAllow={(selectInfo) => selectInfo.start >= dayjs().toDate()}
+        selectAllow={(selectInfo) =>
+          selectInfo.start >= dayjs().startOf('day').toDate()
+        }
         selectMirror
         dayMaxEvents
         weekends
@@ -244,7 +284,7 @@ export default function SittingsCalendar() {
           title: area?.name,
         }))}
         // events={GetEvents}
-        events={events}
+        events={fetchEvents}
         select={handleSelect}
         eventClick={handleEventClick}
         eventDrop={handleDrop}
@@ -257,6 +297,7 @@ export default function SittingsCalendar() {
         event={selectedEvent}
         setEvent={setSelectedEvent}
         areas={areas}
+        // GetEvents={GetEvents}
       />
     </div>
   );
