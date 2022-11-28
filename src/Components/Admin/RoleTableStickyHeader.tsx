@@ -1,19 +1,18 @@
 // Components
 // #region
 import {
+  Button,
   createStyles,
   Group,
   Modal,
   ScrollArea,
-  Select,
-  Table,
-  Title,
-  Text,
-  UnstyledButton,
   SimpleGrid,
-  Button,
+  Table,
+  Text,
+  Title,
+  UnstyledButton,
 } from '@mantine/core';
-import { IconKey, IconPencil, IconTrash, IconUserX } from '@tabler/icons';
+import { IconPencil, IconTrash } from '@tabler/icons';
 import { useState } from 'react';
 // #endregion
 
@@ -73,12 +72,8 @@ export default function RoleTableScrollArea({
           <IconPencil size={20} stroke={1.5} />
         </UnstyledButton>
         {/* Delete Button */}
-        <UnstyledButton pl={20}>
-          <IconTrash
-            size={20}
-            stroke={1.5}
-            onClick={setDeleteRoleModalOpened}
-          />
+        <UnstyledButton pl={20} onClick={() => setDeleteRoleModalOpened(true)}>
+          <IconTrash size={20} stroke={1.5} />
         </UnstyledButton>
         <Modal
           centered

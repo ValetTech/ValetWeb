@@ -229,8 +229,8 @@ export default function CreateEventModal({
   function onSubmit(values) {
     const sitting: Sitting = {
       ...values.sitting,
-      startTime: RoundTime(startDate).toDate(),
-      endTime: RoundTime(endDate).toDate(),
+      startTime: RoundTime(startDate.toDate()).toDate(),
+      endTime: RoundTime(endDate.toDate()).toDate(),
       areaIds: eventAreas,
       groupId: values.sitting.groupId ?? null,
     };

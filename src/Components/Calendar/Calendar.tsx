@@ -2,15 +2,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import '@fullcalendar/react/dist/vdom';
 
-import FullCalendar, {
-  DateSelectArg,
-  EventClickArg,
-  EventSourceInput,
-} from '@fullcalendar/react';
-
 import allLocales from '@fullcalendar/core/locales-all';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import FullCalendar, {
+  DateSelectArg,
+  EventClickArg,
+} from '@fullcalendar/react';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import rrulePlugin from '@fullcalendar/rrule';
@@ -51,8 +49,6 @@ Recurrence
 */
 
 export default function SittingsCalendar() {
-  const [sittingData, setSittingData] = useState<Sitting[]>([]);
-  const [events, setEvents] = useState<EventSourceInput>();
   const [selectedEvent, setSelectedEvent] = useState<Event>();
   const [show, setShow] = useState(false);
   const matches = useMediaQuery('(min-width: 700px)');
@@ -84,24 +80,6 @@ export default function SittingsCalendar() {
     return dayjs(date).minute(
       (Math.round(dayjs(date).minute() / 15) * 15) % 60
     );
-  }
-
-  function createEvents() {
-    const sittings: EventSourceInput = sittingData.map((s) => ({
-      id: s.id?.toString(),
-      title: s.title ?? s.type,
-      type: s.type,
-      start: RoundTime(s.startTime).toDate(),
-      end: RoundTime(s.endTime).toDate(),
-      resourceIds: s.areas?.map((a) => a.id?.toString()) ?? [],
-      groupId: s.groupId?.toString() ?? s.id?.toString(),
-      editable: dayjs(s.endTime).isAfter(dayjs()),
-      backgroundColor: s.areas?.length ? '#023047' : '#3f51b5',
-      data: s,
-    }));
-
-    setEvents(sittings);
-    return sittings;
   }
 
   function fetchEvents(info, successCallback, failureCallback) {
@@ -207,6 +185,12 @@ export default function SittingsCalendar() {
 
   function handleEventClick(arg: EventClickArg) {
     // GetEvents();
+    // const newEvent: Event = {
+    //   ...selectedEvent,
+    //   ...arg,
+    //   bubbles: false,
+    // };
+    // setSelectedEvent(newEvent);
     setSelectedEvent({ ...selectedEvent, ...arg });
     setShow(true);
   }

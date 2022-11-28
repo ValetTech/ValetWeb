@@ -1,17 +1,17 @@
 // Components
 // #region
 import {
+  Button,
   createStyles,
   Group,
   Modal,
   ScrollArea,
   Select,
-  Table,
-  Title,
-  Text,
-  UnstyledButton,
   SimpleGrid,
-  Button,
+  Table,
+  Text,
+  Title,
+  UnstyledButton,
 } from '@mantine/core';
 import { IconKey, IconPencil, IconUserX } from '@tabler/icons';
 import { useState } from 'react';
@@ -83,24 +83,16 @@ export default function UserTableScrollArea({
       </td>
       <td>
         {/* Edit Button */}
-        <UnstyledButton pl={20}>
-          <IconPencil
-            size={20}
-            stroke={1.5}
-            onClick={setUpdateUserModalOpened}
-          />
+        <UnstyledButton pl={20} onClick={() => setUpdateUserModalOpened(true)}>
+          <IconPencil size={20} stroke={1.5} />
           <UpdateUserModal
             opened={updateUserModalOpened}
             onClose={() => setUpdateUserModalOpened(false)}
           />
         </UnstyledButton>
         {/* Delete Button */}
-        <UnstyledButton pl={20}>
-          <IconUserX
-            size={20}
-            stroke={1.5}
-            onClick={setDeleteUserModalOpened}
-          />
+        <UnstyledButton pl={20} onClick={() => setDeleteUserModalOpened(true)}>
+          <IconUserX size={20} stroke={1.5} />
         </UnstyledButton>
         <UnstyledButton pl={20}>
           <IconKey size={20} stroke={1.5} />
