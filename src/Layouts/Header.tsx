@@ -95,10 +95,10 @@ export default function Header({ links }: HeaderSimpleProps) {
   };
 
   return (
-    <div className="bg-[#023047] xs:bg-transparent border-none rounded-b-md ">
-      <Container className="py-2">
+    <div className="bg-[#023047] xs:bg-transparent border-none rounded-b-md w-full">
+      <Container className="py-2 w-full">
         {/* <Group position="right"> */}
-        <Group className="justify-between xs:justify-end">
+        <Group className="w-full justify-between xs:justify-end">
           <Anchor component={Link} to="/dashboard" className="xs:hidden">
             <Image fit="contain" height={40} src={LogoWhite} alt="Valet Logo" />
           </Anchor>
