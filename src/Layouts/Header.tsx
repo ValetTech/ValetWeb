@@ -4,7 +4,6 @@ import {
   Anchor,
   Burger,
   Button,
-  Container,
   createStyles,
   Group,
   Image,
@@ -96,9 +95,9 @@ export default function Header({ links }: HeaderSimpleProps) {
 
   return (
     <div className="bg-[#023047] xs:bg-transparent border-none rounded-b-md w-full">
-      <Container className="py-2 w-full">
+      <div className="py-2 px-5 w-full">
         {/* <Group position="right"> */}
-        <Group className="w-full justify-between xs:justify-end">
+        <div className="flex flex-row justify-between xs:justify-end w-full">
           <Anchor component={Link} to="/dashboard" className="xs:hidden">
             <Image fit="contain" height={40} src={LogoWhite} alt="Valet Logo" />
           </Anchor>
@@ -210,8 +209,8 @@ export default function Header({ links }: HeaderSimpleProps) {
               Sign in
             </Button>
           )}
-        </Group>
-      </Container>
+        </div>
+      </div>
       <LoginModal
         modalOpened={loginModalOpened}
         setModalOpened={setLoginModalOpened}
