@@ -8,9 +8,8 @@ import {
   Textarea,
   TextInput,
 } from '@mantine/core';
-import { DatePicker, TimeInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { IconCalendar, IconClock } from '@tabler/icons';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import Reservation from '../../Models/Reservation';
 import {
@@ -41,7 +40,7 @@ const initialValues: Reservation = {
     capacity: 0,
     price: 0,
   },
-  dateTime: new Date('1970-01-01T00:00').toISOString(),
+  dateTime: dayjs('1970-01-01T00:00').toISOString(),
   duration: 90,
   noGuests: 2,
   source: '',
@@ -65,7 +64,7 @@ export default function DetailsForm({
   useEffect(() => {
     getReservationByIdAsync(reservationId)
       .then((response: Reservation) => {
-        setValues(response);
+        // setValues(response);
         form.setValues(response);
       })
       .catch((error) => {
@@ -77,8 +76,11 @@ export default function DetailsForm({
   useEffect(() => {
     getReservationByIdAsync(reservationId)
       .then((response: Reservation) => {
-        setValues(response);
-        form.setValues(response);
+        console.log(response);
+        form.setFieldValue('dateTime', dayjs(response.dateTime).toISOString());
+
+        // setValues(response);
+        form.setValues({ ...response });
       })
       .catch((error) => {
         onClose();
@@ -100,7 +102,10 @@ export default function DetailsForm({
 
     const { customer, sitting, ...request } = form.values;
     // Update reservation
-    updateReservationAsync(reservationId, request)
+    updateReservationAsync(reservationId, {
+      ...request,
+      dateTime: dayjs(request.dateTime).toISOString(),
+    })
       .then(() => {
         // setValues(form.values);
         // setEdit(false);
@@ -162,11 +167,18 @@ export default function DetailsForm({
           // value={startDate}
           // onChange={setStartDate}
           disabled={!edit}
-          {...form.getInputProps('dateTime')}
+          {...{
+            ...form.getInputProps('dateTime'),
+            value: dayjs(form.values.dateTime),
+            onChange: (value) => {
+              form.setFieldValue('dateTime', value.toISOString());
+            },
+          }}
+
           // {...form.getInputProps('sitting.startTime')}
         />
       </Input.Wrapper>
-      <DatePicker
+      {/* <DatePicker
         label="Reservation date"
         icon={<IconCalendar size={16} />}
         disabled={!edit}
@@ -179,7 +191,7 @@ export default function DetailsForm({
         disabled={!edit}
         // value={new Date(form.values.dateTime)}
         {...form.getInputProps('dateTime')}
-      />
+      /> */}
       <NumberInput
         label="Duration (minutes)"
         hideControls
