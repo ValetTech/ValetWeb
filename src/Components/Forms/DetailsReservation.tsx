@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-props-no-spreading */
 import {
   Button,
@@ -71,9 +72,19 @@ export default function DetailsForm({
         onClose();
         ErrorNotification(error.message);
       });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    getReservationByIdAsync(reservationId)
+      .then((response: Reservation) => {
+        setValues(response);
+        form.setValues(response);
+      })
+      .catch((error) => {
+        onClose();
+        ErrorNotification(error.message);
+      });
+  }, [reservationId]);
 
   function handleCancel() {
     form.setValues(values);
